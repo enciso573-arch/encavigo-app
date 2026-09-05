@@ -1,0 +1,2140 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<link href="./manifest.json" rel="manifest"/>
+<meta content="#000814" name="theme-color"/>
+<meta content="yes" name="apple-mobile-web-app-capable"/>
+<meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
+<title>EncaviGO — Promociones en tu Ruta</title>
+<meta content="Descubre promociones exclusivas de negocios locales en Puerto Vallarta y Bahía de Banderas. Ofertas en tiempo real a bordo de tu transporte." name="description"/>
+<meta content="website" property="og:type"/>
+<meta content="EncaviGO — Promociones en tu Ruta" property="og:title"/>
+<meta content="Descubre promociones exclusivas de negocios locales en Puerto Vallarta y Bahía de Banderas. Ofertas en tiempo real." property="og:description"/>
+<meta content="img/og-bastion.jpg" property="og:image"/>
+<meta content="summary_large_image" name="twitter:card"/>
+<style>
+    /* =============================================
+       SISTEMA DE DISEÑO — ENCAVIGO (DÍA)
+    ============================================= */
+    :root {
+      /* ── Fondos — Día / Claro ── */
+      --bg-root:        #F0F2F5;
+      --bg-app:         #F0F2F5;
+      --bg-card:        #FFFFFF;
+      --bg-card-alt:    #FFFFFF;
+
+      /* ── Acento — Naranja / Teal ── */
+      --accent:         #FF8C00;
+      --accent-soft:    rgba(255,140,0,0.10);
+      --accent-border:  rgba(255,140,0,0.22);
+      --accent-glow:    rgba(255,140,0,0.08);
+      --accent-text:    #FFFFFF;
+      
+      --secondary:      #00BFA0;
+
+      /* ── Fondos tarjeta — variantes claras ── */
+      --mascot-1: linear-gradient(160deg, #FF8C00 0%, #FFB020 100%);
+      --mascot-2: linear-gradient(160deg, #FF7A00 0%, #FFB020 100%);
+      --mascot-3: linear-gradient(160deg, #00BFA0 0%, #008C74 100%);
+      --mascot-4: linear-gradient(160deg, #FFB020 0%, #FF7A00 100%);
+
+      /* ── Texto ── */
+      --text-primary:   #1A1200;
+      --text-secondary: #6B6B6B;
+      --text-muted:     #9CA3AF;
+
+      /* ── Estructura ── */
+      --border:         rgba(0,0,0,0.06);
+      --border-strong:  rgba(0,0,0,0.10);
+      --shadow-card:    0 2px 12px rgba(0,0,0,0.07);
+      --shadow-app:     0 0 0 1px rgba(0,0,0,0.04),
+                        0 8px 32px rgba(0,0,0,0.14);
+      --radius-card:    20px;
+      --radius-btn:     50px;
+      --radius-pill:    999px;
+
+      /* ── Tipografía nativa ── */
+      --font: system-ui, -apple-system, BlinkMacSystemFont,
+              "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+
+    /* =============================================
+       RESET
+    ============================================= */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0; padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+    html { background: var(--bg-root); -webkit-text-size-adjust: 100%; }
+    body {
+      font-family: var(--font);
+      background: var(--bg-root);
+      color: var(--text-primary);
+      height: 100dvh;
+      overflow: hidden; /* el scroll vive dentro de .promo-feed */
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* =============================================
+       CONTENEDOR PRINCIPAL — SIMULACIÓN MÓVIL
+    ============================================= */
+    .app-container {
+      width: 100%;
+      max-width: 430px;
+      height: 100dvh; /* alto fijo: la zona superior queda anclada */
+      background: var(--bg-app);
+      box-shadow: var(--shadow-app);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+    /* ── ZONA SUPERIOR ANCLADA ──
+       Header, perfil, destacadas, filtro, categorías y canales
+       (todo lo anterior al feed) quedan fijos; solo .promo-feed
+       se desliza. */
+    .app-container > *:not(.promo-feed) { flex-shrink: 0; }
+
+    /* =============================================
+       HEADER — Premium compacto con blur
+    ============================================= */
+    .app-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      /* Blur sobre el contenido al hacer scroll */
+      background: rgba(23, 23, 23, 0.80);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    /* Lado izquierdo: logo + stack de texto */
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      min-width: 0;
+    }
+
+    .header-logo {
+      width: 30px; height: 30px;
+      background: var(--accent);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .header-logo svg {
+      width: 16px; height: 16px;
+      fill: var(--accent-text);
+    }
+
+    /* Stack vertical: título arriba, ubicación abajo */
+    .header-brand-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      min-width: 0;
+    }
+
+    .header-title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.2px;
+      color: var(--text-primary);
+      line-height: 1.1;
+    }
+
+    .header-title em {
+      font-style: normal;
+      color: var(--accent);
+    }
+
+    /* Ubicación colapsable bajo el título */
+    .header-location {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      -webkit-user-select: none;
+    }
+
+    .header-location svg {
+      flex-shrink: 0;
+    }
+
+    .header-location .loc-text {
+      font-size: 10px;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 130px;
+    }
+
+    .header-location .loc-text strong {
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .header-location .chevron {
+      opacity: 0.5;
+      transition: transform 0.2s ease;
+    }
+
+    /* Lado derecho: live-chip + iconos */
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    /* CLIMA EN VIVO — chip dinámico */
+    .weather-chip {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(163, 251, 10, 0.28);
+      border-radius: var(--radius-pill);
+      padding: 5px 10px 5px 7px;
+      cursor: default;
+      transition: border-color 0.4s ease;
+    }
+
+    .weather-icon-wrap {
+      width: 16px; height: 16px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .weather-icon-wrap svg {
+      width: 16px; height: 16px;
+    }
+
+    .weather-text {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      line-height: 1.1;
+    }
+
+    .weather-temp {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.3px;
+    }
+
+    .weather-cond {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    /* ── Animaciones de íconos climáticos ── */
+
+    /* Sol: rayos girando lentamente */
+    .sun-rays {
+      transform-origin: 12px 12px;
+      animation: spin-rays 10s linear infinite;
+    }
+    @keyframes spin-rays {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Nublado: flotación suave */
+    .cloud-body {
+      animation: cloud-float 3.5s ease-in-out infinite;
+    }
+    @keyframes cloud-float {
+      0%, 100% { transform: translateX(0); }
+      50%       { transform: translateX(1.5px); }
+    }
+
+    /* Lluvia: gotas cayendo */
+    .rain-drop {
+      animation: drop-fall 1.3s ease-in infinite;
+      opacity: 0;
+    }
+    .rain-drop:nth-child(2) { animation-delay: 0.25s; }
+    .rain-drop:nth-child(3) { animation-delay: 0.55s; }
+    .rain-drop:nth-child(4) { animation-delay: 0.80s; }
+    @keyframes drop-fall {
+      0%   { transform: translateY(-3px); opacity: 0; }
+      30%  { opacity: 1; }
+      100% { transform: translateY(4px); opacity: 0; }
+    }
+
+    /* Tormenta: relámpago parpadeante */
+    .lightning-bolt {
+      animation: flash-bolt 2.8s ease-in-out infinite;
+    }
+    @keyframes flash-bolt {
+      0%, 80%, 100% { opacity: 1; filter: none; }
+      85%            { opacity: 0.1; }
+      90%            { opacity: 1; filter: drop-shadow(0 0 3px #FFE066); }
+    }
+
+    /* Niebla: pulso suave */
+    .fog-lines {
+      animation: fog-pulse 2.4s ease-in-out infinite;
+    }
+    @keyframes fog-pulse {
+      0%, 100% { opacity: 0.6; transform: translateX(0); }
+      50%       { opacity: 1;   transform: translateX(1px); }
+    }
+
+    /* Botones de ícono (lupa y campana) */
+    .header-icon-btn {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: transparent;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.15s ease;
+      position: relative;
+    }
+
+    .header-icon-btn svg {
+      width: 17px; height: 17px;
+      fill: var(--text-secondary);
+    }
+
+    .header-icon-btn:active {
+      background: rgba(255,255,255,0.08);
+    }
+
+
+    /* =============================================
+       PERFIL / BIOGRAFÍA
+    ============================================= */
+    .profile-section {
+      padding: 7px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .profile-top-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .profile-name-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      flex: 1;
+      min-width: 0;
+    }
+    .profile-toggle-btn {
+      background: none;
+      border: none;
+      padding: 5px 0 5px 4px;
+      cursor: pointer;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      flex-shrink: 0;
+      transition: color 0.15s;
+      font-family: var(--font);
+    }
+    .profile-toggle-btn svg { width: 13px; height: 13px; fill: currentColor; transition: transform 0.25s; }
+    .profile-toggle-btn.open svg { transform: rotate(180deg); }
+    .profile-toggle-btn:hover { color: var(--text-secondary); }
+    .profile-collapse {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.34s cubic-bezier(0.4,0,0.2,1);
+    }
+    .profile-collapse.open { max-height: 220px; }
+    .profile-collapse-inner {
+      padding: 14px 0 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      text-align: center;
+    }
+
+    /* Foto de perfil */
+    .profile-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 2px solid var(--border-strong);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .profile-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Placeholder cuando no hay foto */
+    .profile-avatar svg {
+      width: 38px;
+      height: 38px;
+      fill: var(--text-muted);
+    }
+
+    /* Indicador de estado (disponible) */
+    .profile-avatar::after {
+      content: '';
+      position: absolute;
+      bottom: 3px;
+      right: 3px;
+      width: 12px;
+      height: 12px;
+      background: #A3FB0A;
+      border-radius: 50%;
+      border: 2px solid var(--bg-app);
+    }
+
+    /* Datos de la persona — stack vertical */
+    .profile-info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .profile-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.3px;
+    }
+
+    .profile-role {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--accent);
+    }
+
+    .profile-bio {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      max-width: 300px;
+      margin-top: 2px;
+    }
+
+    /* Separador de datos extra (teléfono, zona, etc.) */
+    .profile-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      width: 100%;
+      margin-top: 4px;
+    }
+
+    .profile-meta-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    .profile-meta-row svg {
+      width: 12px;
+      height: 12px;
+      fill: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    /* =============================================
+       BARRA DE CATEGORÍAS — Diseño vertical icónico
+    ============================================= */
+
+    /* Contenedor con fade derecho que indica scroll */
+    /* ── CARRUSEL DE DESTACADAS ── */
+    .carousel-section {
+      padding: 8px 0 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .carousel-label {
+      font-size: 9px; font-weight: 700; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--text-muted);
+      padding: 0 18px 6px; display: block;
+    }
+    .carousel-track {
+      /* Grid-stack: todas las cards ocupan la misma celda y la pista mide
+         lo que la card más alta — sin alturas fijas. Antes, con
+         position:absolute + min-height fija, una card más alta que la
+         pista se desbordaba y se pintaba encima del contenido de abajo
+         en cada rotación (~5 s): se veía cortada/encimada. */
+      display: grid;
+      margin: 0 18px;
+    }
+    .carousel-card {
+      grid-area: 1 / 1;
+      opacity: 0;
+      visibility: hidden;        /* oculta completamente — no hay bleeding de texto */
+      pointer-events: none;
+      transition: opacity 0.9s ease, visibility 0s linear 0.9s;
+    }
+    .carousel-card.active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transition: opacity 0.9s ease, visibility 0s linear 0s;
+    }
+    /* ── BANNER DEL CARRUSEL ──
+       Para agregar imagen de fondo al banner, añadir al div:
+       style="--banner-img: url('img/banner-01.jpg')"
+       La imagen aparece con 30% de opacidad para mantener legibilidad. */
+    .carousel-card-inner {
+      background: var(--bg-card);
+      padding: 12px 16px;
+      border-radius: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+    .carousel-card-inner::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: var(--banner-img, none);
+      background-size: cover;
+      background-position: center;
+      opacity: 0.28;
+      border-radius: 10px;
+    }
+    /* Contenido sobre la imagen */
+    .carousel-card-cat,
+    .carousel-card-title,
+    .carousel-card-badge { position: relative; z-index: 1; }
+    .carousel-card:active .carousel-card-inner { opacity: 0.80; }
+    .carousel-card-cat {
+      font-size: 9px; font-weight: 700; letter-spacing: 0.10em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 5px;
+    }
+    .carousel-card-title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 16px; font-weight: 700; color: var(--text-primary);
+      line-height: 1.2; margin-bottom: 8px;
+    }
+    .carousel-card-badge {
+      font-size: 10px; font-weight: 800; color: #000814;
+      background: var(--accent); padding: 2px 8px;
+      display: inline-block; letter-spacing: 0.04em;
+    }
+
+    /* ── TOGGLE CATEGORÍAS ── */
+    .cat-toggle-wrap {
+      padding: 4px 18px;
+      border-bottom: 1px solid var(--border);
+    }
+    .cat-toggle-btn {
+      background: none; border: none;
+      padding: 4px 0 4px 0;
+      cursor: pointer; display: flex; align-items: center; gap: 7px;
+      font-size: 10px; font-weight: 700; color: var(--text-muted);
+      letter-spacing: 0.08em; text-transform: uppercase;
+      transition: color 0.15s; font-family: var(--font);
+    }
+    .cat-toggle-btn:hover { color: var(--text-secondary); }
+    .cat-toggle-btn svg { width: 13px; height: 13px; fill: currentColor; }
+    .cat-toggle-btn .chevron { transition: transform 0.25s; }
+    .cat-toggle-btn.open .chevron { transform: rotate(180deg); }
+
+    .categories-wrap {
+      display: none;
+      position: relative;
+      border-bottom: 1px solid var(--border);
+    }
+    .categories-wrap.open { display: block; }
+
+    .categories-wrap::after {
+      content: '';
+      position: absolute;
+      right: 0; top: 0; bottom: 0;
+      width: 36px;
+      background: linear-gradient(to left, var(--bg-app) 20%, transparent);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .categories {
+      padding: 12px 16px 14px;
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+    .categories::-webkit-scrollbar { display: none; }
+
+    /* Chip: ícono arriba + etiqueta abajo */
+    .cat-pill {
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      min-width: 56px;
+      padding: 10px 8px 8px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      cursor: pointer;
+      -webkit-user-select: none;
+      transition: background 0.18s ease, border-color 0.18s ease, transform 0.10s ease;
+    }
+
+    /* Zona del SVG */
+    .cat-icon {
+      width: 22px; height: 22px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .cat-icon svg {
+      width: 20px; height: 20px;
+      fill: var(--text-muted);
+      transition: fill 0.18s ease;
+    }
+
+    /* Etiqueta */
+    .cat-label {
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      white-space: nowrap;
+      color: var(--text-secondary);
+      transition: color 0.18s ease;
+    }
+
+    /* Estado activo */
+    .cat-pill.active {
+      background: var(--accent-soft);
+      border-color: var(--accent-border);
+    }
+
+    .cat-pill.active .cat-icon svg { fill: var(--accent); }
+    .cat-pill.active .cat-label    { color: var(--accent); }
+
+    .cat-pill:active { transform: scale(0.92); }
+
+    /* =============================================
+       CANALES / GLOBOS TEMÁTICOS
+    ============================================= */
+    .topics-section {
+      padding: 7px 16px 9px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .topics-header {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.9px;
+      color: var(--text-muted);
+      padding-left: 2px;
+    }
+
+    .topics-row {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 2px;
+    }
+    .topics-row::-webkit-scrollbar { display: none; }
+
+    /* Globo / canal temático */
+    .topic-card {
+      flex-shrink: 0;
+      width: 66px;
+      height: 66px;
+      border-radius: 16px;
+      background: var(--tg, var(--bg-card));
+      border: 1px solid rgba(255,255,255,0.07);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+      padding: 8px 6px 10px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.35), 0 1px 0 rgba(255,255,255,0.05) inset;
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+      -webkit-user-select: none;
+    }
+
+    .topic-card:active {
+      transform: scale(0.91);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+    }
+
+    .topic-icon {
+      width: 24px; height: 24px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .topic-icon svg {
+      width: 22px; height: 22px;
+      fill: rgba(255,255,255,0.88);
+    }
+
+    .topic-name {
+      font-size: 9.5px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.70);
+      text-align: center;
+      line-height: 1.3;
+      max-width: 68px;
+    }
+
+    /* =============================================
+       FEED DE TARJETAS
+    ============================================= */
+    .promo-feed {
+      padding: 8px 14px 120px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      /* Solo el feed tiene scroll propio */
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+    }
+
+    /* =============================================
+       TARJETA — LAYOUT HORIZONTAL
+       [MASCOTA 38%] [CONTENIDO 62%]
+       .reversed invierte el orden
+    ============================================= */
+    .promo-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-card);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+      display: flex;
+      flex-direction: row;
+      min-height: calc(47dvh - 20px);
+      animation: card-in 0.30s ease both;
+      transform: translateZ(0);
+      transition: transform 0.12s ease;
+    }
+
+    .promo-card:nth-child(2) { animation-delay: 0.06s; background: var(--bg-card-alt); }
+    .promo-card:nth-child(3) { animation-delay: 0.12s; }
+    .promo-card:nth-child(4) { animation-delay: 0.18s; background: var(--bg-card-alt); }
+
+    .promo-card:active { transform: scale(0.982); }
+
+    /* Tarjeta oculta por filtro de categoría */
+    .promo-card.filtered-out {
+      display: none;
+    }
+
+    /* Mensaje vacío cuando ninguna tarjeta coincide */
+    .feed-empty {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 52px 24px;
+      color: var(--text-muted);
+      font-size: 13px;
+      text-align: center;
+    }
+    .feed-empty.show { display: flex; }
+    .feed-empty svg { width: 36px; height: 36px; fill: var(--text-muted); opacity: 0.4; }
+
+    /* Tarjeta con mascota a la DERECHA */
+    .promo-card.reversed {
+      flex-direction: row-reverse;
+    }
+
+    /* ── ZONA IMAGEN DEL NEGOCIO (38%) ── */
+    .card-mascot {
+      flex: 0 0 38%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 12px 8px 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Fondo de la zona mascota — sutil, por categoría */
+    .card-mascot::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--mascot-grad, var(--mascot-1));
+    }
+
+    /* Separador vertical entre mascota y contenido */
+    .promo-card:not(.reversed) .card-mascot::after {
+      content: '';
+      position: absolute;
+      right: 0; top: 15%; bottom: 15%;
+      width: 1px;
+      background: linear-gradient(to bottom, transparent, var(--border-strong), transparent);
+    }
+
+    .promo-card.reversed .card-mascot::after {
+      content: '';
+      position: absolute;
+      left: 0; top: 15%; bottom: 15%;
+      width: 1px;
+      background: linear-gradient(to bottom, transparent, var(--border-strong), transparent);
+    }
+
+    /* Badge de descuento dentro de la zona mascota */
+    .mascot-badge {
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      background: var(--accent);
+      color: var(--accent-text);
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 8px;
+      white-space: nowrap;
+    }
+
+    /* ── FOTO REAL DEL NEGOCIO ──
+       Reemplaza src="img/biz-01.jpg" con la ruta de la foto real.
+       Si el archivo no existe, se oculta y muestra el placeholder. */
+    .biz-photo {
+      position: absolute;
+      inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      z-index: 1; /* sobre el gradiente, bajo el badge y separador */
+    }
+
+    /* Placeholder de foto del negocio — visible solo si no hay imagen */
+    .biz-photo-placeholder {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      flex: 1;
+      width: 100%;
+    }
+    .biz-photo-placeholder svg {
+      width: 28px; height: 28px;
+      fill: rgba(255,255,255,0.18);
+    }
+    .biz-photo-placeholder span {
+      font-size: 8.5px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.20);
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    /* ── ZONA CONTENIDO (62%) ── */
+    .card-content {
+      flex: 1;
+      padding: 20px 18px 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .content-top { display: flex; flex-direction: column; gap: 6px; }
+
+    .card-cat {
+      font-size: 9.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent);
+    }
+
+    .card-biz {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      letter-spacing: 0.2px;
+    }
+
+    .card-title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.15;
+      letter-spacing: -0.3px;
+    }
+
+    .card-desc {
+      font-size: 12px;
+      color: #A0AEBF;
+      line-height: 1.6;
+      margin-top: 4px;
+    }
+
+    .content-bottom { display: flex; flex-direction: column; gap: 8px; }
+
+    /* Chip de distancia */
+    .dist-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #60A5FA;
+      background: transparent;
+      border: none;
+      padding: 3px 0;
+      width: fit-content;
+    }
+
+    .dist-chip svg {
+      width: 10px; height: 10px;
+      fill: var(--text-muted);
+    }
+
+    /* =============================================
+       BOTÓN CTA — TEAL CALMADO, MÍNIMO 50px
+    ============================================= */
+    .btn-cta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-height: 50px;
+      padding: 0 12px;
+      background: var(--accent);
+      color: var(--accent-text);
+      font-family: var(--font);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.1px;
+      border: none;
+      border-radius: var(--radius-btn);
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 4px 18px var(--accent-glow);
+      position: relative;
+      overflow: hidden;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-user-select: none;
+      white-space: nowrap;
+      /* Anima color, fondo y geometría */
+      transition: filter 0.12s ease,
+                  transform 0.10s cubic-bezier(0.34, 1.56, 0.64, 1),
+                  background 0.28s ease,
+                  color 0.20s ease,
+                  box-shadow 0.20s ease;
+    }
+
+    .btn-cta svg {
+      width: 16px; height: 16px;
+      fill: currentColor;
+      flex-shrink: 0;
+      transition: opacity 0.15s ease;
+    }
+
+    /* ── ESTADO: PRESIONADO ─────────────────────
+       Respuesta táctil instantánea al toque      */
+    .btn-cta:active {
+      transform: scale(0.96);
+      filter: brightness(0.82);
+    }
+
+    /* ── ESTADO: CARGANDO ───────────────────────
+       Spinner reemplaza el icono de WhatsApp     */
+    .btn-cta.is-loading {
+      pointer-events: none;
+      filter: brightness(0.88);
+      cursor: default;
+    }
+
+    .btn-spinner {
+      display: none;
+      width: 16px; height: 16px;
+      border: 2.5px solid rgba(26, 26, 26, 0.20);
+      border-top-color: var(--accent-text);
+      border-radius: 50%;
+      flex-shrink: 0;
+      animation: spin-cta 0.65s linear infinite;
+    }
+
+    .btn-cta.is-loading .btn-icon-wa { display: none; }
+    .btn-cta.is-loading .btn-spinner  { display: block; }
+
+    @keyframes spin-cta {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ── ESTADO: ÉXITO ──────────────────────────
+       Verde confirmación + checkmark             */
+    .btn-cta.is-success {
+      background: #1A9C4E;
+      color: #ffffff;
+      box-shadow: 0 4px 20px rgba(26, 156, 78, 0.35);
+      pointer-events: none;
+    }
+
+    .btn-check {
+      display: none;
+      width: 17px; height: 17px;
+      flex-shrink: 0;
+    }
+    .btn-check path { fill: #ffffff; }
+
+    .btn-cta.is-success .btn-icon-wa { display: none; }
+    .btn-cta.is-success .btn-spinner  { display: none; }
+    .btn-cta.is-success .btn-check    { display: block; }
+
+    /* =============================================
+       BOTÓN FLOTANTE — MAPA
+    ============================================= */
+    .map-fab {
+      position: fixed;
+      bottom: 26px;
+      right: max(18px, calc(50% - 215px + 18px));
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+      pointer-events: none;
+    }
+
+    /* Badge de alerta — visible solo cuando hay promos cerca (JS lo muestra) */
+    .map-alert {
+      pointer-events: auto;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0,8,20,0.92);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(255,214,10,0.35);
+      border-radius: 8px;
+      padding: 7px 12px;
+      cursor: pointer;
+      text-decoration: none;
+      animation: float-up 3.2s ease-in-out infinite;
+      /* oculto por defecto hasta que JS lo activa */
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+
+    .map-alert.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .alert-dot { display: none; }
+
+    .alert-text {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent);
+      white-space: nowrap;
+    }
+
+    /* Botón circular dorado */
+    .map-btn {
+      pointer-events: auto;
+      width: 54px; height: 54px;
+      background: var(--accent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.14s ease;
+    }
+
+    .map-btn::before { display: none; }
+    .map-btn::after  { display: none; }
+
+    .map-btn svg {
+      width: 24px; height: 24px;
+      fill: var(--accent-text);
+    }
+
+    .map-btn:active { transform: scale(0.88); }
+
+    /* =============================================
+       ANIMACIONES
+    ============================================= */
+    @keyframes dot-pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.35; transform: scale(0.6); }
+    }
+
+    @keyframes float-up {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-4px); }
+    }
+
+    @keyframes ring-out {
+      0%   { transform: scale(1); opacity: 0.8; }
+      100% { transform: scale(1.75); opacity: 0; }
+    }
+
+    @keyframes card-in {
+      from { opacity: 0; transform: translateY(32px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0)    scale(1);    }
+    }
+
+    /* ── LAZY LOAD — cards ocultas hasta que llega el scroll ── */
+    .card-lazy {
+      display: none;             /* no ocupa espacio hasta revelarse:
+                                    antes (opacity:0) dejaba huecos
+                                    invisibles en la zona de scroll */
+      opacity: 0;
+      transform: translateY(32px) scale(0.97);
+      pointer-events: none;
+    }
+    .card-lazy.card-visible {
+      display: flex;             /* recupera el layout de .promo-card */
+      animation: card-in 0.52s cubic-bezier(0.16, 1, 0.3, 1) both;
+      pointer-events: auto;
+    }
+    .card-lazy.card-visible:nth-of-type(2) { animation-delay: 0.07s; }
+    .card-lazy.card-visible:nth-of-type(3) { animation-delay: 0.14s; }
+    .card-lazy.card-visible:nth-of-type(4) { animation-delay: 0.21s; }
+
+    /* ── FEED LOADER — tres puntos mientras carga el siguiente lote ── */
+    .feed-loader {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 28px 0 12px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+    .feed-loader.visible { opacity: 1; }
+    .feed-loader-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: loader-pulse 1.1s ease-in-out infinite;
+    }
+    .feed-loader-dot:nth-child(2) { animation-delay: 0.18s; }
+    .feed-loader-dot:nth-child(3) { animation-delay: 0.36s; }
+    @keyframes loader-pulse {
+      0%, 80%, 100% { transform: scale(0.5); opacity: 0.25; }
+      40%           { transform: scale(1);   opacity: 1;    }
+    }
+
+    /* ── RIPPLE en botón CTA ── */
+    .ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.32);
+      transform: scale(0);
+      animation: ripple-out 0.55s ease-out forwards;
+      pointer-events: none;
+    }
+    @keyframes ripple-out {
+      to { transform: scale(5); opacity: 0; }
+    }
+
+    /* =============================================
+       RESPONSIVE — pantallas muy estrechas
+    ============================================= */
+    @media (max-width: 340px) {
+      .card-title  { font-size: 13px; }
+      .btn-cta     { font-size: 11px; }
+      .card-mascot { flex: 0 0 35%; }
+    }
+
+    /* =============================================
+       FASE 1 — ESTADO EN TIEMPO REAL
+    ============================================= */
+    .status-chip {
+      display: inline-flex;
+      align-items: center;
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      padding: 3px 0 3px 8px;
+      border-radius: 0;
+      border: none;
+      background: transparent;
+      width: fit-content;
+      margin-bottom: 1px;
+    }
+    .status-chip::before { display: none; }
+    .status-chip.active  { color: #A3FB0A; }
+    .status-chip.soon    { color: #FFBA57; }
+    .status-chip.inactive{ color: #64748B; }
+
+    /* =============================================
+       FASE 1 — URGENCIA / COUNTDOWN
+    ============================================= */
+    .urgency-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #EF7A77;
+      background: transparent;
+      border: none;
+      padding: 3px 0;
+      width: fit-content;
+    }
+    .urgency-chip svg {
+      width: 11px; height: 11px;
+      fill: #EF7A77;
+      flex-shrink: 0;
+    }
+    .urgency-chip.last-hours {
+      color: #FF6B35;
+      animation: none;
+    }
+    .urgency-chip.last-hours svg { fill: #FF6B35; }
+    @keyframes pulse-urgency {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.68; }
+    }
+
+    /* =============================================
+       FASE 1 — PRUEBA SOCIAL
+    ============================================= */
+    .social-proof {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 10.5px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .social-proof svg {
+      width: 12px; height: 12px;
+      fill: #FFBA57;
+      flex-shrink: 0;
+    }
+    .social-proof strong {
+      color: var(--text-secondary);
+      font-weight: 700;
+    }
+
+  </style>
+</head>
+<body>
+<div class="app-container">
+<!-- HEADER ===================================== -->
+<header class="app-header">
+<!-- IZQUIERDA: logo + título + ubicación -->
+<div class="header-left">
+<div class="header-logo">
+<svg viewbox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5L12 1zm0 4.18l5 2.22V11c0 3.54-2.33 6.79-5 7.93C9.33 17.79 7 14.54 7 11V7.4l5-2.22z"></path></svg>
+</div>
+<div class="header-brand-stack">
+<span class="header-title">Encavi<em>GO</em></span>
+<!-- Ubicación colapsable — chevron indica que es interactiva -->
+<button aria-label="Cambiar zona" class="header-location">
+<!-- Pin -->
+<svg fill="none" height="9" viewbox="0 0 24 24" width="9">
+<path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="#94A3B8"></path>
+</svg>
+<span class="loc-text">Zona Romántica · <strong>Pto. Vallarta</strong></span>
+<!-- Chevron abajo -->
+<svg class="chevron" fill="none" height="9" viewbox="0 0 24 24" width="9">
+<path d="M7 10l5 5 5-5z" fill="#94A3B8"></path>
+</svg>
+</button>
+</div>
+</div>
+<!-- DERECHA: EN VIVO + búsqueda + notificaciones -->
+<div class="header-right">
+<!-- CLIMA EN VIVO — actualizado por JS con Open-Meteo API -->
+<div class="weather-chip" id="weatherChip" title="Clima en Puerto Vallarta">
+<div class="weather-icon-wrap" id="weatherIcon">
+<!-- Ícono cargando: puntos parpadeantes -->
+<svg fill="none" viewbox="0 0 16 16">
+<circle cx="4" cy="8" fill="#94A3B8" opacity="0.4" r="1.5">
+<animate attributename="opacity" begin="0s" dur="1.2s" repeatcount="indefinite" values="0.4;1;0.4"></animate>
+</circle>
+<circle cx="8" cy="8" fill="#94A3B8" opacity="0.4" r="1.5">
+<animate attributename="opacity" begin="0.3s" dur="1.2s" repeatcount="indefinite" values="0.4;1;0.4"></animate>
+</circle>
+<circle cx="12" cy="8" fill="#94A3B8" opacity="0.4" r="1.5">
+<animate attributename="opacity" begin="0.6s" dur="1.2s" repeatcount="indefinite" values="0.4;1;0.4"></animate>
+</circle>
+</svg>
+</div>
+<div class="weather-text">
+<span class="weather-temp" id="weatherTemp">--°</span>
+<span class="weather-cond" id="weatherCond">Cargando</span>
+</div>
+</div>
+<!-- Notificaciones -->
+<button aria-label="Activar alertas de proximidad" class="header-icon-btn notif-btn" id="notifBtn" title="Recibe alertas cuando hay promos cerca">
+<svg viewbox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"></path></svg>
+</button>
+<!-- Búsqueda -->
+<button aria-label="Buscar promociones" class="header-icon-btn">
+<svg viewbox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg>
+</button>
+</div>
+</header>
+<!-- PERFIL ===================================== -->
+<!--
+    ★ SECCIÓN DE PERFIL — reemplaza los datos placeholder
+    con la información real del promotor / agente EncaviGO
+  -->
+
+<!-- CARRUSEL DE DESTACADAS ======================== -->
+
+<!-- TOGGLE CATEGORÍAS ============================= -->
+
+<!-- CATEGORÍAS ==================================== -->
+
+<!-- CANALES TEMÁTICOS ========================== -->
+<section aria-label="Canales temáticos" class="topics-section">
+<p class="topics-header">Explorar canales</p>
+<div class="topics-row">
+<!-- NOTICIAS — azul informativo -->
+<button aria-label="Noticias locales" class="topic-card" onclick="window.location.href='noticias.html'" style="--tg: linear-gradient(150deg, #1A3A5C 0%, #0A2040 100%)">
+<div class="topic-icon">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<!-- Periódico -->
+<path d="M4 4h13v2H4zM4 8h13v2H4zM4 12h8v2H4zM4 16h5v2H4z"></path>
+<path d="M18 4h2v16a2 2 0 01-2 2H4a2 2 0 01-2-2V4h2v14h14V4z" opacity=".5"></path>
+<!-- Ondas de señal -->
+<path d="M14 14a3 3 0 013 3" fill="none" opacity=".9" stroke="white" stroke-linecap="round" stroke-width="1.5"></path>
+<path d="M14 11a6 6 0 016 6" fill="none" opacity=".55" stroke="white" stroke-linecap="round" stroke-width="1.5"></path>
+</svg>
+</div>
+<span class="topic-name">Noticias</span>
+</button>
+<!-- CLASIFICADOS — ámbar / comercio -->
+<button aria-label="Clasificados" class="topic-card" onclick="window.location.href='clasificados.html'" style="--tg: linear-gradient(150deg, #4A2C08 0%, #2A1804 100%)">
+<div class="topic-icon">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<!-- Etiqueta de precio -->
+<path d="M21.41 11.58l-9-9A2 2 0 0011 2H4a2 2 0 00-2 2v7a2 2 0 00.59 1.42l9 9A2 2 0 0013 22a2 2 0 001.41-.59l7-7A2 2 0 0022 13a2 2 0 00-.59-1.42z"></path>
+<circle cx="6" cy="7" fill="rgba(0,0,0,0.4)" r="1.5"></circle>
+<!-- Símbolo $ -->
+<text fill="rgba(0,0,0,0.35)" font-family="system-ui" font-size="7" font-weight="800" x="13" y="16">$</text>
+</svg>
+</div>
+<span class="topic-name">Clasificados</span>
+</button>
+<!-- QUÉ HACER EN VALLARTA — teal tropical -->
+<button aria-label="Qué hacer en Puerto Vallarta" class="topic-card" onclick="window.location.href='vallarta.html'" style="--tg: linear-gradient(150deg, #0E3828 0%, #071E16 100%)">
+<div class="topic-icon">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<!-- Palmera -->
+<!-- Tronco curvo -->
+<path d="M12 22 Q11 18 12 14 Q13 10 12 7" fill="none" stroke="white" stroke-linecap="round" stroke-width="1.8"></path>
+<!-- Hoja izquierda -->
+<path d="M12 10 Q7 7 3 8 Q6 11 12 10z"></path>
+<!-- Hoja derecha -->
+<path d="M12 10 Q17 7 21 8 Q18 11 12 10z"></path>
+<!-- Hoja superior -->
+<path d="M12 10 Q10 5 11 2 Q13 5 12 10z"></path>
+<!-- Coco -->
+<circle cx="11.5" cy="10.5" fill="rgba(0,0,0,0.3)" r="1.3"></circle>
+</svg>
+</div>
+<span class="topic-name">Vallarta</span>
+</button>
+<!-- QUÉ HACER EN BAHÍA — azul marino profundo -->
+<button aria-label="Qué hacer en Bahía de Banderas" class="topic-card" onclick="window.location.href='bahia.html'" style="--tg: linear-gradient(150deg, #0A2A4A 0%, #051828 100%)">
+<div class="topic-icon">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<!-- Ancla -->
+<circle cx="12" cy="6" fill="none" r="2.5" stroke="white" stroke-width="1.8"></circle>
+<line stroke="white" stroke-linecap="round" stroke-width="1.8" x1="12" x2="12" y1="8.5" y2="20"></line>
+<path d="M7 11h3 M14 11h3" fill="none" stroke="white" stroke-linecap="round" stroke-width="1.8"></path>
+<path d="M7 20 Q12 23 17 20" fill="none" stroke="white" stroke-linecap="round" stroke-width="1.8"></path>
+<!-- Ola decorativa -->
+<path d="M4 16 Q6 14 8 16 Q10 18 12 16" fill="none" opacity=".45" stroke="white" stroke-linecap="round" stroke-width="1.2"></path>
+</svg>
+</div>
+<span class="topic-name">Bahía</span>
+</button>
+<!-- EVENTOS — púrpura / entretenimiento -->
+<button aria-label="Eventos y espectáculos" class="topic-card" onclick="window.location.href='eventos.html'" style="--tg: linear-gradient(150deg, #2A1040 0%, #180824 100%)">
+<div class="topic-icon">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<!-- Estrella de evento / ticket -->
+<path d="M22 9V7h-2V5a2 2 0 00-2-2H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-2h2v-2h-2v-2h2v-2h-2V9z" opacity=".9"></path>
+<line stroke="rgba(0,0,0,0.3)" stroke-dasharray="3 2" stroke-width="2" x1="15" x2="15" y1="2" y2="22"></line>
+<!-- Estrella -->
+<path d="M9 8l1 3H7l2.5 1.8-1 3L11 14l2.5 1.8-1-3L15 11h-3z" fill="rgba(255,255,255,0.7)"></path>
+</svg>
+</div>
+<span class="topic-name">Eventos</span>
+</button>
+</div>
+</section>
+<!-- FEED ======================================= -->
+<main class="promo-feed">
+    <!-- PLATFORMS SECTION -->
+    <article class="promo-card" data-start="00:00" data-end="23:59">
+      <div class="card-mascot" style="--mascot-grad: var(--mascot-1);">
+        <span class="mascot-badge">Conductor</span>
+        <div style="width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; color:white; padding-top:20px;">
+          <svg style="width:60px; height:60px; fill:currentColor" viewBox="0 0 24 24"><path d="M18.92 5.01C18.72 4.42 18.16 4 17.5 4h-11c-.66 0-1.21.42-1.42 1.01L3 11v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.85 5.56l1.08-3.11c.14-.4.52-.65.94-.65h6.26c.42 0 .8.25.94.65l1.08 3.11c.17.49.62.84 1.15.84H19v2H5V6.4h1.7c.53 0 .98-.35 1.15-.84zM7.5 16c-.83 0-1.5-.67-1.5-1.5S6.67 13 7.5 13s1.5.67 1.5 1.5S8.33 16 7.5 16zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+        </div>
+      </div>
+      <div class="card-content">
+        <div class="content-top">
+          <span class="status-chip active">INDRIVE / UBER / DIDI</span>
+          <h2 class="card-title">Únete a la red EncaviGO y genera más</h2>
+          <p class="card-desc">Si eres conductor de plataforma o taxi, pon nuestro código QR en tu vehículo y gana comisiones por cada pasajero que active promociones.</p>
+        </div>
+        <div class="content-bottom">
+          <a class="btn-cta"
+             href="https://wa.me/521XXXXXXXXXX?text=Hola%2C%20soy%20conductor%20y%20quiero%20unirme%20a%20EncaviGO."
+             target="_blank" rel="noopener">
+             <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 0C5.373 0 0 5.373 0 12c0 2.127.555 4.127 1.524 5.87L.057 23.882l6.01-1.467A11.95 11.95 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22a9.95 9.95 0 01-5.18-1.38l-.37-.213-3.567.868.887-3.566-.23-.382A9.953 9.953 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+            Registrar mi vehículo
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- BUSINESS SECTION -->
+    <article class="promo-card reversed" data-start="00:00" data-end="23:59">
+      <div class="card-mascot" style="--mascot-grad: var(--mascot-3);">
+        <span class="mascot-badge">Negocios</span>
+        <div style="width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; color:white; padding-top:20px;">
+          <svg style="width:60px; height:60px; fill:currentColor" viewBox="0 0 24 24"><path d="M12 3L4 9v12h16V9l-8-6zm6 16h-3v-6H9v6H6v-9l6-4.5 6 4.5v9z"/></svg>
+        </div>
+      </div>
+      <div class="card-content">
+        <div class="content-top">
+          <span class="status-chip active" style="background:var(--secondary)">ANÚNCIATE CON NOSOTROS</span>
+          <h2 class="card-title">Llega a miles de pasajeros diariamente</h2>
+          <p class="card-desc">Publica tus ofertas y cupones directamente en los vehículos de servicio público y privado. Incrementa tus ventas hoy.</p>
+        </div>
+        <div class="content-bottom">
+          <a class="btn-cta"
+             href="https://wa.me/521XXXXXXXXXX?text=Hola%2C%20tengo%20un%20negocio%20y%20quiero%20anunciarme%20en%20EncaviGO."
+             target="_blank" rel="noopener">
+             <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 0C5.373 0 0 5.373 0 12c0 2.127.555 4.127 1.524 5.87L.057 23.882l6.01-1.467A11.95 11.95 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22a9.95 9.95 0 01-5.18-1.38l-.37-.213-3.567.868.887-3.566-.23-.382A9.953 9.953 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+            Publicar mi negocio
+          </a>
+        </div>
+      </div>
+    </article>
+</main>
+</div><!-- /app-container -->
+<!-- BOTÓN FLOTANTE MAPA ========================= -->
+<div class="map-fab">
+<button aria-label="Promos cercanas" class="map-alert" id="mapAlert" type="button">
+<span class="alert-dot" id="alertDot"></span>
+<span class="alert-text" id="alertText">Buscando promos…</span>
+</button>
+<button aria-label="Abrir mapa de promociones" class="map-btn" id="mapBtn" type="button">
+<svg viewbox="0 0 24 24"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"></path></svg>
+</button>
+</div>
+<script>
+/* =============================================
+   CLIMA EN VIVO — Open-Meteo API
+   Coordenadas: Puerto Vallarta, Jalisco
+   Sin API key requerida, 0 dependencias
+============================================= */
+
+const WEATHER_URL =
+  'https://api.open-meteo.com/v1/forecast' +
+  '?latitude=20.6534&longitude=-105.2253' +
+  '&current=temperature_2m,weather_code' +
+  '&timezone=America%2FMexico_City';
+
+/* Mapa de códigos WMO → { texto, color de borde, SVG animado } */
+function getWeatherConfig(code) {
+  /* ── Sol / Despejado ── */
+  if (code === 0) return {
+    label: 'Despejado',
+    border: 'rgba(255, 210, 60, 0.45)',
+    icon: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="12" r="4" fill="#FFD23C"/>
+      <g class="sun-rays" stroke="#FFD23C" stroke-width="1.8" stroke-linecap="round">
+        <line x1="12" y1="2"    x2="12" y2="5"/>
+        <line x1="12" y1="19"   x2="12" y2="22"/>
+        <line x1="2"  y1="12"   x2="5"  y2="12"/>
+        <line x1="19" y1="12"   x2="22" y2="12"/>
+        <line x1="4.9" y1="4.9" x2="7"  y2="7"/>
+        <line x1="17" y1="17"   x2="19.1" y2="19.1"/>
+        <line x1="4.9" y1="19.1" x2="7" y2="17"/>
+        <line x1="17" y1="7"    x2="19.1" y2="4.9"/>
+      </g>
+    </svg>`
+  };
+
+  /* ── Parcialmente nublado ── */
+  if (code >= 1 && code <= 2) return {
+    label: 'Nublado',
+    border: 'rgba(180, 190, 210, 0.35)',
+    icon: `<svg viewBox="0 0 24 24" fill="none">
+      <circle cx="9" cy="13" r="1.5" fill="#FFD23C" opacity="0.7"/>
+      <line x1="9" y1="10" x2="9" y2="8.5" stroke="#FFD23C" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="9" y1="15.5" x2="9" y2="17" stroke="#FFD23C" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="6.5" y1="13" x2="5" y2="13" stroke="#FFD23C" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="13" y1="13" x2="11.5" y2="13" stroke="#FFD23C" stroke-width="1.5" stroke-linecap="round"/>
+      <g class="cloud-body">
+        <path d="M17 18H8a4 4 0 010-8 4 4 0 017.4-1A3.5 3.5 0 1117 18z" fill="#B4BED2"/>
+      </g>
+    </svg>`
+  };
+
+  /* ── Muy nublado ── */
+  if (code === 3) return {
+    label: 'Muy nublado',
+    border: 'rgba(140, 150, 170, 0.35)',
+    icon: `<svg viewBox="0 0 24 24" fill="none">
+      <g class="cloud-body">
+        <path d="M18 19H6a5 5 0 010-10 5 5 0 019.9-1A4 4 0 1118 19z" fill="#8C96AA"/>
+      </g>
+    </svg>`
+  };
+
+  /* ── Niebla / Neblina ── */
+  if (code === 45 || code === 48) return {
+    label: 'Neblina',
+    border: 'rgba(180, 190, 200, 0.30)',
+    icon: `<svg viewBox="0 0 24 24" fill="none">
+      <g class="fog-lines" stroke="#94A3B8" stroke-width="1.8" stroke-linecap="round">
+        <line x1="3" y1="8"  x2="21" y2="8"/>
+        <line x1="5" y1="12" x2="19" y2="12"/>
+        <line x1="3" y1="16" x2="21" y2="16"/>
+      </g>
+    </svg>`
+  };
+
+  /* ── Llovizna ── */
+  if (code >= 51 && code <= 57) return {
+    label: 'Llovizna',
+    border: 'rgba(100, 160, 220, 0.40)',
+    icon: `<svg viewBox="0 0 24 24" fill="none">
+      <path d="M18 17H7a4 4 0 010-8 4 4 0 017.4-1A3.5 3.5 0 1118 17z" fill="#7AA4C8" class="cloud-body"/>
+      <g stroke="#7AA4C8" stroke-width="1.6" stroke-linecap="round">
+        <line class="rain-drop" x1="9"  y1="19" x2="8"  y2="22"/>
+        <line class="rain-drop" x1="13" y1="19" x2="12" y2="22"/>
+      </g>
+    </svg>`
+  };
+
+  /* ── Lluvia ── */
+  if (code >= 61 && code <= 67) return {
+    label: 'Lluvia',
+    border: 'rgba(80, 140, 210, 0.45)',
+    icon: `<svg viewBox="0 0 24 24" fill="none">
+      <path d="M18 16H7a4 4 0 010-8 4 4 0 017.4-1A3.5 3.5 0 1118 16z" fill="#6090C8" class="cloud-body"/>
+      <g stroke="#6090C8" stroke-width="1.6" stroke-linecap="round">
+        <line class="rain-drop" x1="8"  y1="18" x2="7"  y2="22"/>
+        <line class="rain-drop" x1="12" y1="18" x2="11" y2="22"/>
+        <line class="rain-drop" x1="16" y1="18" x2="15" y2="22"/>
+        <line class="rain-drop" x1="10" y1="20" x2="9"  y2="23"/>
+      </g>
+    </svg>`
+  };
+
+  /* ── Chubascos ── */
+  if (code >= 80 && code <= 82) return {
+    label: 'Chubascos',
+    border: 'rgba(60, 120, 200, 0.45)',
+    icon: `<svg viewBox="0 0 24 24" fill="none">
+      <path d="M18 15H7a4 4 0 010-8 4 4 0 017.4-1A3.5 3.5 0 1118 15z" fill="#5080B8" class="cloud-body"/>
+      <g stroke="#5080B8" stroke-width="1.8" stroke-linecap="round">
+        <line class="rain-drop" x1="8"  y1="17" x2="6"  y2="22"/>
+        <line class="rain-drop" x1="12" y1="17" x2="10" y2="22"/>
+        <line class="rain-drop" x1="16" y1="17" x2="14" y2="22"/>
+      </g>
+    </svg>`
+  };
+
+  /* ── Tormenta eléctrica ── */
+  if (code >= 95) return {
+    label: 'Tormenta',
+    border: 'rgba(200, 160, 40, 0.50)',
+    icon: `<svg viewBox="0 0 24 24" fill="none">
+      <path d="M18 14H7a4 4 0 010-8 4 4 0 017.4-1A3.5 3.5 0 1118 14z" fill="#4A4A6A" class="cloud-body"/>
+      <path class="lightning-bolt"
+        d="M13 14l-3 5h3l-3 5"
+        stroke="#FFE066" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </svg>`
+  };
+
+  /* ── Fallback: caluroso (PV casi siempre) ── */
+  return {
+    label: 'Cálido',
+    border: 'rgba(255, 180, 60, 0.40)',
+    icon: `<svg viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="4" fill="#FFB43C"/>
+      <g class="sun-rays" stroke="#FFB43C" stroke-width="1.8" stroke-linecap="round">
+        <line x1="12" y1="2"  x2="12" y2="5"/>
+        <line x1="12" y1="19" x2="12" y2="22"/>
+        <line x1="2"  y1="12" x2="5"  y2="12"/>
+        <line x1="19" y1="12" x2="22" y2="12"/>
+        <line x1="4.9" y1="4.9" x2="7" y2="7"/>
+        <line x1="17" y1="17" x2="19.1" y2="19.1"/>
+        <line x1="4.9" y1="19.1" x2="7" y2="17"/>
+        <line x1="17" y1="7"  x2="19.1" y2="4.9"/>
+      </g>
+    </svg>`
+  };
+}
+
+function pintarClima(cfg, tempTxt) {
+  const chip = document.getElementById('weatherChip');
+  const icon = document.getElementById('weatherIcon');
+  const temp = document.getElementById('weatherTemp');
+  const cond = document.getElementById('weatherCond');
+  if (!chip || !icon || !temp || !cond) return;
+  temp.textContent = tempTxt;
+  cond.textContent = cfg.label;
+  icon.innerHTML   = cfg.icon;
+  chip.style.borderColor = cfg.border;
+}
+
+function climaFallback() {
+  /* Clima típico de PV cuando no hay red / API caída / WebView viejo */
+  pintarClima(getWeatherConfig(0), '32°');
+}
+
+async function loadWeather() {
+  /* Watchdog: pase lo que pase, el chip nunca se queda en "Cargando".
+     Si en 6 s nadie actualizó el chip, se pinta el fallback. */
+  const watchdog = setTimeout(() => {
+    const cond = document.getElementById('weatherCond');
+    if (cond && cond.textContent === 'Cargando') climaFallback();
+  }, 6000);
+
+  try {
+    /* AbortController no existe en WebViews viejos — detectar antes de usar.
+       (Bug original: se creaba FUERA del try; si no existía, la función
+       moría sin ejecutar ni el try ni el catch y el chip quedaba congelado.) */
+    let signal = undefined, timeout = null;
+    if (typeof AbortController === 'function') {
+      const controller = new AbortController();
+      timeout = setTimeout(() => controller.abort(), 5000);
+      signal  = controller.signal;
+    }
+
+    const res = await fetch(WEATHER_URL, signal ? { signal } : {});
+    if (timeout) clearTimeout(timeout);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    if (!data || !data.current) throw new Error('respuesta sin current');
+
+    const t   = Math.round(data.current.temperature_2m);
+    pintarClima(getWeatherConfig(data.current.weather_code), t + '°');
+
+  } catch (_) {
+    climaFallback();
+  } finally {
+    clearTimeout(watchdog);
+  }
+}
+
+/* Carga al abrir y refresca cada 10 minutos */
+loadWeather();
+setInterval(loadWeather, 10 * 60 * 1000);
+
+/* =============================================
+   CARRUSEL DE DESTACADAS — rotación automática
+   (Bug original: las cards nacían con opacity:0 +
+   visibility:hidden y NINGÚN script les ponía la
+   clase .active → el carrusel nunca era visible.)
+============================================= */
+(function initCarousel() {
+  const cards = document.querySelectorAll('#carouselTrack .carousel-card');
+  if (!cards.length) return;
+
+  /* ── FOTOS DE NEGOCIOS ──
+     Lee data-img de cada .carousel-card-inner y superpone la foto al
+     degradado (que queda como fallback si la imagen falta o no carga).
+     Solo hay que rellenar data-img en el HTML — nada más. */
+  document.querySelectorAll('#carouselTrack .carousel-card-inner[data-img]').forEach(el => {
+    const src = (el.dataset.img || '').trim();
+    if (!src) return;
+    const grad = el.style.getPropertyValue('--banner-img');
+    el.style.setProperty('--banner-img', "url('" + src + "')" + (grad ? ', ' + grad : ''));
+  });
+
+  let idx = 0;
+  /* Asegurar estado inicial: solo la primera visible */
+  cards.forEach((c, i) => c.classList.toggle('active', i === 0));
+
+  if (cards.length > 1) {
+    setInterval(() => {
+      cards[idx].classList.remove('active');
+      idx = (idx + 1) % cards.length;
+      cards[idx].classList.add('active');
+    }, 5000);
+  }
+})();
+
+/* =============================================
+   INFINITE SCROLL — Reveal por lotes de 4
+   Las cards con .card-lazy están ocultas en CSS.
+   IntersectionObserver observa el sentinel al
+   final del feed. Cuando entra en viewport:
+   1. Muestra loader (puntos)
+   2. Después de 500ms anima el siguiente lote
+   3. Si no hay más, desconecta el observer.
+============================================= */
+(function initLazyFeed() {
+  const sentinel = document.getElementById('feedSentinel');
+  const loader   = document.getElementById('feedLoader');
+  const feed     = document.querySelector('.promo-feed');
+  if (!sentinel || !loader || !feed) return;
+
+  const BATCH = 4;
+  const DELAY = 520; /* ms antes de revelar el lote */
+
+  /* Toma las próximas N cards lazy no reveladas */
+  function getNextBatch() {
+    return Array.from(feed.querySelectorAll('.card-lazy:not(.card-visible)'))
+                .slice(0, BATCH);
+  }
+
+  /* Anima un lote con retraso escalonado */
+  function revealBatch(cards) {
+    cards.forEach((card, i) => {
+      setTimeout(() => {
+        card.classList.add('card-visible');
+        /* Al terminar la animación la card queda como card normal:
+           re-insertarla en el DOM (reordenamiento por distancia) ya
+           no reinicia la animación → sin parpadeos en el feed. */
+        const fijar = () => card.classList.remove('card-lazy', 'card-visible');
+        card.addEventListener('animationend', fijar, { once: true });
+        /* Si la animación se cancela (p. ej. la card fue re-insertada en
+           el DOM a mitad de animación), fijarla igual para que nunca
+           vuelva a animarse. */
+        card.addEventListener('animationcancel', fijar, { once: true });
+      }, i * 90);
+    });
+  }
+
+  let loading = false;
+
+  const observer = new IntersectionObserver((entries) => {
+    if (!entries[0].isIntersecting || loading) return;
+
+    const batch = getNextBatch();
+    if (!batch.length) { observer.disconnect(); return; }
+
+    loading = true;
+    loader.classList.add('visible');
+
+    setTimeout(() => {
+      loader.classList.remove('visible');
+      revealBatch(batch);
+      loading = false;
+
+      /* Si ya no quedan más, desconecta */
+      if (!feed.querySelectorAll('.card-lazy:not(.card-visible)').length) {
+        observer.disconnect();
+      }
+    }, DELAY);
+
+  }, { rootMargin: '120px' });
+
+  observer.observe(sentinel);
+})();
+
+/* =============================================
+   RIPPLE — micro-interacción en botón CTA
+============================================= */
+document.querySelectorAll('.btn-cta').forEach(btn => {
+  btn.addEventListener('pointerdown', function(e) {
+    const r   = btn.getBoundingClientRect();
+    const rpl = document.createElement('span');
+    rpl.className = 'ripple';
+    const size = Math.max(r.width, r.height) * 1.4;
+    rpl.style.cssText = `
+      width:${size}px; height:${size}px;
+      left:${e.clientX - r.left - size / 2}px;
+      top:${e.clientY - r.top  - size / 2}px;
+    `;
+    btn.appendChild(rpl);
+    rpl.addEventListener('animationend', () => rpl.remove());
+  });
+});
+
+/* =============================================
+   NEGOCIOS AFILIADOS — Base de datos local
+   En producción: fetch desde API de EncaviGO
+============================================= */
+const NEGOCIOS = [
+  {
+    id: 'mariscos-la-palapa',
+    nombre: 'Mariscos La Palapa',
+    promo: '30% OFF en toda la carta de mariscos',
+    categoria: 'Mariscos',
+    lat: 20.6046, lng: -105.2366,
+    whatsapp: '523221234567',
+    coupon: '#BASTION-101'
+  },
+  {
+    id: 'tacos-el-guero',
+    nombre: 'Tacos El Güero',
+    promo: '2×1 en tacos de canasta toda la tarde',
+    categoria: 'Tacos',
+    lat: 20.6074, lng: -105.2361,
+    whatsapp: '523221234568',
+    coupon: '#BASTION-102'
+  },
+  {
+    id: 'spa-pacifico',
+    nombre: 'Spa Pacífico',
+    promo: 'Masaje de 60 min por $199 MXN',
+    categoria: 'Spa',
+    lat: 20.6618, lng: -105.2469,
+    whatsapp: '523221234569',
+    coupon: '#BASTION-103'
+  },
+  {
+    id: 'cerveceria-del-muelle',
+    nombre: 'Cervecería del Muelle',
+    promo: '4 cervezas artesanales por $120',
+    categoria: 'Bar',
+    lat: 20.6196, lng: -105.2381,
+    whatsapp: '523221234570',
+    coupon: '#BASTION-104'
+  }
+];
+
+/* Haversine — distancia en metros entre dos pares de coordenadas */
+function haversine(lat1, lng1, lat2, lng2) {
+  const R  = 6371000;
+  const φ1 = lat1 * Math.PI / 180, φ2 = lat2 * Math.PI / 180;
+  const Δφ = (lat2 - lat1) * Math.PI / 180;
+  const Δλ = (lng2 - lng1) * Math.PI / 180;
+  const a  = Math.sin(Δφ/2)**2 + Math.cos(φ1)*Math.cos(φ2)*Math.sin(Δλ/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+/* Formatea metros en texto legible */
+function fmtDist(m) {
+  if (m < 1000) return `${Math.round(m)} m`;
+  return `${(m / 1000).toFixed(1)} km`;
+}
+
+/* Actualiza dist-chips + badge FAB + reordena feed por distancia */
+let _userLat = null, _userLng = null;
+
+function actualizarBadgeMapa(lat, lng) {
+  _userLat = lat; _userLng = lng;
+
+  /* ── Actualizar dist-chip de cada tarjeta ── */
+  const feed = document.querySelector('.promo-feed');
+  const cards = [...feed.querySelectorAll('.promo-card[data-lat]')];
+
+  cards.forEach(card => {
+    const cLat = parseFloat(card.dataset.lat);
+    const cLng = parseFloat(card.dataset.lng);
+    const dist = haversine(lat, lng, cLat, cLng);
+    card.dataset.dist = dist; // guardamos para el sort
+
+    const chip = card.querySelector('.dist-chip');
+    if (chip) {
+      const pin = `<svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>`;
+      chip.innerHTML = `${pin} ${fmtDist(dist)}`;
+      /* Resaltar si está muy cerca */
+      chip.style.color = dist <= 300 ? '#34D36A' : '';
+      chip.style.borderColor = dist <= 300 ? 'rgba(52,211,106,0.30)' : '';
+    }
+  });
+
+  /* ── Reordenar: activos cercanos primero ── */
+  const statusOrder = card => {
+    const sc = card.querySelector('.status-chip');
+    if (!sc) return 2;
+    if (sc.classList.contains('active')) return 0;
+    if (sc.classList.contains('soon'))   return 1;
+    return 2;
+  };
+  const feedEmpty = feed.querySelector('.feed-empty');
+  /* Solo se reordenan cards ya reveladas; las lazy pendientes se quedan
+     al final (en su orden original) para el reveal por lotes. */
+  const visibles = cards.filter(c =>
+    !c.classList.contains('card-lazy') || c.classList.contains('card-visible'));
+  /* Distancias en cubetas de 100 m: el jitter del GPS (±20-50 m estando
+     quieto) intercambiaba el orden de cards casi equidistantes en CADA
+     update → re-inserciones constantes → el feed "parpadeaba" en bucle
+     periódico. Con cubetas, el orden es estable ante el jitter. */
+  const cubeta = c => Math.round((parseFloat(c.dataset.dist) || 9999) / 100);
+  visibles.sort((a, b) => {
+    const so = statusOrder(a) - statusOrder(b);
+    if (so !== 0) return so;
+    return cubeta(a) - cubeta(b);
+  });
+  const cambio = visibles.some((c, i) =>
+    i > 0 && !(visibles[i - 1].compareDocumentPosition(c) & Node.DOCUMENT_POSITION_FOLLOWING));
+  /* Y aunque cambie: máximo un reorden cada 45 s. Re-insertar nodos mueve
+     el scroll y repinta el feed — mejor pocas veces y bien. */
+  const ahora = Date.now();
+  if (cambio && ahora - (actualizarBadgeMapa._ultimoOrden || 0) > 45000) {
+    actualizarBadgeMapa._ultimoOrden = ahora;
+    const ancla = feed.querySelector('.card-lazy:not(.card-visible)') || feedEmpty;
+    visibles.forEach(c => feed.insertBefore(c, ancla));
+  }
+
+  /* ── Badge FAB ── */
+  const cerca  = cards.filter(c => (parseFloat(c.dataset.dist) || 9999) <= 500);
+  const alert  = document.getElementById('mapAlert');
+  const text   = document.getElementById('alertText');
+  if (cerca.length > 0) {
+    text.textContent = `¡${cerca.length} promo${cerca.length > 1 ? 's' : ''} cerca!`;
+    alert.classList.add('visible');
+  } else {
+    alert.classList.remove('visible');
+  }
+
+  /* ── Notificaciones de proximidad ── */
+  if (typeof notificarProxima === 'function') notificarProxima(lat, lng);
+}
+
+/* GPS en vivo — watchPosition para actualizaciones continuas */
+if ('geolocation' in navigator) {
+  navigator.geolocation.watchPosition(
+    pos  => actualizarBadgeMapa(pos.coords.latitude, pos.coords.longitude),
+    _err => { document.getElementById('mapAlert').classList.remove('visible'); },
+    { enableHighAccuracy: true, maximumAge: 30000, timeout: 15000 }
+  );
+} else {
+  document.getElementById('mapAlert').classList.remove('visible');
+}
+
+/* Navegar al mapa pasando las coords actuales del usuario */
+function irAlMapa() {
+  const url = (_userLat !== null)
+    ? `mapa.html?lat=${_userLat.toFixed(6)}&lng=${_userLng.toFixed(6)}`
+    : 'mapa.html';
+  window.location.href = url;
+}
+
+document.getElementById('mapBtn').addEventListener('click', irAlMapa);
+document.getElementById('mapAlert').addEventListener('click', irAlMapa);
+
+/* =============================================
+   FASE 2 — SERVICE WORKER + PUSH NOTIFICATIONS
+============================================= */
+let _swReg = null;
+const _notifiedIds = new Set(); // evitar spam por negocio
+
+async function registrarSW() {
+  if (!('serviceWorker' in navigator)) return;
+  try {
+    /* updateViaCache:'none' → el navegador SIEMPRE revisa sw.js en red,
+       sin caché HTTP: las actualizaciones llegan en la primera apertura
+       (el SW ya hace skipWaiting + clients.claim al activarse). */
+    _swReg = await navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' });
+  } catch (e) {
+    console.warn('SW no disponible:', e);
+  }
+}
+registrarSW();
+
+/* Solicitar permiso y mostrar UI */
+async function activarNotificaciones() {
+  if (!('Notification' in window)) {
+    mostrarToast('Tu navegador no soporta notificaciones');
+    return;
+  }
+  const perm = await Notification.requestPermission();
+  if (perm === 'granted') {
+    actualizarBtnNotif('on');
+    mostrarToast('✅ Notificaciones activadas');
+    /* Notificación de bienvenida inmediata */
+    if (_swReg) {
+      _swReg.showNotification('¡EncaviGO activado!', {
+        body: 'Te avisaremos cuando haya promos cerca de ti.',
+        icon: './icon-192.png',
+        tag: 'bastion-welcome'
+      });
+    }
+  } else {
+    actualizarBtnNotif('off');
+    mostrarToast('Notificaciones bloqueadas en tu navegador');
+  }
+}
+
+function actualizarBtnNotif(estado) {
+  const btn = document.getElementById('notifBtn');
+  if (!btn) return;
+  if (estado === 'on') {
+    btn.innerHTML = `<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg> Alertas ON`;
+    btn.style.color = '#34D36A';
+    btn.style.borderColor = 'rgba(52,211,106,0.30)';
+  } else {
+    btn.innerHTML = `<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg> Activar alertas`;
+    btn.style.color = '';
+    btn.style.borderColor = '';
+  }
+}
+
+/* Disparar notificación local al SW cuando el usuario está cerca */
+function notificarProxima(lat, lng) {
+  if (Notification.permission !== 'granted' || !_swReg) return;
+  document.querySelectorAll('.promo-card[data-lat]').forEach(card => {
+    const id   = card.dataset.biz || card.dataset.coupon || 'promo';
+    const dist = parseFloat(card.dataset.dist) || 9999;
+    if (dist <= 300 && !_notifiedIds.has(id)) {
+      _notifiedIds.add(id);
+      const biz   = card.querySelector('.card-biz')?.textContent || 'Negocio';
+      const promo = card.querySelector('.card-title')?.textContent || '';
+      navigator.serviceWorker.controller?.postMessage({
+        type: 'PROMO_CERCA',
+        id, negocio: biz, promo,
+        dist: fmtDist(dist)
+      });
+      /* Resetear tras 10 min para que pueda notificar de nuevo */
+      setTimeout(() => _notifiedIds.delete(id), 10 * 60 * 1000);
+    }
+  });
+}
+
+/* Nota: notificarProxima() se invoca directamente al final de
+   actualizarBadgeMapa(). El "enchufe" anterior redeclaraba la función
+   y por hoisting _origActualizar apuntaba a la nueva versión →
+   recursión infinita (stack overflow) en cada update del GPS. */
+
+/* =============================================
+   TOAST + INIT BOTÓN DE NOTIFICACIONES
+   (El archivo estaba truncado justo aquí: un comentario
+   sin cerrar dejaba TODO el script con error de sintaxis
+   → nada se ejecutaba: ni clima, ni GPS, ni carrusel.)
+============================================= */
+function mostrarToast(msg) {
+  let t = document.getElementById('bastionToast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'bastionToast';
+    t.style.cssText = 'position:fixed;bottom:96px;left:50%;transform:translateX(-50%);' +
+      'background:rgba(0,29,61,0.95);color:#FFFFFF;border:1px solid rgba(255,255,255,0.10);' +
+      'padding:10px 18px;border-radius:22px;font-size:13px;font-weight:600;z-index:9999;' +
+      'max-width:82%;text-align:center;transition:opacity 0.3s;opacity:0;pointer-events:none;';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  clearTimeout(t._hide);
+  t._hide = setTimeout(() => { t.style.opacity = '0'; }, 2600);
+}
+
+/* Init botón notificaciones — estado inicial + click */
+(function initNotifBtn() {
+  const btn = document.getElementById('notifBtn');
+  if (!btn) return;
+  if ('Notification' in window && Notification.permission === 'granted') {
+    actualizarBtnNotif('on');
+  }
+  btn.addEventListener('click', activarNotificaciones);
+})();
+</script>
+
+<script>
+// ==========================================
+// SCRIPT: INYECCIÓN DE ID DE CHOFER EN WHATSAPP
+// ==========================================
+(function() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const choferId = urlParams.get('chofer');
+  if (choferId) {
+    localStorage.setItem('encavigo_chofer', choferId);
+  }
+  const activeChoferId = choferId || localStorage.getItem('encavigo_chofer') || 'NO_IDENTIFICADO';
+  
+  document.body.addEventListener('click', function(e) {
+    const btn = e.target.closest('a.btn-cta');
+    if (btn) {
+      const originalHref = btn.getAttribute('href');
+      if (originalHref && originalHref.includes('wa.me')) {
+        const urlObj = new URL(originalHref);
+        const numero = urlObj.pathname.replace('/', '');
+        let textoOriginal = urlObj.searchParams.get('text') || '';
+        
+        if (textoOriginal.includes("conductor")) {
+           textoOriginal = "Hola, soy conductor y me gustaría registrarme en EncaviGO. (ID Referencia: " + activeChoferId + ")";
+        } else if (textoOriginal.includes("anunciarme")) {
+           textoOriginal = "Hola, tengo un negocio y me gustaría anunciarme en EncaviGO. (ID Vehículo: " + activeChoferId + ")";
+        }
+        
+        const nuevaUrl = "https://wa.me/" + numero + "?text=" + encodeURIComponent(textoOriginal);
+        btn.setAttribute('href', nuevaUrl);
+      }
+    }
+  });
+})();
+</script>
+</body>
+
+</html>
