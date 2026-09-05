@@ -5511,52 +5511,9 @@
     4. Cambia los textos y el número de WhatsApp.
     ========================================================================
     -->
-<article class="immersive-card">
-<div class="card-bg" style="background-image: url('https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?auto=format&amp;fit=crop&amp;q=80&amp;w=600');"></div>
-<div class="card-overlay"></div>
-<div class="swipe-hint">
-<svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24"><path d="M12 5v14M19 12l-7 7-7-7"></path></svg>
-<span style="font-size:10px; font-weight:bold;">Desliza</span>
-</div>
-<div class="card-ui">
-<div class="card-badge" style="background: rgba(229, 9, 20, 0.2); border-color: rgba(229, 9, 20, 0.5); color: #FFF;">
-                🔥 ENTREGA INMEDIATA
-            </div>
-<h2 class="card-headline">Tus series<br/>sin interrupciones.</h2>
-<p class="card-body">Cuentas premium 100% garantizadas a una fracción del precio. Disfruta tu viaje con el mejor entretenimiento.</p>
-<div class="card-pills">
-<span style="background: #E50914;">NETFLIX</span>
-<span style="background: #1DB954;">SPOTIFY</span>
-<span style="background: #00005E;">DISNEY+</span>
-<span style="background: #5B0BB5;">MAX</span>
-</div>
-<a class="swipe-btn" href="https://wa.me/523221592596?text=Hola,%20quiero%20comprar%20una%20cuenta%20de%20streaming." style="--btn-bg: #E50914; --btn-glow: rgba(229,9,20,0.4);">Activar código</a>
-</div>
-</article>
-<article class="immersive-card">
-<div class="card-bg" style="background-image: url('https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&amp;fit=crop&amp;q=80&amp;w=600');"></div>
-<div class="card-overlay" style="background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.1) 100%);"></div>
-<div class="card-ui">
-<div class="card-badge" style="background: rgba(245, 158, 11, 0.2); border-color: rgba(245, 158, 11, 0.5); color: #FBBF24;">
-                📍 A 5 MINUTOS DE TI
-            </div>
-<h2 class="card-headline">Cena al Carbón<br/>con 2x1</h2>
-<p class="card-body">Muestra esta pantalla en <strong>Asador El Pariente</strong> y llévate tu segunda hamburguesa a la parrilla completamente gratis hoy.</p>
-<a class="swipe-btn" href="javascript:void(0)" style="--btn-bg: #F59E0B; --btn-glow: rgba(245,158,11,0.4); color: #000;"><svg fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="20"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>Activar código</a>
-</div>
-</article>
-<article class="immersive-card">
-<div class="card-bg" style="background-image: url('https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&amp;fit=crop&amp;q=80&amp;w=600');"></div>
-<div class="card-overlay" style="background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0.3) 100%);"></div>
-<div class="card-ui">
-<div class="card-badge" style="background: rgba(37, 99, 235, 0.2); border-color: rgba(37, 99, 235, 0.5);">
-                🏪 ANUNCIA TU NEGOCIO
-            </div>
-<h2 class="card-headline">Capta clientes<br/>en movimiento.</h2>
-<p class="card-body">Toma una foto profesional de tu local (¡nosotros te ayudamos!) y publícala aquí para que la vean miles de turistas en Puerto Vallarta.</p>
-<a class="swipe-btn" href="https://wa.me/523221592596?text=Hola,%20quiero%20informaci%C3%B3n%20para%20afiliarme%20a%20EncaviGO." style="--btn-bg: #2563EB; --btn-glow: rgba(37,99,235,0.4);">Activar código</a>
-</div>
-</article>
+
+
+
 </main>
 </div><!-- /app-container -->
 <!-- BOTÃ“N FLOTANTE MAPA ========================= -->
@@ -5619,8 +5576,6 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 </script>
-
-
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const SESSION_HOURS = 24;
@@ -5656,24 +5611,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    const waLinks = document.querySelectorAll('a[href*="wa.me"]');
-    waLinks.forEach(link => {
-        let originalHref = link.getAttribute('href');
-        if (!originalHref.includes('código')) {
-            const addText = ` Mi código de promo es: ${session.code} (Unidad: ${session.chofer})`;
-            link.setAttribute('href', originalHref + encodeURIComponent(addText));
-        }
-    });
-
-    const cards = document.querySelectorAll('.immersive-card');
-    if(cards.length > 1) {
-        cards[1].setAttribute('data-lat', '20.6025');
-        cards[1].setAttribute('data-lng', '-105.2325');
-        cards[1].setAttribute('data-title', 'Cena al Carbón 2x1');
-        cards[1].setAttribute('data-desc', 'Muestra esta pantalla en Asador El Pariente');
-        cards[1].setAttribute('data-img', 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=300&q=80');
-    }
-    
     function haversine(lat1, lon1, lat2, lon2) {
         const R = 6371; 
         const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -5684,19 +5621,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const drawerBadge = document.querySelector('.pullup-badge');
     const sheetContent = document.querySelector('.sheet-content');
+    let loadedCampaigns = []; // Store them for radar
     
     function actualizarRadar(userLat, userLng) {
         let cercanas = [];
-        cards.forEach(card => {
-            const cLat = card.getAttribute('data-lat');
-            const cLng = card.getAttribute('data-lng');
-            if (cLat && cLng) {
-                const dist = haversine(userLat, userLng, parseFloat(cLat), parseFloat(cLng));
+        loadedCampaigns.forEach(camp => {
+            if (camp.lat && camp.lng) {
+                const dist = haversine(userLat, userLng, parseFloat(camp.lat), parseFloat(camp.lng));
                 if (dist <= 2.0) { 
                     cercanas.push({
-                        title: card.getAttribute('data-title'),
-                        desc: card.getAttribute('data-desc'),
-                        img: card.getAttribute('data-img'),
+                        title: camp.title,
+                        desc: camp.desc,
+                        img: camp.img,
                         distKm: dist
                     });
                 }
@@ -5716,6 +5652,64 @@ document.addEventListener('DOMContentLoaded', () => {
             sheetContent.innerHTML = '<p style="text-align:center; color:#94A3B8; margin-top:20px;">No hay promociones extremadamente cerca de ti en este momento.</p>';
         }
     }
+
+    // CARGAR CAMPAÑAS DINÁMICAS DESDE FIREBASE
+    const mainFeed = document.querySelector('.immersive-feed');
+    
+    db.collection('campaigns').where('active', '==', true).get().then(snapshot => {
+        if(snapshot.empty && mainFeed) {
+            mainFeed.innerHTML = '<div style="color:white; text-align:center; padding:50px; font-family:sans-serif;">No hay campañas activas.</div>';
+            return;
+        }
+        
+        let html = '';
+        snapshot.forEach(doc => {
+            const camp = doc.data();
+            camp.id = doc.id;
+            loadedCampaigns.push(camp);
+            
+            // Build Whatsapp URL
+            const waMsg = camp.waMsg || 'Hola';
+            const fullMsg = `${waMsg} Mi código de promo es: ${session.code} (Unidad: ${session.chofer})`;
+            const waUrl = `https://wa.me/523221592596?text=${encodeURIComponent(fullMsg)}`;
+            
+            // Build the card HTML
+            html += `
+            <article class="immersive-card">
+                <div class="card-bg" style="background-image: url('${camp.img}');"></div>
+                <div class="card-overlay" style="background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.1) 100%);"></div>
+                <div class="card-ui">
+                    <div class="card-badge" style="background: rgba(245, 158, 11, 0.2); border-color: rgba(245, 158, 11, 0.5); color: #FBBF24;">
+                        ✦ ${camp.badge || 'PROMO ACTIVA'}
+                    </div>
+                    <h2 class="card-headline">${camp.title || ''}</h2>
+                    <p class="card-body">${camp.desc || ''}</p>
+                    <a class="swipe-btn" href="${waUrl}" data-campid="${doc.id}" style="--btn-bg: #F59E0B; --btn-glow: rgba(245,158,11,0.4); color: #000;">Activar código</a>
+                </div>
+            </article>
+            `;
+        });
+        
+        if (mainFeed) {
+            mainFeed.innerHTML = html;
+            
+            // Re-attach click listeners to the new buttons
+            document.querySelectorAll('a.swipe-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const cid = e.target.getAttribute('data-campid');
+                    try {
+                        db.collection('stats').doc('global').update({ clicks: firebase.firestore.FieldValue.increment(1) });
+                        if (session && session.chofer !== 'orgánico') {
+                            db.collection('choferes').doc(session.chofer).update({ clicks: firebase.firestore.FieldValue.increment(1) });
+                        }
+                        if (cid) {
+                            db.collection('campaigns').doc(cid).update({ clicks: firebase.firestore.FieldValue.increment(1) });
+                        }
+                    } catch(err) { console.error(err); }
+                });
+            });
+        }
+    }).catch(e => console.error("Error loading campaigns:", e));
 
     let gpsRequested = false;
     document.body.addEventListener('click', () => {
@@ -5748,19 +5742,8 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     } catch(e) { console.error("Error Firebase:", e); }
-
-    document.querySelectorAll('a.swipe-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            try {
-                db.collection('stats').doc('global').update({ clicks: firebase.firestore.FieldValue.increment(1) });
-                if (session && session.chofer !== 'orgánico') {
-                    db.collection('choferes').doc(session.chofer).update({ clicks: firebase.firestore.FieldValue.increment(1) });
-                }
-            } catch(e) { console.error(e); }
-        });
-    });
 });
 </script>
 </body>
 </html>
-<!-- 1788643621.4204273 --><!-- 1788644024.345812 --><!-- v3 1788644297.9113197 -->
+<!-- 1788643621.4204273 --><!-- 1788644024.345812 --><!-- v3 1788644297.9113197 --><!-- v5 1788644868.7509923 -->
