@@ -5604,7 +5604,6 @@
 <span class="pullup-badge">3</span> Promos cerca de ti
         </div>
 </div>
-
 <!-- FIREBASE SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -5620,117 +5619,53 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 </script>
+
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    // ------------------------------------------------------------
-    // 1. SISTEMA DE SESIÓN (24 HORAS) Y CÓDIGO ÚNICO
-    // ------------------------------------------------------------
     const SESSION_HOURS = 24;
-
-    // REGISTRAR ESCANEO EN FIREBASE
-    try {
-        const docRef = db.collection('stats').doc('global');
-        docRef.get().then((doc) => {
-            if (doc.exists) {
-                docRef.update({ scans: firebase.firestore.FieldValue.increment(1) });
-            } else {
-                docRef.set({ scans: 1, clicks: 0 });
-            }
-        });
-        
-        // Registrar en chofer específico
-        if (session && session.chofer !== 'orgánico') {
-            const chofRef = db.collection('choferes').doc(session.chofer);
-            chofRef.get().then(doc => {
-                if (doc.exists) {
-                    chofRef.update({ scans: firebase.firestore.FieldValue.increment(1) });
-                } else {
-                    chofRef.set({ scans: 1, clicks: 0, lastActive: new Date() });
-                }
-            });
-        }
-    } catch(e) { console.error("Firebase no configurado aún", e); }
-
-    // REGISTRAR CLIC AL ACTIVAR CÓDIGO
-    document.querySelectorAll('a.swipe-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            try {
-                db.collection('stats').doc('global').update({ clicks: firebase.firestore.FieldValue.increment(1) });
-                if (session && session.chofer !== 'orgánico') {
-                    db.collection('choferes').doc(session.chofer).update({ clicks: firebase.firestore.FieldValue.increment(1) });
-                }
-            } catch(e) {}
-        });
-    });
-    
     const SESSION_KEY = 'encavigo_session';
-    
-    // Obtener parámetros de la URL
     const urlParams = new URLSearchParams(window.location.search);
     const paramChofer = urlParams.get('chofer');
-    
     let session = null;
-    try {
-        session = JSON.parse(localStorage.getItem(SESSION_KEY));
-    } catch(e) {}
+    try { session = JSON.parse(localStorage.getItem(SESSION_KEY)); } catch(e) {}
     
     const now = Date.now();
-    
-    // Resetear sesión si hay nuevo parámetro chofer en URL
-    if (paramChofer) {
-        session = null; 
-    }
+    if (paramChofer) session = null; 
     
     if (!session) {
-        // Generar código único aleatorio
         const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
         let uniqueCode = 'ENC-';
         for(let i=0; i<4; i++) uniqueCode += chars.charAt(Math.floor(Math.random() * chars.length));
         
-        session = {
-            timestamp: now,
-            code: uniqueCode,
-            chofer: paramChofer || 'orgánico'
-        };
+        session = { timestamp: now, code: uniqueCode, chofer: paramChofer || 'orgánico' };
         localStorage.setItem(SESSION_KEY, JSON.stringify(session));
-        
-        // Limpiar URL
-        if(paramChofer) {
-            window.history.replaceState({}, document.title, window.location.pathname);
-        }
+        if(paramChofer) window.history.replaceState({}, document.title, window.location.pathname);
     } else {
         const diffHours = (now - session.timestamp) / (1000 * 60 * 60);
         if (diffHours > SESSION_HOURS) {
-            document.body.innerHTML = 
+            document.body.innerHTML = `
                 <div style="height: 100dvh; width: 100vw; background: #000; color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; font-family: sans-serif;">
                     <div style="font-size: 50px; margin-bottom: 20px;">🔒</div>
                     <h1 style="font-size: 24px; font-weight: 900; margin-bottom: 10px;">Sesión Expirada</h1>
                     <p style="color: #94A3B8; line-height: 1.5;">Tu código promocional ha caducado. Sube a un vehículo afiliado a EncaviGO y escanea un código QR nuevo para desbloquear las ofertas de hoy.</p>
                 </div>
-            ;
+            `;
             localStorage.removeItem(SESSION_KEY);
             return;
         }
     }
     
-    // ------------------------------------------------------------
-    // 2. AÑADIR EL CÓDIGO A WHATSAPP
-    // ------------------------------------------------------------
     const waLinks = document.querySelectorAll('a[href*="wa.me"]');
     waLinks.forEach(link => {
         let originalHref = link.getAttribute('href');
         if (!originalHref.includes('código')) {
-            const addText =  Mi código de promo es:  (Unidad: );
+            const addText = ` Mi código de promo es: ${session.code} (Unidad: ${session.chofer})`;
             link.setAttribute('href', originalHref + encodeURIComponent(addText));
         }
     });
 
-    // ------------------------------------------------------------
-    // 3. RADAR GPS INTELIGENTE
-    // ------------------------------------------------------------
     const cards = document.querySelectorAll('.immersive-card');
-    
-    // Asignamos coords a la segunda tarjeta (Restaurante) para que haya una de prueba
     if(cards.length > 1) {
         cards[1].setAttribute('data-lat', '20.6025');
         cards[1].setAttribute('data-lng', '-105.2325');
@@ -5757,7 +5692,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const cLng = card.getAttribute('data-lng');
             if (cLat && cLng) {
                 const dist = haversine(userLat, userLng, parseFloat(cLat), parseFloat(cLng));
-                if (dist <= 2.0) { // Ampliado a 2km para facilidad de prueba
+                if (dist <= 2.0) { 
                     cercanas.push({
                         title: card.getAttribute('data-title'),
                         desc: card.getAttribute('data-desc'),
@@ -5774,7 +5709,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let html = '<p style="font-size: 12px; color: #34D399; text-align: center; margin-top:0;">El conductor se acerca a estos lugares:</p>';
             cercanas.forEach(local => {
                 const mins = Math.max(1, Math.round(local.distKm * 5));
-                html += <div class="mini-card"><div class="mini-card-img" style="background-image: url('');"></div><div class="mini-card-info"><h4 class="mini-title"></h4><p class="mini-desc"> A  mins.</p></div></div>;
+                html += `<div class="mini-card"><div class="mini-card-img" style="background-image: url('${local.img}');"></div><div class="mini-card-info"><h4 class="mini-title">${local.title}</h4><p class="mini-desc">${local.desc} A ${mins} mins.</p></div></div>`;
             });
             sheetContent.innerHTML = html;
         } else if (sheetContent) {
@@ -5782,8 +5717,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    
-    // REGISTRAR ESCANEO EN FIREBASE
+    let gpsRequested = false;
+    document.body.addEventListener('click', () => {
+        if(!gpsRequested && 'geolocation' in navigator) {
+            gpsRequested = true;
+            navigator.geolocation.watchPosition((position) => {
+                actualizarRadar(position.coords.latitude, position.coords.longitude);
+            }, (err) => console.log(err), { enableHighAccuracy: true });
+        }
+    }, {once: true});
+
     try {
         const docRef = db.collection('stats').doc('global');
         docRef.get().then((doc) => {
@@ -5806,7 +5749,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     } catch(e) { console.error("Error Firebase:", e); }
 
-    // REGISTRAR CLIC AL ACTIVAR CÓDIGO
     document.querySelectorAll('a.swipe-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             try {
@@ -5817,19 +5759,8 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch(e) { console.error(e); }
         });
     });
-
-    // Pedir permiso de GPS al tocar cualquier parte de la pantalla si no se ha pedido (Mejor UX para móviles que bloquean peticiones automáticas)
-    let gpsRequested = false;
-    document.body.addEventListener('click', () => {
-        if(!gpsRequested && 'geolocation' in navigator) {
-            gpsRequested = true;
-            navigator.geolocation.watchPosition((position) => {
-                actualizarRadar(position.coords.latitude, position.coords.longitude);
-            }, (err) => console.log(err), { enableHighAccuracy: true });
-        }
-    }, {once: true});
 });
 </script>
 </body>
 </html>
-<!-- 1788643621.4204273 --><!-- 1788644024.345812 -->
+<!-- 1788643621.4204273 --><!-- 1788644024.345812 --><!-- v3 1788644297.9113197 -->
