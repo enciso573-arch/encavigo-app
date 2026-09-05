@@ -9,18 +9,18 @@
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
 <title>EncaviGO â€” Promociones en tu Ruta</title>
-<meta content="Descubre promociones exclusivas de negocios locales en Puerto Vallarta y Bahí­a de Banderas. Ofertas en tiempo real a bordo de tu transporte." name="description"/>
+<meta content="Descubre promociones exclusivas de negocios locales en Puerto Vallarta y BahÃ­a de Banderas. Ofertas en tiempo real a bordo de tu transporte." name="description"/>
 <meta content="website" property="og:type"/>
 <meta content="EncaviGO â€” Promociones en tu Ruta" property="og:title"/>
-<meta content="Descubre promociones exclusivas de negocios locales en Puerto Vallarta y Bahí­a de Banderas. Ofertas en tiempo real." property="og:description"/>
+<meta content="Descubre promociones exclusivas de negocios locales en Puerto Vallarta y BahÃ­a de Banderas. Ofertas en tiempo real." property="og:description"/>
 <meta content="img/og-bastion.jpg" property="og:image"/>
 <meta content="summary_large_image" name="twitter:card"/>
 <style>
     /* =============================================
-       SISTEMA DE DISEí‘O â€” ENCAVIGO (DíA)
+       SISTEMA DE DISEÃ‘O â€” ENCAVIGO (DÃA)
     ============================================= */
     :root {
-      /* â”€â”€ Fondos â€” Limpio / Corporativo (Opción 2) â”€â”€ */
+      /* â”€â”€ Fondos â€” Limpio / Corporativo (OpciÃ³n 2) â”€â”€ */
       --bg-root:        #F9FAFB;
       --bg-app:         #F9FAFB;
       --bg-card:        #FFFFFF;
@@ -56,7 +56,7 @@
       --radius-btn:     999px;
       --radius-pill:    999px;
 
-      /* â”€â”€ Tipografí­a nativa - Inter â”€â”€ */
+      /* â”€â”€ TipografÃ­a nativa - Inter â”€â”€ */
       --font: 'Inter', system-ui, -apple-system, sans-serif;
     }
 
@@ -84,7 +84,7 @@
     }
 
     /* =============================================
-       CONTENEDOR PRINCIPAL â€” SIMULACIí“N Mí“VIL
+       CONTENEDOR PRINCIPAL â€” SIMULACIÃ“N MÃ“VIL
     ============================================= */
     .app-container {
       width: 100%;
@@ -98,7 +98,7 @@
       overflow-x: hidden;
     }
     /* â”€â”€ ZONA SUPERIOR ANCLADA â”€â”€
-       Header, perfil, destacadas, filtro, categorí­as y canales
+       Header, perfil, destacadas, filtro, categorÃ­as y canales
        (todo lo anterior al feed) quedan fijos; solo .promo-feed
        se desliza. */
     .app-container > *:not(.promo-feed) { flex-shrink: 0; }
@@ -145,7 +145,7 @@
       fill: var(--accent-text);
     }
 
-    /* Stack vertical: tí­tulo arriba, ubicación abajo */
+    /* Stack vertical: tÃ­tulo arriba, ubicaciÃ³n abajo */
     .header-brand-stack {
       display: flex;
       flex-direction: column;
@@ -167,7 +167,7 @@
       color: var(--accent);
     }
 
-    /* Ubicación colapsable bajo el tí­tulo */
+    /* UbicaciÃ³n colapsable bajo el tÃ­tulo */
     .header-location {
       display: flex;
       align-items: center;
@@ -210,7 +210,7 @@
       flex-shrink: 0;
     }
 
-    /* CLIMA EN VIVO â€” chip dinámico */
+    /* CLIMA EN VIVO â€” chip dinÃ¡mico */
     .weather-chip {
       display: flex;
       align-items: center;
@@ -255,7 +255,7 @@
       white-space: nowrap;
     }
 
-    /* â”€â”€ Animaciones de í­conos climáticos â”€â”€ */
+    /* â”€â”€ Animaciones de Ã­conos climÃ¡ticos â”€â”€ */
 
     /* Sol: rayos girando lentamente */
     .sun-rays {
@@ -266,7 +266,7 @@
       to { transform: rotate(360deg); }
     }
 
-    /* Nublado: flotación suave */
+    /* Nublado: flotaciÃ³n suave */
     .cloud-body {
       animation: cloud-float 3.5s ease-in-out infinite;
     }
@@ -289,7 +289,7 @@
       100% { transform: translateY(4px); opacity: 0; }
     }
 
-    /* Tormenta: relámpago parpadeante */
+    /* Tormenta: relÃ¡mpago parpadeante */
     .lightning-bolt {
       animation: flash-bolt 2.8s ease-in-out infinite;
     }
@@ -308,7 +308,7 @@
       50%       { opacity: 1;   transform: translateX(1px); }
     }
 
-    /* Botones de í­cono (lupa y campana) */
+    /* Botones de Ã­cono (lupa y campana) */
     .header-icon-btn {
       width: 32px; height: 32px;
       border-radius: 50%;
@@ -333,7 +333,7 @@
 
 
     /* =============================================
-       PERFIL / BIOGRAFíA
+       PERFIL / BIOGRAFÃA
     ============================================= */
     .profile-section {
       padding: 7px 18px;
@@ -464,7 +464,7 @@
       margin-top: 2px;
     }
 
-    /* Separador de datos extra (telí©fono, zona, etc.) */
+    /* Separador de datos extra (telÃ©fono, zona, etc.) */
     .profile-meta {
       display: flex;
       flex-direction: column;
@@ -490,7 +490,7 @@
     }
 
     /* =============================================
-       BARRA DE CATEGORíAS â€” Diseí±o vertical icónico
+       BARRA DE CATEGORÃAS â€” DiseÃ±o vertical icÃ³nico
     ============================================= */
 
     /* Contenedor con fade derecho que indica scroll */
@@ -509,7 +509,7 @@
          lo que la card más alta â€” sin alturas fijas. Antes, con
          position:absolute + min-height fija, una card más alta que la
          pista se desbordaba y se pintaba encima del contenido de abajo
-         en cada rotación (~5 s): se veí­a cortada/encimada. */
+         en cada rotaciÃ³n (~5 s): se veÃ­a cortada/encimada. */
       display: grid;
       margin: 0 18px;
     }
@@ -527,7 +527,7 @@
       transition: opacity 0.9s ease, visibility 0s linear 0s;
     }
     /* â”€â”€ BANNER DEL CARRUSEL â”€â”€
-       Para agregar imagen de fondo al banner, aí±adir al div:
+       Para agregar imagen de fondo al banner, aÃ±adir al div:
        style="--banner-img: url('img/banner-01.jpg')"
        La imagen aparece con 30% de opacidad para mantener legibilidad. */
     .carousel-card-inner {
@@ -567,7 +567,7 @@
       display: inline-block; letter-spacing: 0.04em;
     }
 
-    /* â”€â”€ TOGGLE CATEGORíAS â”€â”€ */
+    /* â”€â”€ TOGGLE CATEGORÃAS â”€â”€ */
     .cat-toggle-wrap {
       padding: 4px 18px;
       border-bottom: 1px solid var(--border);
@@ -612,7 +612,7 @@
     }
     .categories::-webkit-scrollbar { display: none; }
 
-    /* Chip: í­cono arriba + etiqueta abajo */
+    /* Chip: Ã­cono arriba + etiqueta abajo */
     .cat-pill {
       flex-shrink: 0;
       display: flex;
@@ -665,7 +665,7 @@
     .cat-pill:active { transform: scale(0.92); }
 
     /* =============================================
-       CANALES / GLOBOS TEMíTICOS
+       CANALES / GLOBOS TEMÃTICOS
     ============================================= */
     .topics-section {
       padding: 7px 16px 9px;
@@ -694,7 +694,7 @@
     }
     .topics-row::-webkit-scrollbar { display: none; }
 
-    /* Globo / canal temático */
+    /* Globo / canal temÃ¡tico */
     .topic-card {
       flex-shrink: 0;
       width: 66px;
@@ -767,19 +767,168 @@
       overflow: hidden;
       margin: 0 16px 20px 16px;
       display: flex;
-      flex-direction: column;
+      flex-direction: column; /* CHANGED to column */
       position: relative;
     }
-    .card-content {
-      padding: 24px;
+
+    .promo-card:nth-child(2) { animation-delay: 0.06s; background: var(--bg-card-alt); }
+    .promo-card:nth-child(3) { animation-delay: 0.12s; }
+    .promo-card:nth-child(4) { animation-delay: 0.18s; background: var(--bg-card-alt); }
+
+    .promo-card:active { transform: scale(0.982); }
+
+    /* Tarjeta oculta por filtro de categorÃ­a */
+    .promo-card.filtered-out {
+      display: none;
+    }
+
+    /* Mensaje vacÃ­o cuando ninguna tarjeta coincide */
+    .feed-empty {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 52px 24px;
+      color: var(--text-muted);
+      font-size: 13px;
+      text-align: center;
+    }
+    .feed-empty.show { display: flex; }
+    .feed-empty svg { width: 36px; height: 36px; fill: var(--text-muted); opacity: 0.4; }
+
+    /* Tarjeta con mascota a la DERECHA */
+    .promo-card.reversed {
+      flex-direction: row-reverse;
+    }
+
+    /* â”€â”€ ZONA IMAGEN DEL NEGOCIO (38%) â”€â”€ */
+    
+
+    /* Fondo de la zona mascota â€” sutil, por categorÃ­a */
+    .card-mascot::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--mascot-grad, var(--mascot-1));
+    }
+
+    /* Separador vertical entre mascota y contenido */
+    .promo-card:not(.reversed) .card-mascot::after {
+      content: '';
+      position: absolute;
+      right: 0; top: 15%; bottom: 15%;
+      width: 1px;
+      background: linear-gradient(to bottom, transparent, var(--border-strong), transparent);
+    }
+
+    .promo-card.reversed .card-mascot::after {
+      content: '';
+      position: absolute;
+      left: 0; top: 15%; bottom: 15%;
+      width: 1px;
+      background: linear-gradient(to bottom, transparent, var(--border-strong), transparent);
+    }
+
+    /* Badge de descuento dentro de la zona mascota */
+    .mascot-badge {
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      background: var(--accent);
+      color: var(--accent-text);
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 8px;
+      white-space: nowrap;
+    }
+
+    /* â”€â”€ FOTO REAL DEL NEGOCIO â”€â”€
+       Reemplaza src="img/biz-01.jpg" con la ruta de la foto real.
+       Si el archivo no existe, se oculta y muestra el placeholder. */
+    .biz-photo {
+      position: absolute;
+      inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      z-index: 1; /* sobre el gradiente, bajo el badge y separador */
+    }
+
+    /* Placeholder de foto del negocio â€” visible solo si no hay imagen */
+    .biz-photo-placeholder {
+      position: relative;
+      z-index: 1;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
       flex: 1;
+      width: 100%;
     }
-    .content-bottom {
-      margin-top: 10px;
+    .biz-photo-placeholder svg {
+      width: 28px; height: 28px;
+      fill: rgba(255,255,255,0.18);
     }
+    .biz-photo-placeholder span {
+      font-size: 8.5px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.20);
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    /* â”€â”€ ZONA CONTENIDO (62%) â”€â”€ */
+    .card-content {
+      flex: 1;
+      padding: 20px 18px 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .content-top { display: flex; flex-direction: column; gap: 6px; }
+
+    .card-cat {
+      font-size: 9.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent);
+    }
+
+    .card-biz {
+      font-family: var(--font);
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      letter-spacing: 0.2px;
+    }
+
+    .card-title {
+      font-family: var(--font);
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.15;
+      letter-spacing: -0.3px;
+    }
+
+    .card-desc {
+      font-size: 12px;
+      color: #A0AEBF;
+      line-height: 1.6;
+      margin-top: 4px;
+    }
+
+    .content-bottom { display: flex; flex-direction: column; gap: 8px; }
 
     /* Chip de distancia */
     .dist-chip {
@@ -801,7 +950,7 @@
     }
 
     /* =============================================
-       BOTí“N CTA â€” TEAL CALMADO, MíNIMO 50px
+       BOTÃ“N CTA â€” TEAL CALMADO, MÃNIMO 50px
     ============================================= */
     .btn-cta {
       display: flex;
@@ -826,7 +975,7 @@
       -webkit-tap-highlight-color: transparent;
       -webkit-user-select: none;
       white-space: nowrap;
-      /* Anima color, fondo y geometrí­a */
+      /* Anima color, fondo y geometrÃ­a */
       transition: filter 0.12s ease,
                   transform 0.10s cubic-bezier(0.34, 1.56, 0.64, 1),
                   background 0.28s ease,
@@ -842,7 +991,7 @@
     }
 
     /* â”€â”€ ESTADO: PRESIONADO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-       Respuesta táctil instantánea al toque      */
+       Respuesta tÃ¡ctil instantÃ¡nea al toque      */
     .btn-cta:active {
       transform: scale(0.96);
       filter: brightness(0.82);
@@ -873,8 +1022,8 @@
       to { transform: rotate(360deg); }
     }
 
-    /* â”€â”€ ESTADO: í‰XITO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-       Verde confirmación + checkmark             */
+    /* â”€â”€ ESTADO: Ã‰XITO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+       Verde confirmaciÃ³n + checkmark             */
     .btn-cta.is-success {
       background: #1A9C4E;
       color: #ffffff;
@@ -894,7 +1043,7 @@
     .btn-cta.is-success .btn-check    { display: block; }
 
     /* =============================================
-       BOTí“N FLOTANTE â€” MAPA
+       BOTÃ“N FLOTANTE â€” MAPA
     ============================================= */
     .map-fab {
       position: fixed;
@@ -942,7 +1091,7 @@
       white-space: nowrap;
     }
 
-    /* Botón circular dorado */
+    /* BotÃ³n circular dorado */
     .map-btn {
       pointer-events: auto;
       width: 54px; height: 54px;
@@ -1032,7 +1181,7 @@
       40%           { transform: scale(1);   opacity: 1;    }
     }
 
-    /* â”€â”€ RIPPLE en botón CTA â”€â”€ */
+    /* â”€â”€ RIPPLE en botÃ³n CTA â”€â”€ */
     .ripple {
       position: absolute;
       border-radius: 50%;
@@ -1051,7 +1200,7 @@
     @media (max-width: 340px) {
       .card-title  { font-size: 13px; }
       .btn-cta     { font-size: 11px; }
-      .card-mascot { flex: 0 0 35%; }
+      
     }
 
     /* =============================================
@@ -1133,20 +1282,20 @@
 <div class="app-container">
 <!-- HEADER ===================================== -->
 <header class="app-header">
-<!-- IZQUIERDA: logo + tí­tulo + ubicación -->
+<!-- IZQUIERDA: logo + tÃ­tulo + ubicaciÃ³n -->
 <div class="header-left">
 <div class="header-logo">
 <svg viewbox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5L12 1zm0 4.18l5 2.22V11c0 3.54-2.33 6.79-5 7.93C9.33 17.79 7 14.54 7 11V7.4l5-2.22z"></path></svg>
 </div>
 <div class="header-brand-stack">
 <span class="header-title">Encavi<em>GO</em></span>
-<!-- Ubicación colapsable â€” chevron indica que es interactiva -->
+<!-- UbicaciÃ³n colapsable â€” chevron indica que es interactiva -->
 <button aria-label="Cambiar zona" class="header-location">
 <!-- Pin -->
 <svg fill="none" height="9" viewbox="0 0 24 24" width="9">
 <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="#94A3B8"></path>
 </svg>
-<span class="loc-text">Zona Romántica Â· <strong>Pto. Vallarta</strong></span>
+<span class="loc-text">Zona RomÃ¡ntica Â· <strong>Pto. Vallarta</strong></span>
 <!-- Chevron abajo -->
 <svg class="chevron" fill="none" height="9" viewbox="0 0 24 24" width="9">
 <path d="M7 10l5 5 5-5z" fill="#94A3B8"></path>
@@ -1154,12 +1303,12 @@
 </button>
 </div>
 </div>
-<!-- DERECHA: EN VIVO + bíºsqueda + notificaciones -->
+<!-- DERECHA: EN VIVO + bÃºsqueda + notificaciones -->
 <div class="header-right">
 <!-- CLIMA EN VIVO â€” actualizado por JS con Open-Meteo API -->
 <div class="weather-chip" id="weatherChip" title="Clima en Puerto Vallarta">
 <div class="weather-icon-wrap" id="weatherIcon">
-<!-- ícono cargando: puntos parpadeantes -->
+<!-- Ãcono cargando: puntos parpadeantes -->
 <svg fill="none" viewbox="0 0 16 16">
 <circle cx="4" cy="8" fill="#94A3B8" opacity="0.4" r="1.5">
 <animate attributename="opacity" begin="0s" dur="1.2s" repeatcount="indefinite" values="0.4;1;0.4"></animate>
@@ -1181,7 +1330,7 @@
 <button aria-label="Activar alertas de proximidad" class="header-icon-btn notif-btn" id="notifBtn" title="Recibe alertas cuando hay promos cerca">
 <svg viewbox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"></path></svg>
 </button>
-<!-- Bíºsqueda -->
+<!-- BÃºsqueda -->
 <button aria-label="Buscar promociones" class="header-icon-btn">
 <svg viewbox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg>
 </button>
@@ -1189,55 +1338,59 @@
 </header>
 <!-- PERFIL ===================================== -->
 <!--
-    â˜… SECCIí“N DE PERFIL â€” reemplaza los datos placeholder
-    con la información real del promotor / agente EncaviGO
+    â˜… SECCIÃ“N DE PERFIL â€” reemplaza los datos placeholder
+    con la informaciÃ³n real del promotor / agente EncaviGO
   -->
 <!-- CARRUSEL DE DESTACADAS ======================== -->
-<!-- TOGGLE CATEGORíAS ============================= -->
-<!-- CATEGORíAS ==================================== -->
-<!-- CANALES TEMíTICOS ========================== -->
-
+<!-- TOGGLE CATEGORÃAS ============================= -->
+<!-- CATEGORÃAS ==================================== -->
+<!-- CANALES TEMÃTICOS ========================== -->
 <!-- FEED ======================================= -->
 <main class="promo-feed">
 <div class="driver-trust-badge" style="margin: 0 16px 24px 16px; padding: 12px 16px; background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 16px; display: flex; align-items: center; gap: 14px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
 <div style="width: 44px; height: 44px; border-radius: 50%; background: #DBEAFE; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0;">🛡️</div>
 <div>
-<div style="font-size: 11px; font-weight: 700; color: #2563EB; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">Vehí­culo Registrado</div>
+<div style="font-size: 11px; font-weight: 700; color: #2563EB; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">VehÃ­culo Registrado</div>
 <div id="driverNameLabel" style="font-size: 14px; font-weight: 600; color: #1E3A8A; line-height: 1.3;">Carlos M. • Nissan Versa</div>
 </div>
 </div>
-
 <!-- PLATFORMS SECTION -->
 <article class="promo-card" data-end="23:59" data-start="00:00">
+
 <div class="card-content">
 <div class="content-top">
 <span class="status-chip active">INDRIVE / UBER / DIDI</span>
 <h2 class="card-title">Únete a la red EncaviGO y genera más</h2>
-<p class="card-desc">Si eres conductor de plataforma o taxi, pon nuestro código QR en tu vehí­culo y gana comisiones por cada pasajero que active promociones.</p>
+<p class="card-desc">Si eres conductor de plataforma o taxi, pon nuestro código QR en tu vehÃ­culo y gana comisiones por cada pasajero que active promociones.</p>
 </div>
 <div class="content-bottom">
-<a class="btn-cta" style="background: #F97316; width: 100%;"><span style="color:white;font-weight:700;">Registrar mi vehículo</span></a>
+<a class="btn-cta" href="https://wa.me/521XXXXXXXXXX•text=Hola%2C%20soy%20conductor%20y%20quiero%20unirme%20a%20EncaviGO." rel="noopener" style="background: #F97316; width: 100%; justify-content: center;" target="_blank">
+<svg viewbox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 0C5.373 0 0 5.373 0 12c0 2.127.555 4.127 1.524 5.87L.057 23.882l6.01-1.467A11.95 11.95 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22a9.95 9.95 0 01-5.18-1.38l-.37-.213-3.567.868.887-3.566-.23-.382A9.953 9.953 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"></path></svg>
+            Registrar mi vehÃ­culo
+          </a>
 </div>
 </div>
 </article>
 <!-- BUSINESS SECTION -->
 <article class="promo-card reversed" data-end="23:59" data-start="00:00">
 
-</div>
 <div class="card-content">
 <div class="content-top">
 <span class="status-chip active" style="background:var(--secondary)">ANÚNCIATE CON NOSOTROS</span>
 <h2 class="card-title">Llega a miles de pasajeros diariamente</h2>
-<p class="card-desc">Publica tus ofertas y cupones directamente en los vehí­culos de servicio público y privado. Incrementa tus ventas hoy.</p>
+<p class="card-desc">Publica tus ofertas y cupones directamente en los vehÃ­culos de servicio público y privado. Incrementa tus ventas hoy.</p>
 </div>
 <div class="content-bottom">
-<a class="btn-cta" style="background: #1D4ED8; width: 100%;" href="javascript:void(0)"><span style="color:white;font-weight:700;">Publicar mi negocio</span></a>
+<a class="btn-cta" href="https://wa.me/521XXXXXXXXXX•text=Hola%2C%20tengo%20un%20negocio%20y%20quiero%20anunciarme%20en%20EncaviGO." rel="noopener" style="background: #1D4ED8; width: 100%; justify-content: center;" target="_blank">
+<svg viewbox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 0C5.373 0 0 5.373 0 12c0 2.127.555 4.127 1.524 5.87L.057 23.882l6.01-1.467A11.95 11.95 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22a9.95 9.95 0 01-5.18-1.38l-.37-.213-3.567.868.887-3.566-.23-.382A9.953 9.953 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"></path></svg>
+            Publicar mi negocio
+          </a>
 </div>
 </div>
 </article>
 </main>
 </div><!-- /app-container -->
-<!-- BOTí“N FLOTANTE MAPA ========================= -->
+<!-- BOTÃ“N FLOTANTE MAPA ========================= -->
 <div class="map-fab">
 <button aria-label="Promos cercanas" class="map-alert" id="mapAlert" type="button">
 <span class="alert-dot" id="alertDot"></span>
@@ -1363,7 +1516,7 @@ function getWeatherConfig(code) {
     </svg>`
   };
 
-  /* â”€â”€ Tormenta elí©ctrica â”€â”€ */
+  /* â”€â”€ Tormenta elÃ©ctrica â”€â”€ */
   if (code >= 95) return {
     label: 'Tormenta',
     border: 'rgba(200, 160, 40, 0.50)',
@@ -1377,7 +1530,7 @@ function getWeatherConfig(code) {
 
   /* â”€â”€ Fallback: caluroso (PV casi siempre) â”€â”€ */
   return {
-    label: 'Cálido',
+    label: 'CÃ¡lido',
     border: 'rgba(255, 180, 60, 0.40)',
     icon: `<svg viewBox="0 0 24 24" fill="none">
       <circle cx="12" cy="12" r="4" fill="#FFB43C"/>
@@ -1408,13 +1561,13 @@ function pintarClima(cfg, tempTxt) {
 }
 
 function climaFallback() {
-  /* Clima tí­pico de PV cuando no hay red / API caí­da / WebView viejo */
+  /* Clima tÃ­pico de PV cuando no hay red / API caÃ­da / WebView viejo */
   pintarClima(getWeatherConfig(0), '32Â°');
 }
 
 async function loadWeather() {
   /* Watchdog: pase lo que pase, el chip nunca se queda en "Cargando".
-     Si en 6 s nadie actualizó el chip, se pinta el fallback. */
+     Si en 6 s nadie actualizÃ³ el chip, se pinta el fallback. */
   const watchdog = setTimeout(() => {
     const cond = document.getElementById('weatherCond');
     if (cond && cond.textContent === 'Cargando') climaFallback();
@@ -1422,8 +1575,8 @@ async function loadWeather() {
 
   try {
     /* AbortController no existe en WebViews viejos â€” detectar antes de usar.
-       (Bug original: se creaba FUERA del try; si no existí­a, la función
-       morí­a sin ejecutar ni el try ni el catch y el chip quedaba congelado.) */
+       (Bug original: se creaba FUERA del try; si no existÃ­a, la funciÃ³n
+       morÃ­a sin ejecutar ni el try ni el catch y el chip quedaba congelado.) */
     let signal = undefined, timeout = null;
     if (typeof AbortController === 'function') {
       const controller = new AbortController();
@@ -1452,9 +1605,9 @@ loadWeather();
 setInterval(loadWeather, 10 * 60 * 1000);
 
 /* =============================================
-   CARRUSEL DE DESTACADAS â€” rotación automática
-   (Bug original: las cards nací­an con opacity:0 +
-   visibility:hidden y NINGíšN script les poní­a la
+   CARRUSEL DE DESTACADAS â€” rotaciÃ³n automÃ¡tica
+   (Bug original: las cards nacÃ­an con opacity:0 +
+   visibility:hidden y NINGÃšN script les ponÃ­a la
    clase .active â†’ el carrusel nunca era visible.)
 ============================================= */
 (function initCarousel() {
@@ -1487,11 +1640,11 @@ setInterval(loadWeather, 10 * 60 * 1000);
 
 /* =============================================
    INFINITE SCROLL â€” Reveal por lotes de 4
-   Las cards con .card-lazy están ocultas en CSS.
+   Las cards con .card-lazy estÃ¡n ocultas en CSS.
    IntersectionObserver observa el sentinel al
    final del feed. Cuando entra en viewport:
    1. Muestra loader (puntos)
-   2. Despuí©s de 500ms anima el siguiente lote
+   2. DespuÃ©s de 500ms anima el siguiente lote
    3. Si no hay más, desconecta el observer.
 ============================================= */
 (function initLazyFeed() {
@@ -1503,7 +1656,7 @@ setInterval(loadWeather, 10 * 60 * 1000);
   const BATCH = 4;
   const DELAY = 520; /* ms antes de revelar el lote */
 
-  /* Toma las próximas N cards lazy no reveladas */
+  /* Toma las prÃ³ximas N cards lazy no reveladas */
   function getNextBatch() {
     return Array.from(feed.querySelectorAll('.card-lazy:not(.card-visible)'))
                 .slice(0, BATCH);
@@ -1514,13 +1667,13 @@ setInterval(loadWeather, 10 * 60 * 1000);
     cards.forEach((card, i) => {
       setTimeout(() => {
         card.classList.add('card-visible');
-        /* Al terminar la animación la card queda como card normal:
+        /* Al terminar la animaciÃ³n la card queda como card normal:
            re-insertarla en el DOM (reordenamiento por distancia) ya
-           no reinicia la animación â†’ sin parpadeos en el feed. */
+           no reinicia la animaciÃ³n â†’ sin parpadeos en el feed. */
         const fijar = () => card.classList.remove('card-lazy', 'card-visible');
         card.addEventListener('animationend', fijar, { once: true });
-        /* Si la animación se cancela (p. ej. la card fue re-insertada en
-           el DOM a mitad de animación), fijarla igual para que nunca
+        /* Si la animaciÃ³n se cancela (p. ej. la card fue re-insertada en
+           el DOM a mitad de animaciÃ³n), fijarla igual para que nunca
            vuelva a animarse. */
         card.addEventListener('animationcancel', fijar, { once: true });
       }, i * 90);
@@ -1555,7 +1708,7 @@ setInterval(loadWeather, 10 * 60 * 1000);
 })();
 
 /* =============================================
-   RIPPLE â€” micro-interacción en botón CTA
+   RIPPLE â€” micro-interacciÃ³n en botÃ³n CTA
 ============================================= */
 document.querySelectorAll('.btn-cta').forEach(btn => {
   btn.addEventListener('pointerdown', function(e) {
@@ -1575,7 +1728,7 @@ document.querySelectorAll('.btn-cta').forEach(btn => {
 
 /* =============================================
    NEGOCIOS AFILIADOS â€” Base de datos local
-   En producción: fetch desde API de EncaviGO
+   En producciÃ³n: fetch desde API de EncaviGO
 ============================================= */
 const NEGOCIOS = [
   {
@@ -1589,8 +1742,8 @@ const NEGOCIOS = [
   },
   {
     id: 'tacos-el-guero',
-    nombre: 'Tacos El Gí¼ero',
-    promo: '2í—1 en tacos de canasta toda la tarde',
+    nombre: 'Tacos El GÃ¼ero',
+    promo: '2Ã—1 en tacos de canasta toda la tarde',
     categoria: 'Tacos',
     lat: 20.6074, lng: -105.2361,
     whatsapp: '523221234568',
@@ -1598,7 +1751,7 @@ const NEGOCIOS = [
   },
   {
     id: 'spa-pacifico',
-    nombre: 'Spa Pací­fico',
+    nombre: 'Spa PacÃ­fico',
     promo: 'Masaje de 60 min por $199 MXN',
     categoria: 'Spa',
     lat: 20.6618, lng: -105.2469,
@@ -1607,7 +1760,7 @@ const NEGOCIOS = [
   },
   {
     id: 'cerveceria-del-muelle',
-    nombre: 'Cervecerí­a del Muelle',
+    nombre: 'CervecerÃ­a del Muelle',
     promo: '4 cervezas artesanales por $120',
     categoria: 'Bar',
     lat: 20.6196, lng: -105.2381,
@@ -1652,7 +1805,7 @@ function actualizarBadgeMapa(lat, lng) {
     if (chip) {
       const pin = `<svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>`;
       chip.innerHTML = `${pin} ${fmtDist(dist)}`;
-      /* Resaltar si está muy cerca */
+      /* Resaltar si estÃ¡ muy cerca */
       chip.style.color = dist <= 300 • '#34D36A' : '';
       chip.style.borderColor = dist <= 300 • 'rgba(52,211,106,0.30)' : '';
     }
@@ -1674,7 +1827,7 @@ function actualizarBadgeMapa(lat, lng) {
   /* Distancias en cubetas de 100 m: el jitter del GPS (Â±20-50 m estando
      quieto) intercambiaba el orden de cards casi equidistantes en CADA
      update â†’ re-inserciones constantes â†’ el feed "parpadeaba" en bucle
-     periódico. Con cubetas, el orden es estable ante el jitter. */
+     periÃ³dico. Con cubetas, el orden es estable ante el jitter. */
   const cubeta = c => Math.round((parseFloat(c.dataset.dist) || 9999) / 100);
   visibles.sort((a, b) => {
     const so = statusOrder(a) - statusOrder(b);
@@ -1683,7 +1836,7 @@ function actualizarBadgeMapa(lat, lng) {
   });
   const cambio = visibles.some((c, i) =>
     i > 0 && !(visibles[i - 1].compareDocumentPosition(c) & Node.DOCUMENT_POSITION_FOLLOWING));
-  /* Y aunque cambie: máximo un reorden cada 45 s. Re-insertar nodos mueve
+  /* Y aunque cambie: mÃ¡ximo un reorden cada 45 s. Re-insertar nodos mueve
      el scroll y repinta el feed â€” mejor pocas veces y bien. */
   const ahora = Date.now();
   if (cambio && ahora - (actualizarBadgeMapa._ultimoOrden || 0) > 45000) {
@@ -1739,7 +1892,7 @@ async function registrarSW() {
   if (!('serviceWorker' in navigator)) return;
   try {
     /* updateViaCache:'none' â†’ el navegador SIEMPRE revisa sw.js en red,
-       sin cachí© HTTP: las actualizaciones llegan en la primera apertura
+       sin cachÃ© HTTP: las actualizaciones llegan en la primera apertura
        (el SW ya hace skipWaiting + clients.claim al activarse). */
     _swReg = await navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' });
   } catch (e) {
@@ -1758,7 +1911,7 @@ async function activarNotificaciones() {
   if (perm === 'granted') {
     actualizarBtnNotif('on');
     mostrarToast('âœ… Notificaciones activadas');
-    /* Notificación de bienvenida inmediata */
+    /* NotificaciÃ³n de bienvenida inmediata */
     if (_swReg) {
       _swReg.showNotification('Â¡EncaviGO activado!', {
         body: 'Te avisaremos cuando haya promos cerca de ti.',
@@ -1786,7 +1939,7 @@ function actualizarBtnNotif(estado) {
   }
 }
 
-/* Disparar notificación local al SW cuando el usuario está cerca */
+/* Disparar notificaciÃ³n local al SW cuando el usuario estÃ¡ cerca */
 function notificarProxima(lat, lng) {
   if (Notification.permission !== 'granted' || !_swReg) return;
   document.querySelectorAll('.promo-card[data-lat]').forEach(card => {
@@ -1808,13 +1961,13 @@ function notificarProxima(lat, lng) {
 }
 
 /* Nota: notificarProxima() se invoca directamente al final de
-   actualizarBadgeMapa(). El "enchufe" anterior redeclaraba la función
-   y por hoisting _origActualizar apuntaba a la nueva versión â†’
-   recursión infinita (stack overflow) en cada update del GPS. */
+   actualizarBadgeMapa(). El "enchufe" anterior redeclaraba la funciÃ³n
+   y por hoisting _origActualizar apuntaba a la nueva versiÃ³n â†’
+   recursiÃ³n infinita (stack overflow) en cada update del GPS. */
 
 /* =============================================
-   TOAST + INIT BOTí“N DE NOTIFICACIONES
-   (El archivo estaba truncado justo aquí­: un comentario
+   TOAST + INIT BOTÃ“N DE NOTIFICACIONES
+   (El archivo estaba truncado justo aquÃ­: un comentario
    sin cerrar dejaba TODO el script con error de sintaxis
    â†’ nada se ejecutaba: ni clima, ni GPS, ni carrusel.)
 ============================================= */
@@ -1835,7 +1988,7 @@ function mostrarToast(msg) {
   t._hide = setTimeout(() => { t.style.opacity = '0'; }, 2600);
 }
 
-/* Init botón notificaciones â€” estado inicial + click */
+/* Init botÃ³n notificaciones â€” estado inicial + click */
 (function initNotifBtn() {
   const btn = document.getElementById('notifBtn');
   if (!btn) return;
@@ -1847,7 +2000,7 @@ function mostrarToast(msg) {
 </script>
 <script>
 // ==========================================
-// SCRIPT: INYECCIí“N DE ID DE CHOFER EN WHATSAPP
+// SCRIPT: INYECCIÃ“N DE ID DE CHOFER EN WHATSAPP
 // ==========================================
 (function() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -1867,9 +2020,9 @@ function mostrarToast(msg) {
         let textoOriginal = urlObj.searchParams.get('text') || '';
         
         if (textoOriginal.includes("conductor")) {
-           textoOriginal = "Hola, soy conductor y me gustarí­a registrarme en EncaviGO. (ID Referencia: " + activeChoferId + ")";
+           textoOriginal = "Hola, soy conductor y me gustarÃ­a registrarme en EncaviGO. (ID Referencia: " + activeChoferId + ")";
         } else if (textoOriginal.includes("anunciarme")) {
-           textoOriginal = "Hola, tengo un negocio y me gustarí­a anunciarme en EncaviGO. (ID Vehí­culo: " + activeChoferId + ")";
+           textoOriginal = "Hola, tengo un negocio y me gustarÃ­a anunciarme en EncaviGO. (ID VehÃ­culo: " + activeChoferId + ")";
         }
         
         const nuevaUrl = "https://wa.me/" + numero + "•text=" + encodeURIComponent(textoOriginal);
