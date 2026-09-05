@@ -61,6 +61,17 @@
   
   .performance-bar { width: 100%; height: 6px; background: #E5E7EB; border-radius: 3px; overflow: hidden; margin-top: 6px; }
   .performance-fill { height: 100%; background: #F97316; border-radius: 3px; }
+
+  /* MODAL */
+  .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(4px); }
+  .modal { background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 12px; width: 450px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); color: #111827; }
+  .modal h2 { margin: 0 0 20px 0; font-size: 18px; }
+  .form-group { margin-bottom: 15px; }
+  .form-group label { display: block; margin-bottom: 5px; font-size: 12px; color: #6B7280; font-weight: 500; }
+  .form-group input, .form-group textarea { width: 100%; padding: 10px; background: #F9FAFB; border: 1px solid #D1D5DB; border-radius: 6px; color: #111827; font-family: 'Inter', sans-serif; font-size: 13px; }
+  .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 25px; }
+  .btn-cancel { background: transparent; color: #6B7280; border: none; cursor: pointer; padding: 10px 20px; font-weight: 500; }
+  .btn-cancel:hover { color: #111827; }
 </style>
 </head>
 <body>
@@ -97,7 +108,7 @@
 <div class="main">
 <div class="top-bar">
 <h1 class="page-title">Métricas Principales</h1>
-<button class="btn-primary">
+<button class="btn-primary" onclick="document.getElementById('addModal').style.display='flex';">
 <svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="16"><line x1="12" x2="12" y1="5" y2="19"></line><line x1="5" x2="19" y1="12" y2="12"></line></svg>
       Nuevo Negocio
     </button>
@@ -179,7 +190,6 @@
 </table>
 </div>
 </div>
-
 <!-- FIREBASE SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -195,13 +205,13 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 </script>
-
-    <script>
+<script>
     document.addEventListener('DOMContentLoaded', () => {
         const valScans = document.getElementById('val-scans');
         const valClicks = document.getElementById('val-clicks');
+        const tbody = document.querySelector('tbody');
         
-        // Leer estadísticas globales en tiempo real
+        // Leer estadísticas globales
         db.collection('stats').doc('global').onSnapshot((doc) => {
             if(doc.exists) {
                 const data = doc.data();
@@ -220,9 +230,125 @@
                 if(topScans) topScans.innerText = topChofer.data().scans + " escaneos";
             }
         });
+
+        // LEER CAMPAÑAS EN VIVO Y PINTAR LA TABLA
+        db.collection('campaigns').onSnapshot(snapshot => {
+            if(tbody) {
+                tbody.innerHTML = '';
+                snapshot.forEach(doc => {
+                    const camp = doc.data();
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = 
+                      <td>
+                        <div class="business-cell">
+                          <div class="biz-avatar" style="background-image: url('');"></div>
+                          <div class="biz-info">
+                            <span class="biz-name"></span>
+                            <span class="biz-type"></span>
+                          </div>
+                        </div>
+                      </td>
+                      <td style="width: 25%;">
+                        <div style="font-weight: 500; color: #111827; margin-bottom: 4px;"> clics</div>
+                        <div class="performance-bar"><div class="performance-fill" style="width: %;"></div></div>
+                      </td>
+                      <td>Activa</td>
+                      <td><span class="badge-active">Online</span></td>
+                      <td>
+                        <button class="action-icon" onclick="deleteCampaign('')" title="Eliminar">🗑️</button>
+                      </td>
+                    ;
+                    tbody.appendChild(tr);
+                });
+            }
+        });
     });
-    </script>
-    
+
+    function closeModal() {
+        document.getElementById('addModal').style.display = 'none';
+    }
+
+    function saveCampaign() {
+        const title = document.getElementById('cTitle').value;
+        const desc = document.getElementById('cDesc').value;
+        const img = document.getElementById('cImg').value;
+        const badge = document.getElementById('cBadge').value;
+        const waMsg = document.getElementById('cWaMsg').value;
+        const lat = document.getElementById('cLat').value;
+        const lng = document.getElementById('cLng').value;
+
+        if(!title || !img) { alert('Título e Imagen son obligatorios'); return; }
+
+        db.collection('campaigns').add({
+            title: title,
+            desc: desc,
+            img: img,
+            badge: badge,
+            waMsg: waMsg || 'Hola',
+            lat: lat,
+            lng: lng,
+            clicks: 0,
+            active: true,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => {
+            closeModal();
+            // Limpiar form
+            document.getElementById('cTitle').value = '';
+            document.getElementById('cDesc').value = '';
+            document.getElementById('cImg').value = '';
+            document.getElementById('cBadge').value = '';
+            document.getElementById('cWaMsg').value = '';
+        }).catch(err => alert('Error guardando: ' + err));
+    }
+
+    function deleteCampaign(id) {
+        if(confirm('¿Seguro que quieres borrar este negocio? Desaparecerá de los taxis inmediatamente.')) {
+            db.collection('campaigns').doc(id).delete();
+        }
+    }
+</script>
+
+<div class="modal-overlay" id="addModal">
+<div class="modal">
+<h2>Nuevo Negocio / Campaña</h2>
+<div class="form-group">
+<label>Nombre del Negocio (Título)</label>
+<input id="cTitle" placeholder="Ej. Cena al Carbón 2x1" type="text"/>
+</div>
+<div class="form-group">
+<label>Descripción Corta</label>
+<textarea id="cDesc" placeholder="Ej. Muestra esta pantalla en el Asador..." rows="2"></textarea>
+</div>
+<div class="form-group">
+<label>URL de la Imagen de Fondo (Link)</label>
+<input id="cImg" placeholder="https://unsplash.com/foto..." type="text"/>
+</div>
+<div class="form-group" style="display:flex; gap:10px;">
+<div style="flex:1;">
+<label>Etiqueta Superior</label>
+<input id="cBadge" placeholder="Ej. 🚀 PROMO FLASH" type="text"/>
+</div>
+<div style="flex:1;">
+<label>Mensaje Pre-escrito WhatsApp</label>
+<input id="cWaMsg" placeholder="Ej. Hola quiero mi descuento" type="text"/>
+</div>
+</div>
+<div class="form-group" style="display:flex; gap:10px;">
+<div style="flex:1;">
+<label>Latitud GPS (Para Radar)</label>
+<input id="cLat" placeholder="Ej. 20.6025" type="text"/>
+</div>
+<div style="flex:1;">
+<label>Longitud GPS (Para Radar)</label>
+<input id="cLng" placeholder="Ej. -105.2325" type="text"/>
+</div>
+</div>
+<div class="modal-actions">
+<button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+<button class="btn-primary" onclick="saveCampaign()">Guardar Campaña</button>
+</div>
+</div>
+</div>
 </body>
 </html>
-<!-- 1788643621.4208372 -->
+<!-- 1788643621.4208372 --><!-- v4 1788644835.507004 -->
