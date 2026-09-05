@@ -5782,6 +5782,42 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    
+    // REGISTRAR ESCANEO EN FIREBASE
+    try {
+        const docRef = db.collection('stats').doc('global');
+        docRef.get().then((doc) => {
+            if (doc.exists) {
+                docRef.update({ scans: firebase.firestore.FieldValue.increment(1) });
+            } else {
+                docRef.set({ scans: 1, clicks: 0 });
+            }
+        });
+        
+        if (session && session.chofer !== 'orgánico') {
+            const chofRef = db.collection('choferes').doc(session.chofer);
+            chofRef.get().then(doc => {
+                if (doc.exists) {
+                    chofRef.update({ scans: firebase.firestore.FieldValue.increment(1) });
+                } else {
+                    chofRef.set({ scans: 1, clicks: 0, lastActive: new Date() });
+                }
+            });
+        }
+    } catch(e) { console.error("Error Firebase:", e); }
+
+    // REGISTRAR CLIC AL ACTIVAR CÓDIGO
+    document.querySelectorAll('a.swipe-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            try {
+                db.collection('stats').doc('global').update({ clicks: firebase.firestore.FieldValue.increment(1) });
+                if (session && session.chofer !== 'orgánico') {
+                    db.collection('choferes').doc(session.chofer).update({ clicks: firebase.firestore.FieldValue.increment(1) });
+                }
+            } catch(e) { console.error(e); }
+        });
+    });
+
     // Pedir permiso de GPS al tocar cualquier parte de la pantalla si no se ha pedido (Mejor UX para móviles que bloquean peticiones automáticas)
     let gpsRequested = false;
     document.body.addEventListener('click', () => {
@@ -5796,4 +5832,4 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
-<!-- 1788643621.4204273 -->
+<!-- 1788643621.4204273 --><!-- 1788644024.345812 -->
