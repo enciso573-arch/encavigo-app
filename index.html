@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 
 <html lang="es">
 <head>
@@ -8,58 +8,58 @@
 <meta content="#000814" name="theme-color"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
-<title>EncaviGO — Promociones en tu Ruta</title>
-<meta content="Descubre promociones exclusivas de negocios locales en Puerto Vallarta y Bahía de Banderas. Ofertas en tiempo real a bordo de tu transporte." name="description"/>
+<title>EncaviGO â€” Promociones en tu Ruta</title>
+<meta content="Descubre promociones exclusivas de negocios locales en Puerto Vallarta y BahÃ­a de Banderas. Ofertas en tiempo real a bordo de tu transporte." name="description"/>
 <meta content="website" property="og:type"/>
-<meta content="EncaviGO — Promociones en tu Ruta" property="og:title"/>
-<meta content="Descubre promociones exclusivas de negocios locales en Puerto Vallarta y Bahía de Banderas. Ofertas en tiempo real." property="og:description"/>
+<meta content="EncaviGO â€” Promociones en tu Ruta" property="og:title"/>
+<meta content="Descubre promociones exclusivas de negocios locales en Puerto Vallarta y BahÃ­a de Banderas. Ofertas en tiempo real." property="og:description"/>
 <meta content="img/og-bastion.jpg" property="og:image"/>
 <meta content="summary_large_image" name="twitter:card"/>
 <style>
     /* =============================================
-       SISTEMA DE DISEÑO — ENCAVIGO (DÍA)
+       SISTEMA DE DISEÃ‘O â€” ENCAVIGO (DÃA)
     ============================================= */
     :root {
-      /* ── Fondos — Día / Claro ── */
-      --bg-root:        #F0F2F5;
-      --bg-app:         #F0F2F5;
+      /* â”€â”€ Fondos â€” Limpio / Corporativo (OpciÃ³n 2) â”€â”€ */
+      --bg-root:        #F9FAFB;
+      --bg-app:         #F9FAFB;
       --bg-card:        #FFFFFF;
       --bg-card-alt:    #FFFFFF;
 
-      /* ── Acento — Naranja / Teal ── */
-      --accent:         #FF8C00;
-      --accent-soft:    rgba(255,140,0,0.10);
-      --accent-border:  rgba(255,140,0,0.22);
-      --accent-glow:    rgba(255,140,0,0.08);
+      /* â”€â”€ Acento â€” Naranja EncaviGO â”€â”€ */
+      --accent:         #F97316;
+      --accent-soft:    rgba(249,115,22,0.10);
+      --accent-border:  rgba(249,115,22,0.22);
+      --accent-glow:    rgba(249,115,22,0.08);
       --accent-text:    #FFFFFF;
       
-      --secondary:      #00BFA0;
+      /* Acento secundario (para la tarjeta de negocio) */
+      --secondary: #1D4ED8;
 
-      /* ── Fondos tarjeta — variantes claras ── */
-      --mascot-1: linear-gradient(160deg, #FF8C00 0%, #FFB020 100%);
-      --mascot-2: linear-gradient(160deg, #FF7A00 0%, #FFB020 100%);
-      --mascot-3: linear-gradient(160deg, #00BFA0 0%, #008C74 100%);
-      --mascot-4: linear-gradient(160deg, #FFB020 0%, #FF7A00 100%);
+      /* â”€â”€ Fondos tarjeta â€” corporativos â”€â”€ */
+      --mascot-1: linear-gradient(160deg, #F97316 0%, #EA580C 100%);
+      --mascot-2: linear-gradient(160deg, #111827 0%, #1F2937 100%);
+      --mascot-3: linear-gradient(160deg, #1D4ED8 0%, #1E3A8A 100%);
+      --mascot-4: linear-gradient(160deg, #1D4ED8 0%, #1E3A8A 100%);
 
-      /* ── Texto ── */
-      --text-primary:   #1A1200;
-      --text-secondary: #6B6B6B;
+      /* â”€â”€ Texto â”€â”€ */
+      --text-primary:   #111827;
+      --text-secondary: #4B5563;
       --text-muted:     #9CA3AF;
 
-      /* ── Estructura ── */
-      --border:         rgba(0,0,0,0.06);
-      --border-strong:  rgba(0,0,0,0.10);
-      --shadow-card:    0 2px 12px rgba(0,0,0,0.07);
-      --shadow-app:     0 0 0 1px rgba(0,0,0,0.04),
-                        0 8px 32px rgba(0,0,0,0.14);
-      --radius-card:    20px;
-      --radius-btn:     50px;
+      /* â”€â”€ Estructura â”€â”€ */
+      --border:         #E5E7EB;
+      --border-strong:  #D1D5DB;
+      --shadow-card:    0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+      --shadow-app:     0 0 0 1px rgba(0,0,0,0.02), 0 8px 32px rgba(0,0,0,0.08);
+      --radius-card:    24px;
+      --radius-btn:     999px;
       --radius-pill:    999px;
 
-      /* ── Tipografía nativa ── */
-      --font: system-ui, -apple-system, BlinkMacSystemFont,
-              "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      /* â”€â”€ TipografÃ­a nativa - Inter â”€â”€ */
+      --font: 'Inter', system-ui, -apple-system, sans-serif;
     }
+
 
 
     /* =============================================
@@ -84,7 +84,7 @@
     }
 
     /* =============================================
-       CONTENEDOR PRINCIPAL — SIMULACIÓN MÓVIL
+       CONTENEDOR PRINCIPAL â€” SIMULACIÃ“N MÃ“VIL
     ============================================= */
     .app-container {
       width: 100%;
@@ -97,21 +97,21 @@
       flex-direction: column;
       overflow-x: hidden;
     }
-    /* ── ZONA SUPERIOR ANCLADA ──
-       Header, perfil, destacadas, filtro, categorías y canales
+    /* â”€â”€ ZONA SUPERIOR ANCLADA â”€â”€
+       Header, perfil, destacadas, filtro, categorÃ­as y canales
        (todo lo anterior al feed) quedan fijos; solo .promo-feed
        se desliza. */
     .app-container > *:not(.promo-feed) { flex-shrink: 0; }
 
     /* =============================================
-       HEADER — Premium compacto con blur
+       HEADER â€” Premium compacto con blur
     ============================================= */
     .app-header {
       position: sticky;
       top: 0;
       z-index: 50;
       /* Blur sobre el contenido al hacer scroll */
-      background: rgba(23, 23, 23, 0.80);
+      background: rgba(255, 255, 255, 0.90);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       border-bottom: 1px solid var(--border);
@@ -145,7 +145,7 @@
       fill: var(--accent-text);
     }
 
-    /* Stack vertical: título arriba, ubicación abajo */
+    /* Stack vertical: tÃ­tulo arriba, ubicaciÃ³n abajo */
     .header-brand-stack {
       display: flex;
       flex-direction: column;
@@ -154,7 +154,7 @@
     }
 
     .header-title {
-      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-family: var(--font);
       font-size: 20px;
       font-weight: 700;
       letter-spacing: -0.2px;
@@ -167,7 +167,7 @@
       color: var(--accent);
     }
 
-    /* Ubicación colapsable bajo el título */
+    /* UbicaciÃ³n colapsable bajo el tÃ­tulo */
     .header-location {
       display: flex;
       align-items: center;
@@ -210,7 +210,7 @@
       flex-shrink: 0;
     }
 
-    /* CLIMA EN VIVO — chip dinámico */
+    /* CLIMA EN VIVO â€” chip dinÃ¡mico */
     .weather-chip {
       display: flex;
       align-items: center;
@@ -255,7 +255,7 @@
       white-space: nowrap;
     }
 
-    /* ── Animaciones de íconos climáticos ── */
+    /* â”€â”€ Animaciones de Ã­conos climÃ¡ticos â”€â”€ */
 
     /* Sol: rayos girando lentamente */
     .sun-rays {
@@ -266,7 +266,7 @@
       to { transform: rotate(360deg); }
     }
 
-    /* Nublado: flotación suave */
+    /* Nublado: flotaciÃ³n suave */
     .cloud-body {
       animation: cloud-float 3.5s ease-in-out infinite;
     }
@@ -289,7 +289,7 @@
       100% { transform: translateY(4px); opacity: 0; }
     }
 
-    /* Tormenta: relámpago parpadeante */
+    /* Tormenta: relÃ¡mpago parpadeante */
     .lightning-bolt {
       animation: flash-bolt 2.8s ease-in-out infinite;
     }
@@ -308,7 +308,7 @@
       50%       { opacity: 1;   transform: translateX(1px); }
     }
 
-    /* Botones de ícono (lupa y campana) */
+    /* Botones de Ã­cono (lupa y campana) */
     .header-icon-btn {
       width: 32px; height: 32px;
       border-radius: 50%;
@@ -333,7 +333,7 @@
 
 
     /* =============================================
-       PERFIL / BIOGRAFÍA
+       PERFIL / BIOGRAFÃA
     ============================================= */
     .profile-section {
       padding: 7px 18px;
@@ -431,7 +431,7 @@
       border: 2px solid var(--bg-app);
     }
 
-    /* Datos de la persona — stack vertical */
+    /* Datos de la persona â€” stack vertical */
     .profile-info {
       display: flex;
       flex-direction: column;
@@ -464,7 +464,7 @@
       margin-top: 2px;
     }
 
-    /* Separador de datos extra (teléfono, zona, etc.) */
+    /* Separador de datos extra (telÃ©fono, zona, etc.) */
     .profile-meta {
       display: flex;
       flex-direction: column;
@@ -490,11 +490,11 @@
     }
 
     /* =============================================
-       BARRA DE CATEGORÍAS — Diseño vertical icónico
+       BARRA DE CATEGORÃAS â€” DiseÃ±o vertical icÃ³nico
     ============================================= */
 
     /* Contenedor con fade derecho que indica scroll */
-    /* ── CARRUSEL DE DESTACADAS ── */
+    /* â”€â”€ CARRUSEL DE DESTACADAS â”€â”€ */
     .carousel-section {
       padding: 8px 0 8px;
       border-bottom: 1px solid var(--border);
@@ -506,17 +506,17 @@
     }
     .carousel-track {
       /* Grid-stack: todas las cards ocupan la misma celda y la pista mide
-         lo que la card más alta — sin alturas fijas. Antes, con
-         position:absolute + min-height fija, una card más alta que la
+         lo que la card mÃ¡s alta â€” sin alturas fijas. Antes, con
+         position:absolute + min-height fija, una card mÃ¡s alta que la
          pista se desbordaba y se pintaba encima del contenido de abajo
-         en cada rotación (~5 s): se veía cortada/encimada. */
+         en cada rotaciÃ³n (~5 s): se veÃ­a cortada/encimada. */
       display: grid;
       margin: 0 18px;
     }
     .carousel-card {
       grid-area: 1 / 1;
       opacity: 0;
-      visibility: hidden;        /* oculta completamente — no hay bleeding de texto */
+      visibility: hidden;        /* oculta completamente â€” no hay bleeding de texto */
       pointer-events: none;
       transition: opacity 0.9s ease, visibility 0s linear 0.9s;
     }
@@ -526,8 +526,8 @@
       pointer-events: auto;
       transition: opacity 0.9s ease, visibility 0s linear 0s;
     }
-    /* ── BANNER DEL CARRUSEL ──
-       Para agregar imagen de fondo al banner, añadir al div:
+    /* â”€â”€ BANNER DEL CARRUSEL â”€â”€
+       Para agregar imagen de fondo al banner, aÃ±adir al div:
        style="--banner-img: url('img/banner-01.jpg')"
        La imagen aparece con 30% de opacidad para mantener legibilidad. */
     .carousel-card-inner {
@@ -557,7 +557,7 @@
       text-transform: uppercase; color: var(--accent); margin-bottom: 5px;
     }
     .carousel-card-title {
-      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-family: var(--font);
       font-size: 16px; font-weight: 700; color: var(--text-primary);
       line-height: 1.2; margin-bottom: 8px;
     }
@@ -567,7 +567,7 @@
       display: inline-block; letter-spacing: 0.04em;
     }
 
-    /* ── TOGGLE CATEGORÍAS ── */
+    /* â”€â”€ TOGGLE CATEGORÃAS â”€â”€ */
     .cat-toggle-wrap {
       padding: 4px 18px;
       border-bottom: 1px solid var(--border);
@@ -612,7 +612,7 @@
     }
     .categories::-webkit-scrollbar { display: none; }
 
-    /* Chip: ícono arriba + etiqueta abajo */
+    /* Chip: Ã­cono arriba + etiqueta abajo */
     .cat-pill {
       flex-shrink: 0;
       display: flex;
@@ -665,7 +665,7 @@
     .cat-pill:active { transform: scale(0.92); }
 
     /* =============================================
-       CANALES / GLOBOS TEMÁTICOS
+       CANALES / GLOBOS TEMÃTICOS
     ============================================= */
     .topics-section {
       padding: 7px 16px 9px;
@@ -694,7 +694,7 @@
     }
     .topics-row::-webkit-scrollbar { display: none; }
 
-    /* Globo / canal temático */
+    /* Globo / canal temÃ¡tico */
     .topic-card {
       flex-shrink: 0;
       width: 66px;
@@ -755,7 +755,7 @@
     }
 
     /* =============================================
-       TARJETA — LAYOUT HORIZONTAL
+       TARJETA â€” LAYOUT HORIZONTAL
        [MASCOTA 38%] [CONTENIDO 62%]
        .reversed invierte el orden
     ============================================= */
@@ -779,12 +779,12 @@
 
     .promo-card:active { transform: scale(0.982); }
 
-    /* Tarjeta oculta por filtro de categoría */
+    /* Tarjeta oculta por filtro de categorÃ­a */
     .promo-card.filtered-out {
       display: none;
     }
 
-    /* Mensaje vacío cuando ninguna tarjeta coincide */
+    /* Mensaje vacÃ­o cuando ninguna tarjeta coincide */
     .feed-empty {
       display: none;
       flex-direction: column;
@@ -804,7 +804,7 @@
       flex-direction: row-reverse;
     }
 
-    /* ── ZONA IMAGEN DEL NEGOCIO (38%) ── */
+    /* â”€â”€ ZONA IMAGEN DEL NEGOCIO (38%) â”€â”€ */
     .card-mascot {
       flex: 0 0 38%;
       display: flex;
@@ -816,7 +816,7 @@
       overflow: hidden;
     }
 
-    /* Fondo de la zona mascota — sutil, por categoría */
+    /* Fondo de la zona mascota â€” sutil, por categorÃ­a */
     .card-mascot::before {
       content: '';
       position: absolute;
@@ -857,7 +857,7 @@
       white-space: nowrap;
     }
 
-    /* ── FOTO REAL DEL NEGOCIO ──
+    /* â”€â”€ FOTO REAL DEL NEGOCIO â”€â”€
        Reemplaza src="img/biz-01.jpg" con la ruta de la foto real.
        Si el archivo no existe, se oculta y muestra el placeholder. */
     .biz-photo {
@@ -869,7 +869,7 @@
       z-index: 1; /* sobre el gradiente, bajo el badge y separador */
     }
 
-    /* Placeholder de foto del negocio — visible solo si no hay imagen */
+    /* Placeholder de foto del negocio â€” visible solo si no hay imagen */
     .biz-photo-placeholder {
       position: relative;
       z-index: 1;
@@ -895,7 +895,7 @@
       line-height: 1.4;
     }
 
-    /* ── ZONA CONTENIDO (62%) ── */
+    /* â”€â”€ ZONA CONTENIDO (62%) â”€â”€ */
     .card-content {
       flex: 1;
       padding: 20px 18px 18px;
@@ -916,7 +916,7 @@
     }
 
     .card-biz {
-      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-family: var(--font);
       font-size: 15px;
       font-weight: 600;
       color: var(--text-secondary);
@@ -924,7 +924,7 @@
     }
 
     .card-title {
-      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-family: var(--font);
       font-size: 24px;
       font-weight: 700;
       color: var(--text-primary);
@@ -961,7 +961,7 @@
     }
 
     /* =============================================
-       BOTÓN CTA — TEAL CALMADO, MÍNIMO 50px
+       BOTÃ“N CTA â€” TEAL CALMADO, MÃNIMO 50px
     ============================================= */
     .btn-cta {
       display: flex;
@@ -986,7 +986,7 @@
       -webkit-tap-highlight-color: transparent;
       -webkit-user-select: none;
       white-space: nowrap;
-      /* Anima color, fondo y geometría */
+      /* Anima color, fondo y geometrÃ­a */
       transition: filter 0.12s ease,
                   transform 0.10s cubic-bezier(0.34, 1.56, 0.64, 1),
                   background 0.28s ease,
@@ -1001,14 +1001,14 @@
       transition: opacity 0.15s ease;
     }
 
-    /* ── ESTADO: PRESIONADO ─────────────────────
-       Respuesta táctil instantánea al toque      */
+    /* â”€â”€ ESTADO: PRESIONADO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+       Respuesta tÃ¡ctil instantÃ¡nea al toque      */
     .btn-cta:active {
       transform: scale(0.96);
       filter: brightness(0.82);
     }
 
-    /* ── ESTADO: CARGANDO ───────────────────────
+    /* â”€â”€ ESTADO: CARGANDO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
        Spinner reemplaza el icono de WhatsApp     */
     .btn-cta.is-loading {
       pointer-events: none;
@@ -1033,8 +1033,8 @@
       to { transform: rotate(360deg); }
     }
 
-    /* ── ESTADO: ÉXITO ──────────────────────────
-       Verde confirmación + checkmark             */
+    /* â”€â”€ ESTADO: Ã‰XITO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+       Verde confirmaciÃ³n + checkmark             */
     .btn-cta.is-success {
       background: #1A9C4E;
       color: #ffffff;
@@ -1054,7 +1054,7 @@
     .btn-cta.is-success .btn-check    { display: block; }
 
     /* =============================================
-       BOTÓN FLOTANTE — MAPA
+       BOTÃ“N FLOTANTE â€” MAPA
     ============================================= */
     .map-fab {
       position: fixed;
@@ -1068,7 +1068,7 @@
       pointer-events: none;
     }
 
-    /* Badge de alerta — visible solo cuando hay promos cerca (JS lo muestra) */
+    /* Badge de alerta â€” visible solo cuando hay promos cerca (JS lo muestra) */
     .map-alert {
       pointer-events: auto;
       display: flex;
@@ -1102,7 +1102,7 @@
       white-space: nowrap;
     }
 
-    /* Botón circular dorado */
+    /* BotÃ³n circular dorado */
     .map-btn {
       pointer-events: auto;
       width: 54px; height: 54px;
@@ -1149,7 +1149,7 @@
       to   { opacity: 1; transform: translateY(0)    scale(1);    }
     }
 
-    /* ── LAZY LOAD — cards ocultas hasta que llega el scroll ── */
+    /* â”€â”€ LAZY LOAD â€” cards ocultas hasta que llega el scroll â”€â”€ */
     .card-lazy {
       display: none;             /* no ocupa espacio hasta revelarse:
                                     antes (opacity:0) dejaba huecos
@@ -1167,7 +1167,7 @@
     .card-lazy.card-visible:nth-of-type(3) { animation-delay: 0.14s; }
     .card-lazy.card-visible:nth-of-type(4) { animation-delay: 0.21s; }
 
-    /* ── FEED LOADER — tres puntos mientras carga el siguiente lote ── */
+    /* â”€â”€ FEED LOADER â€” tres puntos mientras carga el siguiente lote â”€â”€ */
     .feed-loader {
       display: flex;
       align-items: center;
@@ -1192,7 +1192,7 @@
       40%           { transform: scale(1);   opacity: 1;    }
     }
 
-    /* ── RIPPLE en botón CTA ── */
+    /* â”€â”€ RIPPLE en botÃ³n CTA â”€â”€ */
     .ripple {
       position: absolute;
       border-radius: 50%;
@@ -1206,7 +1206,7 @@
     }
 
     /* =============================================
-       RESPONSIVE — pantallas muy estrechas
+       RESPONSIVE â€” pantallas muy estrechas
     ============================================= */
     @media (max-width: 340px) {
       .card-title  { font-size: 13px; }
@@ -1215,7 +1215,7 @@
     }
 
     /* =============================================
-       FASE 1 — ESTADO EN TIEMPO REAL
+       FASE 1 â€” ESTADO EN TIEMPO REAL
     ============================================= */
     .status-chip {
       display: inline-flex;
@@ -1236,7 +1236,7 @@
     .status-chip.inactive{ color: #64748B; }
 
     /* =============================================
-       FASE 1 — URGENCIA / COUNTDOWN
+       FASE 1 â€” URGENCIA / COUNTDOWN
     ============================================= */
     .urgency-chip {
       display: inline-flex;
@@ -1266,7 +1266,7 @@
     }
 
     /* =============================================
-       FASE 1 — PRUEBA SOCIAL
+       FASE 1 â€” PRUEBA SOCIAL
     ============================================= */
     .social-proof {
       display: flex;
@@ -1293,20 +1293,20 @@
 <div class="app-container">
 <!-- HEADER ===================================== -->
 <header class="app-header">
-<!-- IZQUIERDA: logo + título + ubicación -->
+<!-- IZQUIERDA: logo + tÃ­tulo + ubicaciÃ³n -->
 <div class="header-left">
 <div class="header-logo">
 <svg viewbox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5L12 1zm0 4.18l5 2.22V11c0 3.54-2.33 6.79-5 7.93C9.33 17.79 7 14.54 7 11V7.4l5-2.22z"></path></svg>
 </div>
 <div class="header-brand-stack">
 <span class="header-title">Encavi<em>GO</em></span>
-<!-- Ubicación colapsable — chevron indica que es interactiva -->
+<!-- UbicaciÃ³n colapsable â€” chevron indica que es interactiva -->
 <button aria-label="Cambiar zona" class="header-location">
 <!-- Pin -->
 <svg fill="none" height="9" viewbox="0 0 24 24" width="9">
 <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="#94A3B8"></path>
 </svg>
-<span class="loc-text">Zona Romántica · <strong>Pto. Vallarta</strong></span>
+<span class="loc-text">Zona RomÃ¡ntica Â· <strong>Pto. Vallarta</strong></span>
 <!-- Chevron abajo -->
 <svg class="chevron" fill="none" height="9" viewbox="0 0 24 24" width="9">
 <path d="M7 10l5 5 5-5z" fill="#94A3B8"></path>
@@ -1314,12 +1314,12 @@
 </button>
 </div>
 </div>
-<!-- DERECHA: EN VIVO + búsqueda + notificaciones -->
+<!-- DERECHA: EN VIVO + bÃºsqueda + notificaciones -->
 <div class="header-right">
-<!-- CLIMA EN VIVO — actualizado por JS con Open-Meteo API -->
+<!-- CLIMA EN VIVO â€” actualizado por JS con Open-Meteo API -->
 <div class="weather-chip" id="weatherChip" title="Clima en Puerto Vallarta">
 <div class="weather-icon-wrap" id="weatherIcon">
-<!-- Ícono cargando: puntos parpadeantes -->
+<!-- Ãcono cargando: puntos parpadeantes -->
 <svg fill="none" viewbox="0 0 16 16">
 <circle cx="4" cy="8" fill="#94A3B8" opacity="0.4" r="1.5">
 <animate attributename="opacity" begin="0s" dur="1.2s" repeatcount="indefinite" values="0.4;1;0.4"></animate>
@@ -1333,7 +1333,7 @@
 </svg>
 </div>
 <div class="weather-text">
-<span class="weather-temp" id="weatherTemp">--°</span>
+<span class="weather-temp" id="weatherTemp">--Â°</span>
 <span class="weather-cond" id="weatherCond">Cargando</span>
 </div>
 </div>
@@ -1341,7 +1341,7 @@
 <button aria-label="Activar alertas de proximidad" class="header-icon-btn notif-btn" id="notifBtn" title="Recibe alertas cuando hay promos cerca">
 <svg viewbox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"></path></svg>
 </button>
-<!-- Búsqueda -->
+<!-- BÃºsqueda -->
 <button aria-label="Buscar promociones" class="header-icon-btn">
 <svg viewbox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg>
 </button>
@@ -1349,154 +1349,75 @@
 </header>
 <!-- PERFIL ===================================== -->
 <!--
-    ★ SECCIÓN DE PERFIL — reemplaza los datos placeholder
-    con la información real del promotor / agente EncaviGO
+    â˜… SECCIÃ“N DE PERFIL â€” reemplaza los datos placeholder
+    con la informaciÃ³n real del promotor / agente EncaviGO
   -->
-
 <!-- CARRUSEL DE DESTACADAS ======================== -->
+<!-- TOGGLE CATEGORÃAS ============================= -->
+<!-- CATEGORÃAS ==================================== -->
+<!-- CANALES TEMÃTICOS ========================== -->
 
-<!-- TOGGLE CATEGORÍAS ============================= -->
-
-<!-- CATEGORÍAS ==================================== -->
-
-<!-- CANALES TEMÁTICOS ========================== -->
-<section aria-label="Canales temáticos" class="topics-section">
-<p class="topics-header">Explorar canales</p>
-<div class="topics-row">
-<!-- NOTICIAS — azul informativo -->
-<button aria-label="Noticias locales" class="topic-card" onclick="window.location.href='noticias.html'" style="--tg: linear-gradient(150deg, #1A3A5C 0%, #0A2040 100%)">
-<div class="topic-icon">
-<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-<!-- Periódico -->
-<path d="M4 4h13v2H4zM4 8h13v2H4zM4 12h8v2H4zM4 16h5v2H4z"></path>
-<path d="M18 4h2v16a2 2 0 01-2 2H4a2 2 0 01-2-2V4h2v14h14V4z" opacity=".5"></path>
-<!-- Ondas de señal -->
-<path d="M14 14a3 3 0 013 3" fill="none" opacity=".9" stroke="white" stroke-linecap="round" stroke-width="1.5"></path>
-<path d="M14 11a6 6 0 016 6" fill="none" opacity=".55" stroke="white" stroke-linecap="round" stroke-width="1.5"></path>
-</svg>
-</div>
-<span class="topic-name">Noticias</span>
-</button>
-<!-- CLASIFICADOS — ámbar / comercio -->
-<button aria-label="Clasificados" class="topic-card" onclick="window.location.href='clasificados.html'" style="--tg: linear-gradient(150deg, #4A2C08 0%, #2A1804 100%)">
-<div class="topic-icon">
-<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-<!-- Etiqueta de precio -->
-<path d="M21.41 11.58l-9-9A2 2 0 0011 2H4a2 2 0 00-2 2v7a2 2 0 00.59 1.42l9 9A2 2 0 0013 22a2 2 0 001.41-.59l7-7A2 2 0 0022 13a2 2 0 00-.59-1.42z"></path>
-<circle cx="6" cy="7" fill="rgba(0,0,0,0.4)" r="1.5"></circle>
-<!-- Símbolo $ -->
-<text fill="rgba(0,0,0,0.35)" font-family="system-ui" font-size="7" font-weight="800" x="13" y="16">$</text>
-</svg>
-</div>
-<span class="topic-name">Clasificados</span>
-</button>
-<!-- QUÉ HACER EN VALLARTA — teal tropical -->
-<button aria-label="Qué hacer en Puerto Vallarta" class="topic-card" onclick="window.location.href='vallarta.html'" style="--tg: linear-gradient(150deg, #0E3828 0%, #071E16 100%)">
-<div class="topic-icon">
-<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-<!-- Palmera -->
-<!-- Tronco curvo -->
-<path d="M12 22 Q11 18 12 14 Q13 10 12 7" fill="none" stroke="white" stroke-linecap="round" stroke-width="1.8"></path>
-<!-- Hoja izquierda -->
-<path d="M12 10 Q7 7 3 8 Q6 11 12 10z"></path>
-<!-- Hoja derecha -->
-<path d="M12 10 Q17 7 21 8 Q18 11 12 10z"></path>
-<!-- Hoja superior -->
-<path d="M12 10 Q10 5 11 2 Q13 5 12 10z"></path>
-<!-- Coco -->
-<circle cx="11.5" cy="10.5" fill="rgba(0,0,0,0.3)" r="1.3"></circle>
-</svg>
-</div>
-<span class="topic-name">Vallarta</span>
-</button>
-<!-- QUÉ HACER EN BAHÍA — azul marino profundo -->
-<button aria-label="Qué hacer en Bahía de Banderas" class="topic-card" onclick="window.location.href='bahia.html'" style="--tg: linear-gradient(150deg, #0A2A4A 0%, #051828 100%)">
-<div class="topic-icon">
-<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-<!-- Ancla -->
-<circle cx="12" cy="6" fill="none" r="2.5" stroke="white" stroke-width="1.8"></circle>
-<line stroke="white" stroke-linecap="round" stroke-width="1.8" x1="12" x2="12" y1="8.5" y2="20"></line>
-<path d="M7 11h3 M14 11h3" fill="none" stroke="white" stroke-linecap="round" stroke-width="1.8"></path>
-<path d="M7 20 Q12 23 17 20" fill="none" stroke="white" stroke-linecap="round" stroke-width="1.8"></path>
-<!-- Ola decorativa -->
-<path d="M4 16 Q6 14 8 16 Q10 18 12 16" fill="none" opacity=".45" stroke="white" stroke-linecap="round" stroke-width="1.2"></path>
-</svg>
-</div>
-<span class="topic-name">Bahía</span>
-</button>
-<!-- EVENTOS — púrpura / entretenimiento -->
-<button aria-label="Eventos y espectáculos" class="topic-card" onclick="window.location.href='eventos.html'" style="--tg: linear-gradient(150deg, #2A1040 0%, #180824 100%)">
-<div class="topic-icon">
-<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-<!-- Estrella de evento / ticket -->
-<path d="M22 9V7h-2V5a2 2 0 00-2-2H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-2h2v-2h-2v-2h2v-2h-2V9z" opacity=".9"></path>
-<line stroke="rgba(0,0,0,0.3)" stroke-dasharray="3 2" stroke-width="2" x1="15" x2="15" y1="2" y2="22"></line>
-<!-- Estrella -->
-<path d="M9 8l1 3H7l2.5 1.8-1 3L11 14l2.5 1.8-1-3L15 11h-3z" fill="rgba(255,255,255,0.7)"></path>
-</svg>
-</div>
-<span class="topic-name">Eventos</span>
-</button>
-</div>
-</section>
 <!-- FEED ======================================= -->
 <main class="promo-feed">
-    <!-- PLATFORMS SECTION -->
-    <article class="promo-card" data-start="00:00" data-end="23:59">
-      <div class="card-mascot" style="--mascot-grad: var(--mascot-1);">
-        <span class="mascot-badge">Conductor</span>
-        <div style="width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; color:white; padding-top:20px;">
-          <svg style="width:60px; height:60px; fill:currentColor" viewBox="0 0 24 24"><path d="M18.92 5.01C18.72 4.42 18.16 4 17.5 4h-11c-.66 0-1.21.42-1.42 1.01L3 11v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.85 5.56l1.08-3.11c.14-.4.52-.65.94-.65h6.26c.42 0 .8.25.94.65l1.08 3.11c.17.49.62.84 1.15.84H19v2H5V6.4h1.7c.53 0 .98-.35 1.15-.84zM7.5 16c-.83 0-1.5-.67-1.5-1.5S6.67 13 7.5 13s1.5.67 1.5 1.5S8.33 16 7.5 16zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
-        </div>
-      </div>
-      <div class="card-content">
-        <div class="content-top">
-          <span class="status-chip active">INDRIVE / UBER / DIDI</span>
-          <h2 class="card-title">Únete a la red EncaviGO y genera más</h2>
-          <p class="card-desc">Si eres conductor de plataforma o taxi, pon nuestro código QR en tu vehículo y gana comisiones por cada pasajero que active promociones.</p>
-        </div>
-        <div class="content-bottom">
-          <a class="btn-cta"
-             href="https://wa.me/521XXXXXXXXXX?text=Hola%2C%20soy%20conductor%20y%20quiero%20unirme%20a%20EncaviGO."
-             target="_blank" rel="noopener">
-             <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 0C5.373 0 0 5.373 0 12c0 2.127.555 4.127 1.524 5.87L.057 23.882l6.01-1.467A11.95 11.95 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22a9.95 9.95 0 01-5.18-1.38l-.37-.213-3.567.868.887-3.566-.23-.382A9.953 9.953 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
-            Registrar mi vehículo
-          </a>
-        </div>
-      </div>
-    </article>
+<div class="driver-trust-badge" style="margin: 0 16px 24px 16px; padding: 12px 16px; background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 16px; display: flex; align-items: center; gap: 14px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+<div style="width: 44px; height: 44px; border-radius: 50%; background: #DBEAFE; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0;">ðŸ›¡ï¸</div>
+<div>
+<div style="font-size: 11px; font-weight: 700; color: #2563EB; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">VehÃ­culo Registrado</div>
+<div id="driverNameLabel" style="font-size: 14px; font-weight: 600; color: #1E3A8A; line-height: 1.3;">Carlos M. â€¢ Nissan Versa</div>
+</div>
+</div>
 
-    <!-- BUSINESS SECTION -->
-    <article class="promo-card reversed" data-start="00:00" data-end="23:59">
-      <div class="card-mascot" style="--mascot-grad: var(--mascot-3);">
-        <span class="mascot-badge">Negocios</span>
-        <div style="width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; color:white; padding-top:20px;">
-          <svg style="width:60px; height:60px; fill:currentColor" viewBox="0 0 24 24"><path d="M12 3L4 9v12h16V9l-8-6zm6 16h-3v-6H9v6H6v-9l6-4.5 6 4.5v9z"/></svg>
-        </div>
-      </div>
-      <div class="card-content">
-        <div class="content-top">
-          <span class="status-chip active" style="background:var(--secondary)">ANÚNCIATE CON NOSOTROS</span>
-          <h2 class="card-title">Llega a miles de pasajeros diariamente</h2>
-          <p class="card-desc">Publica tus ofertas y cupones directamente en los vehículos de servicio público y privado. Incrementa tus ventas hoy.</p>
-        </div>
-        <div class="content-bottom">
-          <a class="btn-cta"
-             href="https://wa.me/521XXXXXXXXXX?text=Hola%2C%20tengo%20un%20negocio%20y%20quiero%20anunciarme%20en%20EncaviGO."
-             target="_blank" rel="noopener">
-             <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 0C5.373 0 0 5.373 0 12c0 2.127.555 4.127 1.524 5.87L.057 23.882l6.01-1.467A11.95 11.95 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22a9.95 9.95 0 01-5.18-1.38l-.37-.213-3.567.868.887-3.566-.23-.382A9.953 9.953 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+<!-- PLATFORMS SECTION -->
+<article class="promo-card" data-end="23:59" data-start="00:00">
+<div class="card-mascot" style="--mascot-grad: var(--mascot-1);">
+<span class="mascot-badge">Conductor</span>
+<div style="width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; color:white; padding-top:20px;">
+<svg style="width:60px; height:60px; fill:currentColor" viewbox="0 0 24 24"><path d="M18.92 5.01C18.72 4.42 18.16 4 17.5 4h-11c-.66 0-1.21.42-1.42 1.01L3 11v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.85 5.56l1.08-3.11c.14-.4.52-.65.94-.65h6.26c.42 0 .8.25.94.65l1.08 3.11c.17.49.62.84 1.15.84H19v2H5V6.4h1.7c.53 0 .98-.35 1.15-.84zM7.5 16c-.83 0-1.5-.67-1.5-1.5S6.67 13 7.5 13s1.5.67 1.5 1.5S8.33 16 7.5 16zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"></path></svg>
+</div>
+</div>
+<div class="card-content">
+<div class="content-top">
+<span class="status-chip active">INDRIVE / UBER / DIDI</span>
+<h2 class="card-title">Ãšnete a la red EncaviGO y genera mÃ¡s</h2>
+<p class="card-desc">Si eres conductor de plataforma o taxi, pon nuestro cÃ³digo QR en tu vehÃ­culo y gana comisiones por cada pasajero que active promociones.</p>
+</div>
+<div class="content-bottom">
+<a class="btn-cta" href="https://wa.me/521XXXXXXXXXX?text=Hola%2C%20soy%20conductor%20y%20quiero%20unirme%20a%20EncaviGO." rel="noopener" target="_blank">
+<svg viewbox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 0C5.373 0 0 5.373 0 12c0 2.127.555 4.127 1.524 5.87L.057 23.882l6.01-1.467A11.95 11.95 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22a9.95 9.95 0 01-5.18-1.38l-.37-.213-3.567.868.887-3.566-.23-.382A9.953 9.953 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"></path></svg>
+            Registrar mi vehÃ­culo
+          </a>
+</div>
+</div>
+</article>
+<!-- BUSINESS SECTION -->
+<article class="promo-card reversed" data-end="23:59" data-start="00:00">
+<div class="card-mascot" style="--mascot-grad: var(--mascot-3);">
+<span class="mascot-badge">Negocios</span>
+<div style="width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; color:white; padding-top:20px;">
+<svg style="width:60px; height:60px; fill:currentColor" viewbox="0 0 24 24"><path d="M12 3L4 9v12h16V9l-8-6zm6 16h-3v-6H9v6H6v-9l6-4.5 6 4.5v9z"></path></svg>
+</div>
+</div>
+<div class="card-content">
+<div class="content-top">
+<span class="status-chip active" style="background:var(--secondary)">ANÃšNCIATE CON NOSOTROS</span>
+<h2 class="card-title">Llega a miles de pasajeros diariamente</h2>
+<p class="card-desc">Publica tus ofertas y cupones directamente en los vehÃ­culos de servicio pÃºblico y privado. Incrementa tus ventas hoy.</p>
+</div>
+<div class="content-bottom">
+<a class="btn-cta" href="https://wa.me/521XXXXXXXXXX?text=Hola%2C%20tengo%20un%20negocio%20y%20quiero%20anunciarme%20en%20EncaviGO." rel="noopener" target="_blank">
+<svg viewbox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 0C5.373 0 0 5.373 0 12c0 2.127.555 4.127 1.524 5.87L.057 23.882l6.01-1.467A11.95 11.95 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22a9.95 9.95 0 01-5.18-1.38l-.37-.213-3.567.868.887-3.566-.23-.382A9.953 9.953 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"></path></svg>
             Publicar mi negocio
           </a>
-        </div>
-      </div>
-    </article>
+</div>
+</div>
+</article>
 </main>
 </div><!-- /app-container -->
-<!-- BOTÓN FLOTANTE MAPA ========================= -->
+<!-- BOTÃ“N FLOTANTE MAPA ========================= -->
 <div class="map-fab">
 <button aria-label="Promos cercanas" class="map-alert" id="mapAlert" type="button">
 <span class="alert-dot" id="alertDot"></span>
-<span class="alert-text" id="alertText">Buscando promos…</span>
+<span class="alert-text" id="alertText">Buscando promosâ€¦</span>
 </button>
 <button aria-label="Abrir mapa de promociones" class="map-btn" id="mapBtn" type="button">
 <svg viewbox="0 0 24 24"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"></path></svg>
@@ -1504,7 +1425,7 @@
 </div>
 <script>
 /* =============================================
-   CLIMA EN VIVO — Open-Meteo API
+   CLIMA EN VIVO â€” Open-Meteo API
    Coordenadas: Puerto Vallarta, Jalisco
    Sin API key requerida, 0 dependencias
 ============================================= */
@@ -1515,9 +1436,9 @@ const WEATHER_URL =
   '&current=temperature_2m,weather_code' +
   '&timezone=America%2FMexico_City';
 
-/* Mapa de códigos WMO → { texto, color de borde, SVG animado } */
+/* Mapa de cÃ³digos WMO â†’ { texto, color de borde, SVG animado } */
 function getWeatherConfig(code) {
-  /* ── Sol / Despejado ── */
+  /* â”€â”€ Sol / Despejado â”€â”€ */
   if (code === 0) return {
     label: 'Despejado',
     border: 'rgba(255, 210, 60, 0.45)',
@@ -1536,7 +1457,7 @@ function getWeatherConfig(code) {
     </svg>`
   };
 
-  /* ── Parcialmente nublado ── */
+  /* â”€â”€ Parcialmente nublado â”€â”€ */
   if (code >= 1 && code <= 2) return {
     label: 'Nublado',
     border: 'rgba(180, 190, 210, 0.35)',
@@ -1552,7 +1473,7 @@ function getWeatherConfig(code) {
     </svg>`
   };
 
-  /* ── Muy nublado ── */
+  /* â”€â”€ Muy nublado â”€â”€ */
   if (code === 3) return {
     label: 'Muy nublado',
     border: 'rgba(140, 150, 170, 0.35)',
@@ -1563,7 +1484,7 @@ function getWeatherConfig(code) {
     </svg>`
   };
 
-  /* ── Niebla / Neblina ── */
+  /* â”€â”€ Niebla / Neblina â”€â”€ */
   if (code === 45 || code === 48) return {
     label: 'Neblina',
     border: 'rgba(180, 190, 200, 0.30)',
@@ -1576,7 +1497,7 @@ function getWeatherConfig(code) {
     </svg>`
   };
 
-  /* ── Llovizna ── */
+  /* â”€â”€ Llovizna â”€â”€ */
   if (code >= 51 && code <= 57) return {
     label: 'Llovizna',
     border: 'rgba(100, 160, 220, 0.40)',
@@ -1589,7 +1510,7 @@ function getWeatherConfig(code) {
     </svg>`
   };
 
-  /* ── Lluvia ── */
+  /* â”€â”€ Lluvia â”€â”€ */
   if (code >= 61 && code <= 67) return {
     label: 'Lluvia',
     border: 'rgba(80, 140, 210, 0.45)',
@@ -1604,7 +1525,7 @@ function getWeatherConfig(code) {
     </svg>`
   };
 
-  /* ── Chubascos ── */
+  /* â”€â”€ Chubascos â”€â”€ */
   if (code >= 80 && code <= 82) return {
     label: 'Chubascos',
     border: 'rgba(60, 120, 200, 0.45)',
@@ -1618,7 +1539,7 @@ function getWeatherConfig(code) {
     </svg>`
   };
 
-  /* ── Tormenta eléctrica ── */
+  /* â”€â”€ Tormenta elÃ©ctrica â”€â”€ */
   if (code >= 95) return {
     label: 'Tormenta',
     border: 'rgba(200, 160, 40, 0.50)',
@@ -1630,9 +1551,9 @@ function getWeatherConfig(code) {
     </svg>`
   };
 
-  /* ── Fallback: caluroso (PV casi siempre) ── */
+  /* â”€â”€ Fallback: caluroso (PV casi siempre) â”€â”€ */
   return {
-    label: 'Cálido',
+    label: 'CÃ¡lido',
     border: 'rgba(255, 180, 60, 0.40)',
     icon: `<svg viewBox="0 0 24 24" fill="none">
       <circle cx="12" cy="12" r="4" fill="#FFB43C"/>
@@ -1663,22 +1584,22 @@ function pintarClima(cfg, tempTxt) {
 }
 
 function climaFallback() {
-  /* Clima típico de PV cuando no hay red / API caída / WebView viejo */
-  pintarClima(getWeatherConfig(0), '32°');
+  /* Clima tÃ­pico de PV cuando no hay red / API caÃ­da / WebView viejo */
+  pintarClima(getWeatherConfig(0), '32Â°');
 }
 
 async function loadWeather() {
   /* Watchdog: pase lo que pase, el chip nunca se queda en "Cargando".
-     Si en 6 s nadie actualizó el chip, se pinta el fallback. */
+     Si en 6 s nadie actualizÃ³ el chip, se pinta el fallback. */
   const watchdog = setTimeout(() => {
     const cond = document.getElementById('weatherCond');
     if (cond && cond.textContent === 'Cargando') climaFallback();
   }, 6000);
 
   try {
-    /* AbortController no existe en WebViews viejos — detectar antes de usar.
-       (Bug original: se creaba FUERA del try; si no existía, la función
-       moría sin ejecutar ni el try ni el catch y el chip quedaba congelado.) */
+    /* AbortController no existe en WebViews viejos â€” detectar antes de usar.
+       (Bug original: se creaba FUERA del try; si no existÃ­a, la funciÃ³n
+       morÃ­a sin ejecutar ni el try ni el catch y el chip quedaba congelado.) */
     let signal = undefined, timeout = null;
     if (typeof AbortController === 'function') {
       const controller = new AbortController();
@@ -1693,7 +1614,7 @@ async function loadWeather() {
     if (!data || !data.current) throw new Error('respuesta sin current');
 
     const t   = Math.round(data.current.temperature_2m);
-    pintarClima(getWeatherConfig(data.current.weather_code), t + '°');
+    pintarClima(getWeatherConfig(data.current.weather_code), t + 'Â°');
 
   } catch (_) {
     climaFallback();
@@ -1707,19 +1628,19 @@ loadWeather();
 setInterval(loadWeather, 10 * 60 * 1000);
 
 /* =============================================
-   CARRUSEL DE DESTACADAS — rotación automática
-   (Bug original: las cards nacían con opacity:0 +
-   visibility:hidden y NINGÚN script les ponía la
-   clase .active → el carrusel nunca era visible.)
+   CARRUSEL DE DESTACADAS â€” rotaciÃ³n automÃ¡tica
+   (Bug original: las cards nacÃ­an con opacity:0 +
+   visibility:hidden y NINGÃšN script les ponÃ­a la
+   clase .active â†’ el carrusel nunca era visible.)
 ============================================= */
 (function initCarousel() {
   const cards = document.querySelectorAll('#carouselTrack .carousel-card');
   if (!cards.length) return;
 
-  /* ── FOTOS DE NEGOCIOS ──
+  /* â”€â”€ FOTOS DE NEGOCIOS â”€â”€
      Lee data-img de cada .carousel-card-inner y superpone la foto al
      degradado (que queda como fallback si la imagen falta o no carga).
-     Solo hay que rellenar data-img en el HTML — nada más. */
+     Solo hay que rellenar data-img en el HTML â€” nada mÃ¡s. */
   document.querySelectorAll('#carouselTrack .carousel-card-inner[data-img]').forEach(el => {
     const src = (el.dataset.img || '').trim();
     if (!src) return;
@@ -1741,13 +1662,13 @@ setInterval(loadWeather, 10 * 60 * 1000);
 })();
 
 /* =============================================
-   INFINITE SCROLL — Reveal por lotes de 4
-   Las cards con .card-lazy están ocultas en CSS.
+   INFINITE SCROLL â€” Reveal por lotes de 4
+   Las cards con .card-lazy estÃ¡n ocultas en CSS.
    IntersectionObserver observa el sentinel al
    final del feed. Cuando entra en viewport:
    1. Muestra loader (puntos)
-   2. Después de 500ms anima el siguiente lote
-   3. Si no hay más, desconecta el observer.
+   2. DespuÃ©s de 500ms anima el siguiente lote
+   3. Si no hay mÃ¡s, desconecta el observer.
 ============================================= */
 (function initLazyFeed() {
   const sentinel = document.getElementById('feedSentinel');
@@ -1758,7 +1679,7 @@ setInterval(loadWeather, 10 * 60 * 1000);
   const BATCH = 4;
   const DELAY = 520; /* ms antes de revelar el lote */
 
-  /* Toma las próximas N cards lazy no reveladas */
+  /* Toma las prÃ³ximas N cards lazy no reveladas */
   function getNextBatch() {
     return Array.from(feed.querySelectorAll('.card-lazy:not(.card-visible)'))
                 .slice(0, BATCH);
@@ -1769,13 +1690,13 @@ setInterval(loadWeather, 10 * 60 * 1000);
     cards.forEach((card, i) => {
       setTimeout(() => {
         card.classList.add('card-visible');
-        /* Al terminar la animación la card queda como card normal:
+        /* Al terminar la animaciÃ³n la card queda como card normal:
            re-insertarla en el DOM (reordenamiento por distancia) ya
-           no reinicia la animación → sin parpadeos en el feed. */
+           no reinicia la animaciÃ³n â†’ sin parpadeos en el feed. */
         const fijar = () => card.classList.remove('card-lazy', 'card-visible');
         card.addEventListener('animationend', fijar, { once: true });
-        /* Si la animación se cancela (p. ej. la card fue re-insertada en
-           el DOM a mitad de animación), fijarla igual para que nunca
+        /* Si la animaciÃ³n se cancela (p. ej. la card fue re-insertada en
+           el DOM a mitad de animaciÃ³n), fijarla igual para que nunca
            vuelva a animarse. */
         card.addEventListener('animationcancel', fijar, { once: true });
       }, i * 90);
@@ -1798,7 +1719,7 @@ setInterval(loadWeather, 10 * 60 * 1000);
       revealBatch(batch);
       loading = false;
 
-      /* Si ya no quedan más, desconecta */
+      /* Si ya no quedan mÃ¡s, desconecta */
       if (!feed.querySelectorAll('.card-lazy:not(.card-visible)').length) {
         observer.disconnect();
       }
@@ -1810,7 +1731,7 @@ setInterval(loadWeather, 10 * 60 * 1000);
 })();
 
 /* =============================================
-   RIPPLE — micro-interacción en botón CTA
+   RIPPLE â€” micro-interacciÃ³n en botÃ³n CTA
 ============================================= */
 document.querySelectorAll('.btn-cta').forEach(btn => {
   btn.addEventListener('pointerdown', function(e) {
@@ -1829,8 +1750,8 @@ document.querySelectorAll('.btn-cta').forEach(btn => {
 });
 
 /* =============================================
-   NEGOCIOS AFILIADOS — Base de datos local
-   En producción: fetch desde API de EncaviGO
+   NEGOCIOS AFILIADOS â€” Base de datos local
+   En producciÃ³n: fetch desde API de EncaviGO
 ============================================= */
 const NEGOCIOS = [
   {
@@ -1844,8 +1765,8 @@ const NEGOCIOS = [
   },
   {
     id: 'tacos-el-guero',
-    nombre: 'Tacos El Güero',
-    promo: '2×1 en tacos de canasta toda la tarde',
+    nombre: 'Tacos El GÃ¼ero',
+    promo: '2Ã—1 en tacos de canasta toda la tarde',
     categoria: 'Tacos',
     lat: 20.6074, lng: -105.2361,
     whatsapp: '523221234568',
@@ -1853,7 +1774,7 @@ const NEGOCIOS = [
   },
   {
     id: 'spa-pacifico',
-    nombre: 'Spa Pacífico',
+    nombre: 'Spa PacÃ­fico',
     promo: 'Masaje de 60 min por $199 MXN',
     categoria: 'Spa',
     lat: 20.6618, lng: -105.2469,
@@ -1862,7 +1783,7 @@ const NEGOCIOS = [
   },
   {
     id: 'cerveceria-del-muelle',
-    nombre: 'Cervecería del Muelle',
+    nombre: 'CervecerÃ­a del Muelle',
     promo: '4 cervezas artesanales por $120',
     categoria: 'Bar',
     lat: 20.6196, lng: -105.2381,
@@ -1871,13 +1792,13 @@ const NEGOCIOS = [
   }
 ];
 
-/* Haversine — distancia en metros entre dos pares de coordenadas */
+/* Haversine â€” distancia en metros entre dos pares de coordenadas */
 function haversine(lat1, lng1, lat2, lng2) {
   const R  = 6371000;
-  const φ1 = lat1 * Math.PI / 180, φ2 = lat2 * Math.PI / 180;
-  const Δφ = (lat2 - lat1) * Math.PI / 180;
-  const Δλ = (lng2 - lng1) * Math.PI / 180;
-  const a  = Math.sin(Δφ/2)**2 + Math.cos(φ1)*Math.cos(φ2)*Math.sin(Δλ/2)**2;
+  const Ï†1 = lat1 * Math.PI / 180, Ï†2 = lat2 * Math.PI / 180;
+  const Î”Ï† = (lat2 - lat1) * Math.PI / 180;
+  const Î”Î» = (lng2 - lng1) * Math.PI / 180;
+  const a  = Math.sin(Î”Ï†/2)**2 + Math.cos(Ï†1)*Math.cos(Ï†2)*Math.sin(Î”Î»/2)**2;
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 }
 
@@ -1893,7 +1814,7 @@ let _userLat = null, _userLng = null;
 function actualizarBadgeMapa(lat, lng) {
   _userLat = lat; _userLng = lng;
 
-  /* ── Actualizar dist-chip de cada tarjeta ── */
+  /* â”€â”€ Actualizar dist-chip de cada tarjeta â”€â”€ */
   const feed = document.querySelector('.promo-feed');
   const cards = [...feed.querySelectorAll('.promo-card[data-lat]')];
 
@@ -1907,13 +1828,13 @@ function actualizarBadgeMapa(lat, lng) {
     if (chip) {
       const pin = `<svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>`;
       chip.innerHTML = `${pin} ${fmtDist(dist)}`;
-      /* Resaltar si está muy cerca */
+      /* Resaltar si estÃ¡ muy cerca */
       chip.style.color = dist <= 300 ? '#34D36A' : '';
       chip.style.borderColor = dist <= 300 ? 'rgba(52,211,106,0.30)' : '';
     }
   });
 
-  /* ── Reordenar: activos cercanos primero ── */
+  /* â”€â”€ Reordenar: activos cercanos primero â”€â”€ */
   const statusOrder = card => {
     const sc = card.querySelector('.status-chip');
     if (!sc) return 2;
@@ -1926,10 +1847,10 @@ function actualizarBadgeMapa(lat, lng) {
      al final (en su orden original) para el reveal por lotes. */
   const visibles = cards.filter(c =>
     !c.classList.contains('card-lazy') || c.classList.contains('card-visible'));
-  /* Distancias en cubetas de 100 m: el jitter del GPS (±20-50 m estando
+  /* Distancias en cubetas de 100 m: el jitter del GPS (Â±20-50 m estando
      quieto) intercambiaba el orden de cards casi equidistantes en CADA
-     update → re-inserciones constantes → el feed "parpadeaba" en bucle
-     periódico. Con cubetas, el orden es estable ante el jitter. */
+     update â†’ re-inserciones constantes â†’ el feed "parpadeaba" en bucle
+     periÃ³dico. Con cubetas, el orden es estable ante el jitter. */
   const cubeta = c => Math.round((parseFloat(c.dataset.dist) || 9999) / 100);
   visibles.sort((a, b) => {
     const so = statusOrder(a) - statusOrder(b);
@@ -1938,8 +1859,8 @@ function actualizarBadgeMapa(lat, lng) {
   });
   const cambio = visibles.some((c, i) =>
     i > 0 && !(visibles[i - 1].compareDocumentPosition(c) & Node.DOCUMENT_POSITION_FOLLOWING));
-  /* Y aunque cambie: máximo un reorden cada 45 s. Re-insertar nodos mueve
-     el scroll y repinta el feed — mejor pocas veces y bien. */
+  /* Y aunque cambie: mÃ¡ximo un reorden cada 45 s. Re-insertar nodos mueve
+     el scroll y repinta el feed â€” mejor pocas veces y bien. */
   const ahora = Date.now();
   if (cambio && ahora - (actualizarBadgeMapa._ultimoOrden || 0) > 45000) {
     actualizarBadgeMapa._ultimoOrden = ahora;
@@ -1947,22 +1868,22 @@ function actualizarBadgeMapa(lat, lng) {
     visibles.forEach(c => feed.insertBefore(c, ancla));
   }
 
-  /* ── Badge FAB ── */
+  /* â”€â”€ Badge FAB â”€â”€ */
   const cerca  = cards.filter(c => (parseFloat(c.dataset.dist) || 9999) <= 500);
   const alert  = document.getElementById('mapAlert');
   const text   = document.getElementById('alertText');
   if (cerca.length > 0) {
-    text.textContent = `¡${cerca.length} promo${cerca.length > 1 ? 's' : ''} cerca!`;
+    text.textContent = `Â¡${cerca.length} promo${cerca.length > 1 ? 's' : ''} cerca!`;
     alert.classList.add('visible');
   } else {
     alert.classList.remove('visible');
   }
 
-  /* ── Notificaciones de proximidad ── */
+  /* â”€â”€ Notificaciones de proximidad â”€â”€ */
   if (typeof notificarProxima === 'function') notificarProxima(lat, lng);
 }
 
-/* GPS en vivo — watchPosition para actualizaciones continuas */
+/* GPS en vivo â€” watchPosition para actualizaciones continuas */
 if ('geolocation' in navigator) {
   navigator.geolocation.watchPosition(
     pos  => actualizarBadgeMapa(pos.coords.latitude, pos.coords.longitude),
@@ -1985,7 +1906,7 @@ document.getElementById('mapBtn').addEventListener('click', irAlMapa);
 document.getElementById('mapAlert').addEventListener('click', irAlMapa);
 
 /* =============================================
-   FASE 2 — SERVICE WORKER + PUSH NOTIFICATIONS
+   FASE 2 â€” SERVICE WORKER + PUSH NOTIFICATIONS
 ============================================= */
 let _swReg = null;
 const _notifiedIds = new Set(); // evitar spam por negocio
@@ -1993,8 +1914,8 @@ const _notifiedIds = new Set(); // evitar spam por negocio
 async function registrarSW() {
   if (!('serviceWorker' in navigator)) return;
   try {
-    /* updateViaCache:'none' → el navegador SIEMPRE revisa sw.js en red,
-       sin caché HTTP: las actualizaciones llegan en la primera apertura
+    /* updateViaCache:'none' â†’ el navegador SIEMPRE revisa sw.js en red,
+       sin cachÃ© HTTP: las actualizaciones llegan en la primera apertura
        (el SW ya hace skipWaiting + clients.claim al activarse). */
     _swReg = await navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' });
   } catch (e) {
@@ -2012,10 +1933,10 @@ async function activarNotificaciones() {
   const perm = await Notification.requestPermission();
   if (perm === 'granted') {
     actualizarBtnNotif('on');
-    mostrarToast('✅ Notificaciones activadas');
-    /* Notificación de bienvenida inmediata */
+    mostrarToast('âœ… Notificaciones activadas');
+    /* NotificaciÃ³n de bienvenida inmediata */
     if (_swReg) {
-      _swReg.showNotification('¡EncaviGO activado!', {
+      _swReg.showNotification('Â¡EncaviGO activado!', {
         body: 'Te avisaremos cuando haya promos cerca de ti.',
         icon: './icon-192.png',
         tag: 'bastion-welcome'
@@ -2041,7 +1962,7 @@ function actualizarBtnNotif(estado) {
   }
 }
 
-/* Disparar notificación local al SW cuando el usuario está cerca */
+/* Disparar notificaciÃ³n local al SW cuando el usuario estÃ¡ cerca */
 function notificarProxima(lat, lng) {
   if (Notification.permission !== 'granted' || !_swReg) return;
   document.querySelectorAll('.promo-card[data-lat]').forEach(card => {
@@ -2063,15 +1984,15 @@ function notificarProxima(lat, lng) {
 }
 
 /* Nota: notificarProxima() se invoca directamente al final de
-   actualizarBadgeMapa(). El "enchufe" anterior redeclaraba la función
-   y por hoisting _origActualizar apuntaba a la nueva versión →
-   recursión infinita (stack overflow) en cada update del GPS. */
+   actualizarBadgeMapa(). El "enchufe" anterior redeclaraba la funciÃ³n
+   y por hoisting _origActualizar apuntaba a la nueva versiÃ³n â†’
+   recursiÃ³n infinita (stack overflow) en cada update del GPS. */
 
 /* =============================================
-   TOAST + INIT BOTÓN DE NOTIFICACIONES
-   (El archivo estaba truncado justo aquí: un comentario
+   TOAST + INIT BOTÃ“N DE NOTIFICACIONES
+   (El archivo estaba truncado justo aquÃ­: un comentario
    sin cerrar dejaba TODO el script con error de sintaxis
-   → nada se ejecutaba: ni clima, ni GPS, ni carrusel.)
+   â†’ nada se ejecutaba: ni clima, ni GPS, ni carrusel.)
 ============================================= */
 function mostrarToast(msg) {
   let t = document.getElementById('bastionToast');
@@ -2090,7 +2011,7 @@ function mostrarToast(msg) {
   t._hide = setTimeout(() => { t.style.opacity = '0'; }, 2600);
 }
 
-/* Init botón notificaciones — estado inicial + click */
+/* Init botÃ³n notificaciones â€” estado inicial + click */
 (function initNotifBtn() {
   const btn = document.getElementById('notifBtn');
   if (!btn) return;
@@ -2100,10 +2021,9 @@ function mostrarToast(msg) {
   btn.addEventListener('click', activarNotificaciones);
 })();
 </script>
-
 <script>
 // ==========================================
-// SCRIPT: INYECCIÓN DE ID DE CHOFER EN WHATSAPP
+// SCRIPT: INYECCIÃ“N DE ID DE CHOFER EN WHATSAPP
 // ==========================================
 (function() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -2123,9 +2043,9 @@ function mostrarToast(msg) {
         let textoOriginal = urlObj.searchParams.get('text') || '';
         
         if (textoOriginal.includes("conductor")) {
-           textoOriginal = "Hola, soy conductor y me gustaría registrarme en EncaviGO. (ID Referencia: " + activeChoferId + ")";
+           textoOriginal = "Hola, soy conductor y me gustarÃ­a registrarme en EncaviGO. (ID Referencia: " + activeChoferId + ")";
         } else if (textoOriginal.includes("anunciarme")) {
-           textoOriginal = "Hola, tengo un negocio y me gustaría anunciarme en EncaviGO. (ID Vehículo: " + activeChoferId + ")";
+           textoOriginal = "Hola, tengo un negocio y me gustarÃ­a anunciarme en EncaviGO. (ID VehÃ­culo: " + activeChoferId + ")";
         }
         
         const nuevaUrl = "https://wa.me/" + numero + "?text=" + encodeURIComponent(textoOriginal);
@@ -2136,5 +2056,4 @@ function mostrarToast(msg) {
 })();
 </script>
 </body>
-
 </html>
