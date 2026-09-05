@@ -1,0 +1,117 @@
+﻿<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Opciones de Diseño - EncaviGO</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800;900&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; padding: 20px; font-family: 'Montserrat', sans-serif; background: #0A1121; color: #F8FAFC; }
+  h1 { font-size: 24px; font-weight: 900; text-align: center; margin-bottom: 40px; }
+  
+  .section-title { font-size: 18px; color: #34D399; margin: 40px 0 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
+  
+  .grid { display: flex; flex-direction: column; gap: 30px; }
+  .card { background: #152033; border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 20px; }
+  .card h3 { margin: 0 0 10px 0; font-size: 18px; }
+  .card p { font-size: 13px; color: #94A3B8; line-height: 1.5; margin-bottom: 20px; }
+  
+  /* ICON STYLES */
+  .icon-showcase { display: flex; gap: 15px; justify-content: center; }
+  
+  /* A: Duotone / Glass */
+  .icon-duotone { width: 60px; height: 60px; border-radius: 16px; background: rgba(37,99,235,0.1); position: relative; display: flex; align-items: center; justify-content: center; }
+  .icon-duotone::before { content: ''; position: absolute; width: 30px; height: 30px; background: #3B82F6; border-radius: 8px; opacity: 0.8; transform: rotate(-10deg); }
+  .icon-duotone::after { content: ''; position: absolute; width: 30px; height: 30px; background: rgba(255,255,255,0.8); backdrop-filter: blur(4px); border-radius: 8px; transform: rotate(10deg); border: 1px solid rgba(255,255,255,0.5); }
+
+  /* B: Neumorphic / 3D */
+  .icon-3d { width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(145deg, #1b2942, #172338); box-shadow: 6px 6px 12px #0f1625, -6px -6px 12px #1f2e4b; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 900; color: #34D399; }
+  
+  /* C: Brutalist / Abstract */
+  .icon-brutal { width: 60px; height: 60px; background: #FFF; border: 3px solid #F97316; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 900; color: #0A1121; transform: skew(-5deg); box-shadow: 4px 4px 0 #F97316; }
+
+  /* LAYOUT STYLES */
+  .layout-showcase { background: #0A1121; padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; gap: 10px; }
+  
+  /* Layout 1: Bento */
+  .bento-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .bento-item { background: #1E293B; border-radius: 16px; height: 80px; display: flex; align-items: flex-end; padding: 10px; font-size: 11px; font-weight: bold; }
+  .bento-item.large { grid-column: span 2; height: 120px; background: linear-gradient(135deg, #10B981, #059669); }
+
+  /* Layout 2: Immersive Swipe */
+  .swipe-card { background: #1E293B; border-radius: 24px; height: 250px; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; padding: 20px; border: 1px solid rgba(255,255,255,0.1); }
+  .swipe-title { font-size: 24px; font-weight: 900; margin: 0; }
+  .swipe-indicator { position: absolute; right: -20px; top: 50%; transform: translateY(-50%); opacity: 0.5; font-size: 30px; letter-spacing: -10px;}
+
+</style>
+</head>
+<body>
+
+<h1>Análisis de Diseño EncaviGO</h1>
+
+<h2 class="section-title">1. Estilos de Íconos (Adiós a lo genérico)</h2>
+<div class="grid">
+  
+  <div class="card">
+    <h3>Opción A: Glass/Duotone (Modern Fintech)</h3>
+    <p>Capas translúcidas de cristal sobre colores sólidos. Se ve sumamente digital, de alta tecnología y muy exclusivo. Es el estándar actual de Apple y apps financieras.</p>
+    <div class="icon-showcase">
+      <div class="icon-duotone"></div>
+      <div class="icon-duotone" style="filter: hue-rotate(150deg);"></div>
+      <div class="icon-duotone" style="filter: hue-rotate(280deg);"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Opción B: Neumorfismo (Efecto 3D / Relieve)</h3>
+    <p>Juega con luces y sombras extremas para parecer botones físicos integrados en la pantalla. Genera un efecto muy lujoso y táctil.</p>
+    <div class="icon-showcase">
+      <div class="icon-3d">1</div>
+      <div class="icon-3d">2</div>
+      <div class="icon-3d">3</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Opción C: Abstracto Brutalista</h3>
+    <p>Letras gigantes, colores contrastantes, asimetría. Se ve agresivo, juvenil, estilo Streetwear o apps disruptivas. Cero aburrido.</p>
+    <div class="icon-showcase">
+      <div class="icon-brutal">C</div>
+      <div class="icon-brutal" style="border-color:#34D399; box-shadow: 4px 4px 0 #34D399;">N</div>
+      <div class="icon-brutal" style="border-color:#3B82F6; box-shadow: 4px 4px 0 #3B82F6;">S</div>
+    </div>
+  </div>
+
+</div>
+
+<h2 class="section-title">2. Estructuras Móviles Novedosas (Layouts)</h2>
+<div class="grid">
+
+  <div class="card">
+    <h3>Layout 1: "Bento Box" (Estilo Dashboard iOS)</h3>
+    <p>Rompe con la monotonía de la "lista hacia abajo". Agrupa la información en cuadros asimétricos. El streaming iría en el cuadro gigante, y Chofer/Negocio en los pequeños.</p>
+    <div class="layout-showcase">
+      <div class="bento-grid">
+        <div class="bento-item large">Streaming Premium</div>
+        <div class="bento-item">Choferes</div>
+        <div class="bento-item">Negocios</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Layout 2: Tarjetas Inmersivas (Estilo TikTok / Tinder)</h3>
+    <p>Adiós a hacer scroll. Cada promoción o servicio ocupa casi toda la pantalla y el usuario "desliza" a la izquierda o derecha para ver la siguiente. Súper adictivo.</p>
+    <div class="layout-showcase">
+      <div class="swipe-card">
+        <div class="swipe-indicator">»»</div>
+        <h3 class="swipe-title">Cuentas Premium</h3>
+        <p style="margin: 5px 0 0; font-size: 14px;">Desliza para ver reclutamiento...</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
