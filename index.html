@@ -5388,6 +5388,38 @@
         padding: 2px 5px; border-radius: 10px; border: 2px solid #0A1121;
         box-shadow: 0 2px 4px rgba(0,0,0,0.5);
     }
+    
+    /* MOCKUP 2: PULL-UP DRAWER */
+    .pullup-drawer {
+        position: fixed; bottom: 0; left: 0; right: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 50%, transparent 100%);
+        height: 100px;
+        display: flex; justify-content: center; align-items: flex-end;
+        padding-bottom: 24px;
+        z-index: 90;
+        pointer-events: none; /* Let background clicks pass through */
+    }
+    .pullup-pill {
+        background: rgba(255,255,255,0.15);
+        backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+        border: 1px solid rgba(255,255,255,0.25);
+        padding: 10px 24px;
+        border-radius: 30px;
+        color: #FFF; font-size: 13px; font-weight: 800;
+        display: flex; align-items: center; gap: 8px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+        pointer-events: auto; /* Re-enable clicks */
+        cursor: pointer;
+        animation: float-up 3s ease-in-out infinite;
+    }
+    @keyframes float-up {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-8px); }
+    }
+    .pullup-badge {
+        background: #F97316; color: #FFF;
+        font-size: 11px; padding: 2px 6px; border-radius: 10px;
+    }
     </style>
 </head>
 <body>
@@ -8058,7 +8090,6 @@ function mostrarToast(msg) {
 <!-- NOTIFICACIÓN TIPO DYNAMIC ISLAND -->
 <!-- BOTTOM SHEET (LA "VENTANA NUEVA") -->
 <!-- TIKTOK STYLE SIDE BUTTON -->
-
 <div class="sheet-backdrop" id="sheetBackdrop" onclick="document.getElementById('nearbySheet').classList.remove('active'); this.classList.remove('active');"></div>
 <div class="bottom-sheet" id="nearbySheet">
 <div class="sheet-header">
@@ -8085,23 +8116,13 @@ function mostrarToast(msg) {
 </div>
 </div>
 
-<nav class="bottom-nav">
-<!-- Tab 1: Inicio -->
-<div class="nav-item active" onclick="document.getElementById('nearbySheet').classList.remove('active'); document.getElementById('sheetBackdrop').classList.remove('active');">
-<svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-<span>Feed</span>
+
+<!-- Opción 2: PULL-UP DRAWER -->
+<div class="pullup-drawer">
+<div class="pullup-pill" onclick="document.getElementById('nearbySheet').classList.add('active'); document.getElementById('sheetBackdrop').classList.add('active');">
+<svg fill="none" height="18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewbox="0 0 24 24" width="18"><path d="M12 19V5M5 12l7-7 7 7"></path></svg>
+<span class="pullup-badge">3</span> Promos cerca de ti
+        </div>
 </div>
-<!-- Tab 2: Cercanos -->
-<div class="nav-item" onclick="document.getElementById('nearbySheet').classList.add('active'); document.getElementById('sheetBackdrop').classList.add('active');">
-<div class="nav-badge">3</div>
-<svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-<span>Cercanos</span>
-</div>
-<!-- Tab 3: Menú/Más -->
-<div class="nav-item">
-<svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24"><line x1="3" x2="21" y1="12" y2="12"></line><line x1="3" x2="21" y1="6" y2="6"></line><line x1="3" x2="21" y1="18" y2="18"></line></svg>
-<span>Menú</span>
-</div>
-</nav>
 </body>
 </html>
