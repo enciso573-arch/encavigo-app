@@ -5500,8 +5500,7 @@
 <!-- CANALES TEMÃTICOS ========================== -->
 <!-- FEED ======================================= -->
 <main class="immersive-feed">
-
-    <!-- 
+<!-- 
     ========================================================================
     🛑 ÁREA DE BASE DE DATOS (ZONA PARA AÑADIR/QUITAR PROMOCIONES) 🛑
     ========================================================================
@@ -5512,7 +5511,6 @@
     4. Cambia los textos y el número de WhatsApp.
     ========================================================================
     -->
-
 <article class="immersive-card">
 <div class="card-bg" style="background-image: url('https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?auto=format&amp;fit=crop&amp;q=80&amp;w=600');"></div>
 <div class="card-overlay"></div>
@@ -5532,9 +5530,7 @@
 <span style="background: #00005E;">DISNEY+</span>
 <span style="background: #5B0BB5;">MAX</span>
 </div>
-<a class="swipe-btn" href="https://wa.me/523221592596?text=Hola,%20quiero%20comprar%20una%20cuenta%20de%20streaming." style="--btn-bg: #E50914; --btn-glow: rgba(229,9,20,0.4);">
-                Comprar ahora
-            </a>
+<a class="swipe-btn" href="https://wa.me/523221592596?text=Hola,%20quiero%20comprar%20una%20cuenta%20de%20streaming." style="--btn-bg: #E50914; --btn-glow: rgba(229,9,20,0.4);">Activar código</a>
 </div>
 </article>
 <article class="immersive-card">
@@ -5546,10 +5542,7 @@
             </div>
 <h2 class="card-headline">Cena al Carbón<br/>con 2x1</h2>
 <p class="card-body">Muestra esta pantalla en <strong>Asador El Pariente</strong> y llévate tu segunda hamburguesa a la parrilla completamente gratis hoy.</p>
-<a class="swipe-btn" href="javascript:void(0)" style="--btn-bg: #F59E0B; --btn-glow: rgba(245,158,11,0.4); color: #000;">
-<svg fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="20"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                Ver ruta al local
-            </a>
+<a class="swipe-btn" href="javascript:void(0)" style="--btn-bg: #F59E0B; --btn-glow: rgba(245,158,11,0.4); color: #000;"><svg fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="20"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>Activar código</a>
 </div>
 </article>
 <article class="immersive-card">
@@ -5561,9 +5554,7 @@
             </div>
 <h2 class="card-headline">Capta clientes<br/>en movimiento.</h2>
 <p class="card-body">Toma una foto profesional de tu local (¡nosotros te ayudamos!) y publícala aquí para que la vean miles de turistas en Puerto Vallarta.</p>
-<a class="swipe-btn" href="https://wa.me/523221592596?text=Hola,%20quiero%20informaci%C3%B3n%20para%20afiliarme%20a%20EncaviGO." style="--btn-bg: #2563EB; --btn-glow: rgba(37,99,235,0.4);">
-                Subir mi negocio hoy
-            </a>
+<a class="swipe-btn" href="https://wa.me/523221592596?text=Hola,%20quiero%20informaci%C3%B3n%20para%20afiliarme%20a%20EncaviGO." style="--btn-bg: #2563EB; --btn-glow: rgba(37,99,235,0.4);">Activar código</a>
 </div>
 </article>
 </main>
@@ -5579,139 +5570,6 @@
 </button>
 </div>
 
-<script>
-
-
-
-// ==========================================
-
-
-
-// SCRIPT: INYECCIÃ“N DE ID DE CHOFER EN WHATSAPP
-
-
-
-// ==========================================
-
-
-
-(function() {
-
-
-
-  const urlParams = new URLSearchParams(window.location.search);
-
-
-
-  const choferId = urlParams.get('chofer');
-
-
-
-  if (choferId) {
-
-
-
-    localStorage.setItem('encavigo_chofer', choferId);
-
-
-
-  }
-
-
-
-  const activeChoferId = choferId || localStorage.getItem('encavigo_chofer') || 'NO_IDENTIFICADO';
-
-
-
-  
-
-
-
-  document.body.addEventListener('click', function(e) {
-
-
-
-    const btn = e.target.closest('a.btn-cta');
-
-
-
-    if (btn) {
-
-
-
-      const originalHref = btn.getAttribute('href');
-
-
-
-      if (originalHref && originalHref.includes('wa.me')) {
-
-
-
-        const urlObj = new URL(originalHref);
-
-
-
-        const numero = urlObj.pathname.replace('/', '');
-
-
-
-        let textoOriginal = urlObj.searchParams.get('text') || '';
-
-
-
-        
-
-
-
-        if (textoOriginal.includes("conductor")) {
-
-
-
-           textoOriginal = "Hola, soy conductor y me gustarÃ­a registrarme en EncaviGO. (ID Referencia: " + activeChoferId + ")";
-
-
-
-        } else if (textoOriginal.includes("anunciarme")) {
-
-
-
-           textoOriginal = "Hola, tengo un negocio y me gustarÃ­a anunciarme en EncaviGO. (ID Vehículo: " + activeChoferId + ")";
-
-
-
-        }
-
-
-
-        
-
-
-
-        const nuevaUrl = "https://wa.me/" + numero + "•text=" + encodeURIComponent(textoOriginal);
-
-
-
-        btn.setAttribute('href', nuevaUrl);
-
-
-
-      }
-
-
-
-    }
-
-
-
-  });
-
-
-
-})();
-
-
-
-</script>
 <!-- NOTIFICACIÓN TIPO DYNAMIC ISLAND -->
 <!-- BOTTOM SHEET (LA "VENTANA NUEVA") -->
 <!-- TIKTOK STYLE SIDE BUTTON -->
@@ -5748,6 +5606,7 @@
         </div>
 </div>
 
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     // ------------------------------------------------------------
@@ -5756,21 +5615,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const SESSION_HOURS = 24;
     const SESSION_KEY = 'encavigo_session';
     
-    // Obtener parámetros de la URL (Ej. ?chofer=001)
+    // Obtener parámetros de la URL
     const urlParams = new URLSearchParams(window.location.search);
     const paramChofer = urlParams.get('chofer');
     
-    let session = JSON.parse(localStorage.getItem(SESSION_KEY));
+    let session = null;
+    try {
+        session = JSON.parse(localStorage.getItem(SESSION_KEY));
+    } catch(e) {}
+    
     const now = Date.now();
     
-    // Si la URL trae un parámetro ?chofer, siempre reseteamos la sesión 
-    // (significa que es un nuevo escaneo fresco en el carro)
+    // Resetear sesión si hay nuevo parámetro chofer en URL
     if (paramChofer) {
         session = null; 
     }
     
     if (!session) {
-        // Nueva sesión
+        // Generar código único aleatorio
         const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
         let uniqueCode = 'ENC-';
         for(let i=0; i<4; i++) uniqueCode += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -5782,13 +5644,13 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         localStorage.setItem(SESSION_KEY, JSON.stringify(session));
         
-        // Limpiamos la URL visualmente para que no se vea el parámetro
-        window.history.replaceState({}, document.title, window.location.pathname);
+        // Limpiar URL
+        if(paramChofer) {
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
     } else {
-        // Verificar si caducó
         const diffHours = (now - session.timestamp) / (1000 * 60 * 60);
         if (diffHours > SESSION_HOURS) {
-            // BLOQUEAR APLICACIÓN
             document.body.innerHTML = 
                 <div style="height: 100dvh; width: 100vw; background: #000; color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; font-family: sans-serif;">
                     <div style="font-size: 50px; margin-bottom: 20px;">🔒</div>
@@ -5797,23 +5659,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             ;
             localStorage.removeItem(SESSION_KEY);
-            return; // Detener ejecución
+            return;
         }
     }
     
-    // Mostrar el ID del chofer en la interfaz (opcional, en el escudo)
-    const driverLabel = document.getElementById('driverNameLabel');
-    if (driverLabel && session.chofer !== 'orgánico') {
-        driverLabel.innerHTML = 'Vehículo ID: ' + session.chofer;
-    }
-
     // ------------------------------------------------------------
-    // 2. AÑADIR EL CÓDIGO A LOS BOTONES DE WHATSAPP
+    // 2. AÑADIR EL CÓDIGO A WHATSAPP
     // ------------------------------------------------------------
     const waLinks = document.querySelectorAll('a[href*="wa.me"]');
     waLinks.forEach(link => {
         let originalHref = link.getAttribute('href');
-        // Solo añadirlo una vez
         if (!originalHref.includes('código')) {
             const addText =  Mi código de promo es:  (Unidad: );
             link.setAttribute('href', originalHref + encodeURIComponent(addText));
@@ -5823,27 +5678,23 @@ document.addEventListener('DOMContentLoaded', () => {
     // ------------------------------------------------------------
     // 3. RADAR GPS INTELIGENTE
     // ------------------------------------------------------------
-    // Añadiremos coordenadas de ejemplo a las tarjetas de negocios para poder medirlas.
     const cards = document.querySelectorAll('.immersive-card');
     
-    // Asignamos coords ficticias a la tarjeta del Asador para pruebas (Ej. Zona Romántica)
+    // Asignamos coords a la segunda tarjeta (Restaurante) para que haya una de prueba
     if(cards.length > 1) {
         cards[1].setAttribute('data-lat', '20.6025');
         cards[1].setAttribute('data-lng', '-105.2325');
-        cards[1].setAttribute('data-title', 'Asador El Pariente');
-        cards[1].setAttribute('data-desc', 'Cena al carbón con 2x1 en hamburguesas.');
+        cards[1].setAttribute('data-title', 'Cena al Carbón 2x1');
+        cards[1].setAttribute('data-desc', 'Muestra esta pantalla en Asador El Pariente');
         cards[1].setAttribute('data-img', 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=300&q=80');
     }
     
     function haversine(lat1, lon1, lat2, lon2) {
-        const R = 6371; // Radio de la Tierra en km
+        const R = 6371; 
         const dLat = (lat2 - lat1) * Math.PI / 180;
         const dLon = (lon2 - lon1) * Math.PI / 180;
-        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-                  Math.sin(dLon/2) * Math.sin(dLon/2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        return R * c; // Distancia en km
+        const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
+        return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))); 
     }
 
     const drawerBadge = document.querySelector('.pullup-badge');
@@ -5851,14 +5702,12 @@ document.addEventListener('DOMContentLoaded', () => {
     
     function actualizarRadar(userLat, userLng) {
         let cercanas = [];
-        
-        cards.forEach((card, index) => {
+        cards.forEach(card => {
             const cLat = card.getAttribute('data-lat');
             const cLng = card.getAttribute('data-lng');
             if (cLat && cLng) {
                 const dist = haversine(userLat, userLng, parseFloat(cLat), parseFloat(cLng));
-                // Si está a menos de 1km (1000 metros)
-                if (dist <= 1.0) {
+                if (dist <= 2.0) { // Ampliado a 2km para facilidad de prueba
                     cercanas.push({
                         title: card.getAttribute('data-title'),
                         desc: card.getAttribute('data-desc'),
@@ -5869,41 +5718,30 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
         
-        // Actualizar UI del Cajón Flotante
-        if (drawerBadge) {
-            drawerBadge.innerText = cercanas.length;
-        }
+        if (drawerBadge) drawerBadge.innerText = cercanas.length;
         
-        // Actualizar contenido de la Ventana (Bottom Sheet)
         if (sheetContent && cercanas.length > 0) {
             let html = '<p style="font-size: 12px; color: #34D399; text-align: center; margin-top:0;">El conductor se acerca a estos lugares:</p>';
             cercanas.forEach(local => {
-                const mins = Math.max(1, Math.round(local.distKm * 5)); // Estimado 5 mins por km
-                html += 
-                <div class="mini-card">
-                    <div class="mini-card-img" style="background-image: url('');"></div>
-                    <div class="mini-card-info">
-                        <h4 class="mini-title"></h4>
-                        <p class="mini-desc"> A  mins.</p>
-                    </div>
-                </div>;
+                const mins = Math.max(1, Math.round(local.distKm * 5));
+                html += <div class="mini-card"><div class="mini-card-img" style="background-image: url('');"></div><div class="mini-card-info"><h4 class="mini-title"></h4><p class="mini-desc"> A  mins.</p></div></div>;
             });
             sheetContent.innerHTML = html;
         } else if (sheetContent) {
-            sheetContent.innerHTML = '<p style="text-align:center; color:#94A3B8; margin-top:20px;">No hay promociones extremadamente cerca de ti en este momento. Sigue en tu viaje para descubrir más.</p>';
+            sheetContent.innerHTML = '<p style="text-align:center; color:#94A3B8; margin-top:20px;">No hay promociones extremadamente cerca de ti en este momento.</p>';
         }
     }
 
-    // Simular GPS (ya que estamos en un teléfono real, pedimos permiso real)
-    if ('geolocation' in navigator) {
-        navigator.geolocation.watchPosition((position) => {
-            actualizarRadar(position.coords.latitude, position.coords.longitude);
-        }, (error) => {
-            console.log("GPS Denegado o Error:", error);
-            // Mostrar 0 si denegó el GPS
-            if(drawerBadge) drawerBadge.innerText = "0";
-        }, { enableHighAccuracy: true });
-    }
+    // Pedir permiso de GPS al tocar cualquier parte de la pantalla si no se ha pedido (Mejor UX para móviles que bloquean peticiones automáticas)
+    let gpsRequested = false;
+    document.body.addEventListener('click', () => {
+        if(!gpsRequested && 'geolocation' in navigator) {
+            gpsRequested = true;
+            navigator.geolocation.watchPosition((position) => {
+                actualizarRadar(position.coords.latitude, position.coords.longitude);
+            }, (err) => console.log(err), { enableHighAccuracy: true });
+        }
+    }, {once: true});
 });
 </script>
 </body>
