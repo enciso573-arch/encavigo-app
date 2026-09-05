@@ -5569,7 +5569,6 @@
 <svg viewbox="0 0 24 24"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"></path></svg>
 </button>
 </div>
-
 <!-- NOTIFICACIÓN TIPO DYNAMIC ISLAND -->
 <!-- BOTTOM SHEET (LA "VENTANA NUEVA") -->
 <!-- TIKTOK STYLE SIDE BUTTON -->
@@ -5606,13 +5605,64 @@
         </div>
 </div>
 
-
+<!-- FIREBASE SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBS87d1Dv9nx6Yg_dqq-E3x9GI4gpSA7ps",
+    authDomain: "encavi-go.firebaseapp.com",
+    projectId: "encavi-go",
+    storageBucket: "encavi-go.firebasestorage.app",
+    messagingSenderId: "1073579842188",
+    appId: "1:1073579842188:web:0b415778424a7bce5639a9"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+</script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     // ------------------------------------------------------------
     // 1. SISTEMA DE SESIÓN (24 HORAS) Y CÓDIGO ÚNICO
     // ------------------------------------------------------------
     const SESSION_HOURS = 24;
+
+    // REGISTRAR ESCANEO EN FIREBASE
+    try {
+        const docRef = db.collection('stats').doc('global');
+        docRef.get().then((doc) => {
+            if (doc.exists) {
+                docRef.update({ scans: firebase.firestore.FieldValue.increment(1) });
+            } else {
+                docRef.set({ scans: 1, clicks: 0 });
+            }
+        });
+        
+        // Registrar en chofer específico
+        if (session && session.chofer !== 'orgánico') {
+            const chofRef = db.collection('choferes').doc(session.chofer);
+            chofRef.get().then(doc => {
+                if (doc.exists) {
+                    chofRef.update({ scans: firebase.firestore.FieldValue.increment(1) });
+                } else {
+                    chofRef.set({ scans: 1, clicks: 0, lastActive: new Date() });
+                }
+            });
+        }
+    } catch(e) { console.error("Firebase no configurado aún", e); }
+
+    // REGISTRAR CLIC AL ACTIVAR CÓDIGO
+    document.querySelectorAll('a.swipe-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            try {
+                db.collection('stats').doc('global').update({ clicks: firebase.firestore.FieldValue.increment(1) });
+                if (session && session.chofer !== 'orgánico') {
+                    db.collection('choferes').doc(session.chofer).update({ clicks: firebase.firestore.FieldValue.increment(1) });
+                }
+            } catch(e) {}
+        });
+    });
+    
     const SESSION_KEY = 'encavigo_session';
     
     // Obtener parámetros de la URL
