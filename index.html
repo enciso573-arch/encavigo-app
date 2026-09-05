@@ -5133,7 +5133,7 @@
         z-index: 2;
     }
     
-    .card-ui {
+    .card-ui { padding-bottom: 80px !important; 
         position: relative;
         z-index: 3;
         padding: 24px;
@@ -5359,6 +5359,35 @@
     
     /* Overwrite old radar if any CSS was left */
     .radar-notif { display: none !important; }
+    
+    /* BOTTOM NAVIGATION BAR */
+    .bottom-nav {
+        position: fixed; bottom: 0; left: 0; right: 0;
+        height: 65px;
+        background: rgba(10, 17, 33, 0.9);
+        backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+        border-top: 1px solid rgba(255,255,255,0.08);
+        display: flex; justify-content: space-around; align-items: center;
+        z-index: 90;
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+    .nav-item {
+        flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+        gap: 4px; color: #64748B; font-size: 10px; font-weight: 800;
+        height: 100%; cursor: pointer; position: relative;
+        text-transform: uppercase; letter-spacing: 0.5px;
+        transition: color 0.2s;
+    }
+    .nav-item.active { color: #F97316; }
+    .nav-item svg { stroke: currentColor; transition: transform 0.2s; }
+    .nav-item.active svg { transform: scale(1.1); stroke-width: 2.5; }
+    
+    .nav-badge {
+        position: absolute; top: 10px; right: calc(50% - 20px);
+        background: #E50914; color: #FFF; font-size: 9px; font-weight: 900;
+        padding: 2px 5px; border-radius: 10px; border: 2px solid #0A1121;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
     </style>
 </head>
 <body>
@@ -8027,22 +8056,9 @@ function mostrarToast(msg) {
 
 </script>
 <!-- NOTIFICACIÓN TIPO DYNAMIC ISLAND -->
-
 <!-- BOTTOM SHEET (LA "VENTANA NUEVA") -->
-
 <!-- TIKTOK STYLE SIDE BUTTON -->
-<div class="side-actions">
-<div class="action-btn" onclick="document.getElementById('nearbySheet').classList.add('active'); document.getElementById('sheetBackdrop').classList.add('active');">
-<div class="action-icon">
-<svg fill="none" height="22" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewbox="0 0 24 24" width="22">
-<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-<circle cx="12" cy="10" r="3"></circle>
-</svg>
-<div class="action-badge">3</div>
-</div>
-<span class="action-label">Cerca</span>
-</div>
-</div>
+
 <div class="sheet-backdrop" id="sheetBackdrop" onclick="document.getElementById('nearbySheet').classList.remove('active'); this.classList.remove('active');"></div>
 <div class="bottom-sheet" id="nearbySheet">
 <div class="sheet-header">
@@ -8068,5 +8084,24 @@ function mostrarToast(msg) {
 </div>
 </div>
 </div>
+
+<nav class="bottom-nav">
+<!-- Tab 1: Inicio -->
+<div class="nav-item active" onclick="document.getElementById('nearbySheet').classList.remove('active'); document.getElementById('sheetBackdrop').classList.remove('active');">
+<svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+<span>Feed</span>
+</div>
+<!-- Tab 2: Cercanos -->
+<div class="nav-item" onclick="document.getElementById('nearbySheet').classList.add('active'); document.getElementById('sheetBackdrop').classList.add('active');">
+<div class="nav-badge">3</div>
+<svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+<span>Cercanos</span>
+</div>
+<!-- Tab 3: Menú/Más -->
+<div class="nav-item">
+<svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24"><line x1="3" x2="21" y1="12" y2="12"></line><line x1="3" x2="21" y1="6" y2="6"></line><line x1="3" x2="21" y1="18" y2="18"></line></svg>
+<span>Menú</span>
+</div>
+</nav>
 </body>
 </html>
