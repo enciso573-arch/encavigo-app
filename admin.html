@@ -205,6 +205,7 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 </script>
+
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const valScans = document.getElementById('val-scans');
@@ -238,30 +239,30 @@
                 snapshot.forEach(doc => {
                     const camp = doc.data();
                     const tr = document.createElement('tr');
-                    tr.innerHTML = 
+                    tr.innerHTML = `
                       <td>
                         <div class="business-cell">
-                          <div class="biz-avatar" style="background-image: url('');"></div>
+                          <div class="biz-avatar" style="background-image: url('${camp.img || ''}');"></div>
                           <div class="biz-info">
-                            <span class="biz-name"></span>
-                            <span class="biz-type"></span>
+                            <span class="biz-name">${camp.title || 'Sin Título'}</span>
+                            <span class="biz-type">${camp.badge || 'Anuncio'}</span>
                           </div>
                         </div>
                       </td>
                       <td style="width: 25%;">
-                        <div style="font-weight: 500; color: #111827; margin-bottom: 4px;"> clics</div>
-                        <div class="performance-bar"><div class="performance-fill" style="width: %;"></div></div>
+                        <div style="font-weight: 500; color: #111827; margin-bottom: 4px;">${camp.clicks || 0} clics</div>
+                        <div class="performance-bar"><div class="performance-fill" style="width: ${Math.min((camp.clicks||0), 100)}%;"></div></div>
                       </td>
                       <td>Activa</td>
                       <td><span class="badge-active">Online</span></td>
                       <td>
-                        <button class="action-icon" onclick="deleteCampaign('')" title="Eliminar">🗑️</button>
+                        <button class="action-icon" onclick="deleteCampaign('${doc.id}')" title="Eliminar">🗑️</button>
                       </td>
-                    ;
+                    `;
                     tbody.appendChild(tr);
                 });
             }
-        });
+        }, err => console.error(err));
     });
 
     function closeModal() {
@@ -351,4 +352,4 @@
 </div>
 </body>
 </html>
-<!-- 1788643621.4208372 --><!-- v4 1788644835.507004 -->
+<!-- 1788643621.4208372 --><!-- v4 1788644835.507004 --><!-- v6 1788645702.3345118 -->
