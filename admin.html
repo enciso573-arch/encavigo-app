@@ -112,7 +112,7 @@
 <svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="16"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
       Analíticas
     </div>
-<div class="nav-item" id="nav-reporte" onclick="generarReportePDF()"><svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="16"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" x2="8" y1="13" y2="13"></line><line x1="16" x2="8" y1="17" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> Reporte PDF (Clientes)</div>
+<div class="nav-item" id="nav-reportes" onclick="switchTab('reportes')"><svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="16"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" x2="8" y1="13" y2="13"></line><line x1="16" x2="8" y1="17" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> Reportes a Clientes</div>
 </div>
 </div>
 <div class="main"><div id="view-dashboard">
@@ -242,6 +242,34 @@
             </p>
 </div>
 </div>
+
+<div id="view-reportes" style="display: none;">
+<div class="top-bar">
+<h1 class="page-title">Reportes para Clientes</h1>
+<button class="btn-primary" onclick="generarReportePDF()">
+<svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="16"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" x2="12" y1="15" y2="3"></line></svg>
+            Exportar PDF
+        </button>
+</div>
+<div class="data-section">
+<div class="data-header">
+<h3>Vista Previa del Reporte de Impacto</h3>
+</div>
+<table>
+<thead>
+<tr>
+<th>Nombre de la Campaña</th>
+<th>Tipo de Oferta</th>
+<th>Estado</th>
+<th>Clics / Impactos Generados</th>
+</tr>
+</thead>
+<tbody id="reportes-tbody">
+<!-- Dynamic -->
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <!-- FIREBASE SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -319,6 +347,7 @@
         db.collection('campaigns').onSnapshot(snapshot => {
             if(tbody) {
                 tbody.innerHTML = '';
+                if(document.getElementById('reportes-tbody')) document.getElementById('reportes-tbody').innerHTML = '';
                 snapshot.forEach(doc => {
                     const camp = doc.data();
                     const tr = document.createElement('tr');
@@ -343,6 +372,16 @@
                       </td>
                     `;
                     tbody.appendChild(tr);
+
+                    const trRep = document.createElement('tr');
+                    trRep.innerHTML = `
+                      <td><strong style="color: #111827;">${camp.title || 'Sin Título'}</strong></td>
+                      <td>${camp.badge || '-'}</td>
+                      <td>${camp.active ? '<span style="color: #10B981;">● Activo</span>' : '<span style="color: #EF4444;">● Pausado</span>'}</td>
+                      <td style="color: #F97316; font-weight: bold;">+${camp.clicks || 0} interacciones</td>
+                    `;
+                    if(document.getElementById('reportes-tbody')) document.getElementById('reportes-tbody').appendChild(trRep);
+
                 });
             }
         }, err => console.error(err));
@@ -430,6 +469,8 @@
         
         const vAna = document.getElementById('view-analiticas');
         if(vAna) vAna.style.display = (tab === 'analiticas') ? 'flex' : 'none';
+        const vRep = document.getElementById('view-reportes');
+        if(vRep) vRep.style.display = (tab === 'reportes') ? 'block' : 'none';
     }
 
 
@@ -509,23 +550,23 @@
                 <script>
                     setTimeout(() => window.print(), 1000);
                 </script>
-            </body>
-            </html>
+</body>
+</html>
             ;
             win.document.write(html);
             win.document.close();
-        }).catch(err => alert("Error al generar Reporte: " + err));
+        }).catch(err =&gt; alert("Error al generar Reporte: " + err));
     }
 
     function descargarExcel_OLD() {
-        db.collection('campaigns').get().then(snapshot => {
+        db.collection('campaigns').get().then(snapshot =&gt; {
             let csvContent = "data:text/csv;charset=utf-8,";
             // Header
             csvContent += "Nombre del Negocio,Etiqueta,Clics Generados,Estado,Fecha de Reporte\n";
             
             const hoy = new Date().toLocaleDateString();
             
-            snapshot.forEach(doc => {
+            snapshot.forEach(doc =&gt; {
                 const c = doc.data();
                 const nombre = (c.title || 'Sin Titulo').replace(/,/g, ''); // Evitar comas en CSV
                 const etiqueta = (c.badge || '').replace(/,/g, '');
@@ -542,9 +583,9 @@
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-        }).catch(err => alert("Error al generar Excel: " + err));
+        }).catch(err =&gt; alert("Error al generar Excel: " + err));
     }
-</script>
+
 <div class="modal-overlay" id="addModal">
 <div class="modal">
 <h2>Nuevo Negocio / Campaña</h2>
@@ -586,6 +627,6 @@
 </div>
 </div>
 </div>
-</body>
-</html>
-<!-- 1788643621.4208372 --><!-- v4 1788644835.507004 --><!-- v6 1788645702.3345118 --><!-- v7 1788657285.6522698 --><!-- v8 1788658146.5265121 --><!-- v10 1788658633.7332523 --><!-- v11 1788658746.0280507 --><!-- v12 1788658954.1285067 --><!-- v13 1788659375.369281 --><!-- v14 1788659490.9794564 --><!-- v15 1788659598.9648716 --><!-- v16 1788659866.331883 --><!-- v17 1788659926.5760808 -->
+
+
+<!-- 1788643621.4208372 --><!-- v4 1788644835.507004 --><!-- v6 1788645702.3345118 --><!-- v7 1788657285.6522698 --><!-- v8 1788658146.5265121 --><!-- v10 1788658633.7332523 --><!-- v11 1788658746.0280507 --><!-- v12 1788658954.1285067 --><!-- v13 1788659375.369281 --><!-- v14 1788659490.9794564 --><!-- v15 1788659598.9648716 --><!-- v16 1788659866.331883 --><!-- v17 1788659926.5760808 --><!-- v18 1788660009.04101 -->
