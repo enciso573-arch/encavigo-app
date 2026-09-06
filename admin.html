@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Admin Dashboard - EncaviGO</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
   * { box-sizing: border-box; }
   body { font-family: 'Inter', sans-serif; background: #F3F4F6; color: #111827; margin: 0; display: flex; height: 100vh; overflow: hidden; -webkit-font-smoothing: antialiased; }
@@ -159,7 +159,7 @@
 <tr>
 <td>
 <div class="business-cell">
-<div class="biz-avatar" style="background-image: url('https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?auto=format&amp;fit=crop&amp;w=100&amp;q=80');"></div>
+<div class="biz-avatar" style="background-image: url('https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?auto=format&fit=crop&w=100&q=80');"></div>
 <div class="biz-info">
 <span class="biz-name">Cuentas Premium Netflix</span>
 <span class="biz-type">Streaming / Digital</span>
@@ -179,7 +179,7 @@
 <tr>
 <td>
 <div class="business-cell">
-<div class="biz-avatar" style="background-image: url('https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&amp;fit=crop&amp;w=100&amp;q=80');"></div>
+<div class="biz-avatar" style="background-image: url('https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=100&q=80');"></div>
 <div class="biz-info">
 <span class="biz-name">Asador El Pariente</span>
 <span class="biz-type">Restaurante / Comida</span>
@@ -550,23 +550,23 @@
                 <script>
                     setTimeout(() => window.print(), 1000);
                 </script>
-</body>
-</html>
+            </body>
+            </html>
             ;
             win.document.write(html);
             win.document.close();
-        }).catch(err =&gt; alert("Error al generar Reporte: " + err));
+        }).catch(err => alert("Error al generar Reporte: " + err));
     }
 
     function descargarExcel_OLD() {
-        db.collection('campaigns').get().then(snapshot =&gt; {
+        db.collection('campaigns').get().then(snapshot => {
             let csvContent = "data:text/csv;charset=utf-8,";
             // Header
             csvContent += "Nombre del Negocio,Etiqueta,Clics Generados,Estado,Fecha de Reporte\n";
             
             const hoy = new Date().toLocaleDateString();
             
-            snapshot.forEach(doc =&gt; {
+            snapshot.forEach(doc => {
                 const c = doc.data();
                 const nombre = (c.title || 'Sin Titulo').replace(/,/g, ''); // Evitar comas en CSV
                 const etiqueta = (c.badge || '').replace(/,/g, '');
@@ -583,7 +583,7 @@
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-        }).catch(err =&gt; alert("Error al generar Excel: " + err));
+        }).catch(err => alert("Error al generar Excel: " + err));
     }
 
 <div class="modal-overlay" id="addModal">
@@ -630,3 +630,5 @@
 
 
 <!-- 1788643621.4208372 --><!-- v4 1788644835.507004 --><!-- v6 1788645702.3345118 --><!-- v7 1788657285.6522698 --><!-- v8 1788658146.5265121 --><!-- v10 1788658633.7332523 --><!-- v11 1788658746.0280507 --><!-- v12 1788658954.1285067 --><!-- v13 1788659375.369281 --><!-- v14 1788659490.9794564 --><!-- v15 1788659598.9648716 --><!-- v16 1788659866.331883 --><!-- v17 1788659926.5760808 --><!-- v18 1788660009.04101 -->
+</body>
+</html><!-- v19 1788660205.61142 -->
