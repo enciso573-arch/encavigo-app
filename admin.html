@@ -475,10 +475,11 @@
 
 
     
+    
     function generarReportePDF() {
         db.collection('campaigns').get().then(snapshot => {
             let win = window.open('', '_blank');
-            let html = 
+            let pdfHtml = `
             <html>
             <head>
                 <title>Reporte EncaviGO</title>
@@ -503,7 +504,7 @@
                 <div class="report-container">
                     <div class="header">
                         <h1>EncaviGO Analytics</h1>
-                        <p>Reporte de Rendimiento<br>Fecha: </p>
+                        <p>Reporte de Rendimiento<br>Fecha: ${new Date().toLocaleDateString()}</p>
                     </div>
                     <p style="margin-bottom: 30px; line-height: 1.6;">A continuación se detalla el impacto directo y las activaciones generadas por la red de vehículos afiliados a EncaviGO durante el periodo activo.</p>
                     <table>
@@ -516,30 +517,30 @@
                             </tr>
                         </thead>
                         <tbody>
-            ;
+            `;
             
             let totalClics = 0;
             snapshot.forEach(doc => {
                 const c = doc.data();
                 const clics = c.clicks || 0;
                 totalClics += clics;
-                html += 
+                pdfHtml += `
                             <tr>
-                                <td style="font-weight: 600; color: #111827;"></td>
-                                <td></td>
-                                <td></td>
-                                <td class="highlight">+ interacciones</td>
+                                <td style="font-weight: 600; color: #111827;">${c.title || 'Sin Titulo'}</td>
+                                <td>${c.badge || '-'}</td>
+                                <td>${c.active ? '<span style="color: #10B981;">● Activo</span>' : '<span style="color: #EF4444;">● Pausado</span>'}</td>
+                                <td class="highlight">+${clics} interacciones</td>
                             </tr>
-                ;
+                `;
             });
             
-            html += 
+            pdfHtml += `
                         </tbody>
                     </table>
                     
                     <div style="margin-top: 30px; background: #F9FAFB; padding: 20px; border-radius: 8px; text-align: right;">
                         <span style="font-size: 14px; color: #6B7280; margin-right: 15px;">Total de Impactos Globales:</span>
-                        <span style="font-size: 24px; font-weight: 800; color: #F97316;"></span>
+                        <span style="font-size: 24px; font-weight: 800; color: #F97316;">${totalClics}</span>
                     </div>
                     
                     <div class="footer">
@@ -552,28 +553,12 @@
                 </script>
             </body>
             </html>
-            ;
-            win.document.write(html);
+            `;
+            win.document.write(pdfHtml);
             win.document.close();
         }).catch(err => alert("Error al generar Reporte: " + err));
     }
-
-    function descargarExcel_OLD() {
-        db.collection('campaigns').get().then(snapshot => {
-            let csvContent = "data:text/csv;charset=utf-8,";
-            // Header
-            csvContent += "Nombre del Negocio,Etiqueta,Clics Generados,Estado,Fecha de Reporte\n";
-            
-            const hoy = new Date().toLocaleDateString();
-            
-            snapshot.forEach(doc => {
-                const c = doc.data();
-                const nombre = (c.title || 'Sin Titulo').replace(/,/g, ''); // Evitar comas en CSV
-                const etiqueta = (c.badge || '').replace(/,/g, '');
-                const clics = c.clicks || 0;
-                const estado = c.active ? 'Activo' : 'Pausado';
-                
-                csvContent += `${nombre},${etiqueta},${clics},${estado},${hoy}\n`;
+,${etiqueta},${clics},${estado},${hoy}\n`;
             });
             
             const encodedUri = encodeURI(csvContent);
@@ -631,4 +616,4 @@
 
 <!-- 1788643621.4208372 --><!-- v4 1788644835.507004 --><!-- v6 1788645702.3345118 --><!-- v7 1788657285.6522698 --><!-- v8 1788658146.5265121 --><!-- v10 1788658633.7332523 --><!-- v11 1788658746.0280507 --><!-- v12 1788658954.1285067 --><!-- v13 1788659375.369281 --><!-- v14 1788659490.9794564 --><!-- v15 1788659598.9648716 --><!-- v16 1788659866.331883 --><!-- v17 1788659926.5760808 --><!-- v18 1788660009.04101 -->
 </body>
-</html><!-- v19 1788660205.61142 -->
+</html><!-- v19 1788660205.61142 --><!-- v20 1788660339.5204992 -->
