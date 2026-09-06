@@ -112,7 +112,7 @@
 <svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="16"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
       Flotilla Choferes
     </div>
-<div class="nav-item" onclick="alert('Módulo de analíticas avanzadas en construcción. Por ahora, revisa el Dashboard.')">
+<div class="nav-item" id="nav-analiticas" onclick="switchTab('analiticas')">
 <svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="16"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
       Analíticas
     </div>
@@ -230,6 +230,12 @@
 </tbody>
 </table>
 </div>
+</div>
+
+<div id="view-analiticas" style="display: none; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center;">
+<img alt="Analíticas" src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&amp;fit=crop&amp;w=400&amp;q=80" style="width: 300px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin-bottom: 30px;"/>
+<h2 style="font-size: 28px; font-weight: 700; color: #111827; margin-bottom: 10px;">Módulo en Construcción</h2>
+<p style="color: #6B7280; font-size: 16px; max-width: 500px; line-height: 1.6;">Estamos trabajando en un sistema avanzado de gráficas y reportes inteligentes impulsados por IA para que conozcas a fondo a tus pasajeros. ¡Próximamente en EncaviGO 2.0!</p>
 </div>
 </div>
 <!-- FIREBASE SDK -->
@@ -416,6 +422,9 @@
         // Update views
         document.getElementById('view-dashboard').style.display = (tab === 'dashboard') ? 'block' : 'none';
         document.getElementById('view-choferes').style.display = (tab === 'choferes') ? 'block' : 'none';
+        
+        const vAna = document.getElementById('view-analiticas');
+        if(vAna) vAna.style.display = (tab === 'analiticas') ? 'flex' : 'none';
     }
 
 
@@ -490,4 +499,4 @@
 </div>
 </body>
 </html>
-<!-- 1788643621.4208372 --><!-- v4 1788644835.507004 --><!-- v6 1788645702.3345118 --><!-- v7 1788657285.6522698 --><!-- v8 1788658146.5265121 --><!-- v10 1788658633.7332523 --><!-- v11 1788658746.0280507 --><!-- v12 1788658954.1285067 --><!-- v13 1788659375.369281 -->
+<!-- 1788643621.4208372 --><!-- v4 1788644835.507004 --><!-- v6 1788645702.3345118 --><!-- v7 1788657285.6522698 --><!-- v8 1788658146.5265121 --><!-- v10 1788658633.7332523 --><!-- v11 1788658746.0280507 --><!-- v12 1788658954.1285067 --><!-- v13 1788659375.369281 --><!-- v14 1788659490.9794564 -->
