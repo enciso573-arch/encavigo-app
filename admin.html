@@ -512,18 +512,7 @@
         }).catch(err => alert("Error al generar Reporte: " + err));
     }
 
-,${etiqueta},${clics},${estado},${hoy}\n`;
-            });
-            
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "Reporte_EncaviGO_" + hoy.replace(/\//g, '-') + ".csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }).catch(err => alert("Error al generar Excel: " + err));
-    }
+
 </script>
 <div class="modal-overlay" id="addModal">
 <div class="modal">
@@ -568,4 +557,4 @@
 </div>
 </body>
 </html>
-<!-- 1788643621.4208372 --><!-- v4 1788644835.507004 --><!-- v6 1788645702.3345118 --><!-- v7 1788657285.6522698 --><!-- v8 1788658146.5265121 --><!-- v10 1788658633.7332523 --><!-- v11 1788658746.0280507 --><!-- v12 1788658954.1285067 --><!-- v13 1788659375.369281 --><!-- v21 1788660497.1802418 --><!-- v22 1788660571.5987554 -->
+<!-- 1788643621.4208372 --><!-- v4 1788644835.507004 --><!-- v6 1788645702.3345118 --><!-- v7 1788657285.6522698 --><!-- v8 1788658146.5265121 --><!-- v10 1788658633.7332523 --><!-- v11 1788658746.0280507 --><!-- v12 1788658954.1285067 --><!-- v13 1788659375.369281 --><!-- v21 1788660497.1802418 --><!-- v22 1788660571.5987554 --><!-- v23 1788660619.9974518 -->
