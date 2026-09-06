@@ -83,7 +83,7 @@
 <div class="brand-name">EncaviGO</div>
 </div>
 <div class="nav-menu">
-<div class="nav-item active">
+<div class="nav-item active" id="nav-dashboard" onclick="switchTab('dashboard')">
 <svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="16"><rect height="9" width="7" x="3" y="3"></rect><rect height="5" width="7" x="14" y="3"></rect><rect height="9" width="7" x="14" y="12"></rect><rect height="5" width="7" x="3" y="16"></rect></svg>
       Dashboard
     </div>
@@ -91,7 +91,7 @@
 <svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="16"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
       Negocios Activos
     </div>
-<div class="nav-item">
+<div class="nav-item" id="nav-choferes" onclick="switchTab('choferes')">
 <svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="16"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
       Flotilla Choferes
     </div>
@@ -105,7 +105,7 @@
     </div>
 </div>
 </div>
-<div class="main">
+<div class="main"><div id="view-dashboard">
 <div class="top-bar">
 <h1 class="page-title">Métricas Principales</h1>
 <button class="btn-primary" onclick="document.getElementById('addModal').style.display='flex';">
@@ -190,6 +190,31 @@
 </table>
 </div>
 </div>
+<div id="view-choferes" style="display: none;">
+<div class="top-bar">
+<h1 class="page-title">Gestión de Choferes</h1>
+</div>
+<div class="data-section">
+<div class="data-header">
+<h3>Comisiones y Rendimiento por Unidad</h3>
+</div>
+<table>
+<thead>
+<tr>
+<th>Identificador (ID)</th>
+<th>Escaneos Generados</th>
+<th>Clics a Negocios</th>
+<th>Comisión Sugerida ($)</th>
+<th>Última Actividad</th>
+</tr>
+</thead>
+<tbody id="choferes-tbody">
+<!-- Dynamic from Firebase -->
+</tbody>
+</table>
+</div>
+</div>
+</div>
 <!-- FIREBASE SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -205,7 +230,6 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 </script>
-
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const valScans = document.getElementById('val-scans');
@@ -219,7 +243,36 @@
                 if(valScans) valScans.innerText = (data.scans || 0).toLocaleString();
                 if(valClicks) valClicks.innerText = (data.clicks || 0).toLocaleString();
             }
+        
+        const choferesTbody = document.getElementById('choferes-tbody');
+        db.collection('choferes').orderBy('scans', 'desc').onSnapshot(snapshot => {
+            if(choferesTbody) {
+                choferesTbody.innerHTML = '';
+                snapshot.forEach(doc => {
+                    const c = doc.data();
+                    const tr = document.createElement('tr');
+                    
+                    // Supongamos que pagas  pesos por cada escaneo (ajustable)
+                    const comision = (c.scans || 0) * 2.0; 
+                    
+                    let dateStr = 'Reciente';
+                    if (c.lastActive && c.lastActive.toDate) {
+                        dateStr = c.lastActive.toDate().toLocaleDateString();
+                    }
+                    
+                    tr.innerHTML = 
+                      <td><strong style="color: #FFF;"></strong></td>
+                      <td></td>
+                      <td></td>
+                      <td style="color: #10B981; font-weight: bold;">{comision.toFixed(2)} MXN</td>
+                      <td></td>
+                    ;
+                    choferesTbody.appendChild(tr);
+                });
+            }
         });
+    
+    });
         
         // Leer Top Chofer
         db.collection('choferes').orderBy('scans', 'desc').limit(1).onSnapshot(snapshot => {
@@ -307,8 +360,17 @@
             db.collection('campaigns').doc(id).delete();
         }
     }
-</script>
 
+    function switchTab(tab) {
+        // Update nav UI
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        document.getElementById('nav-' + tab).classList.add('active');
+        
+        // Update views
+        document.getElementById('view-dashboard').style.display = (tab === 'dashboard') ? 'block' : 'none';
+        document.getElementById('view-choferes').style.display = (tab === 'choferes') ? 'block' : 'none';
+    }
+    </script>
 <div class="modal-overlay" id="addModal">
 <div class="modal">
 <h2>Nuevo Negocio / Campaña</h2>
@@ -352,4 +414,4 @@
 </div>
 </body>
 </html>
-<!-- 1788643621.4208372 --><!-- v4 1788644835.507004 --><!-- v6 1788645702.3345118 -->
+<!-- 1788643621.4208372 --><!-- v4 1788644835.507004 --><!-- v6 1788645702.3345118 --><!-- v7 1788657285.6522698 -->
