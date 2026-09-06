@@ -92,7 +92,6 @@
 <p id="loginError" style="color: #EF4444; font-size: 12px; margin-top: 10px; display: none;">Credenciales incorrectas.</p>
 </div>
 </div>
-
 <div class="sidebar">
 <div class="brand">
 <div class="brand-icon">
@@ -249,6 +248,7 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 </script>
+
 <script>
     // FIREBASE AUTHENTICATION LOGIC
     const auth = firebase.auth();
@@ -279,7 +279,6 @@
     function logoutAdmin() {
         auth.signOut();
     }
-    
 
     document.addEventListener('DOMContentLoaded', () => {
         const valScans = document.getElementById('val-scans');
@@ -293,36 +292,7 @@
                 if(valScans) valScans.innerText = (data.scans || 0).toLocaleString();
                 if(valClicks) valClicks.innerText = (data.clicks || 0).toLocaleString();
             }
-        
-        const choferesTbody = document.getElementById('choferes-tbody');
-        db.collection('choferes').orderBy('scans', 'desc').onSnapshot(snapshot => {
-            if(choferesTbody) {
-                choferesTbody.innerHTML = '';
-                snapshot.forEach(doc => {
-                    const c = doc.data();
-                    const tr = document.createElement('tr');
-                    
-                    // Supongamos que pagas  pesos por cada escaneo (ajustable)
-                    const comision = (c.scans || 0) * 2.0; 
-                    
-                    let dateStr = 'Reciente';
-                    if (c.lastActive && c.lastActive.toDate) {
-                        dateStr = c.lastActive.toDate().toLocaleDateString();
-                    }
-                    
-                    tr.innerHTML = 
-                      <td><strong style="color: #FFF;"></strong></td>
-                      <td></td>
-                      <td></td>
-                      <td style="color: #10B981; font-weight: bold;">{comision.toFixed(2)} MXN</td>
-                      <td></td>
-                    ;
-                    choferesTbody.appendChild(tr);
-                });
-            }
         });
-    
-    });
         
         // Leer Top Chofer
         db.collection('choferes').orderBy('scans', 'desc').limit(1).onSnapshot(snapshot => {
@@ -366,6 +336,34 @@
                 });
             }
         }, err => console.error(err));
+
+        const choferesTbody = document.getElementById('choferes-tbody');
+        db.collection('choferes').orderBy('scans', 'desc').onSnapshot(snapshot => {
+            if(choferesTbody) {
+                choferesTbody.innerHTML = '';
+                snapshot.forEach(doc => {
+                    const c = doc.data();
+                    const tr = document.createElement('tr');
+                    
+                    // Supongamos que pagas $2 pesos por cada escaneo (ajustable)
+                    const comision = (c.scans || 0) * 2.0; 
+                    
+                    let dateStr = 'Reciente';
+                    if (c.lastActive && c.lastActive.toDate) {
+                        dateStr = c.lastActive.toDate().toLocaleDateString();
+                    }
+                    
+                    tr.innerHTML = `
+                      <td><strong style="color: #111827;">${doc.id}</strong></td>
+                      <td>${c.scans || 0}</td>
+                      <td>${c.clicks || 0}</td>
+                      <td style="color: #10B981; font-weight: bold;">$${comision.toFixed(2)} MXN</td>
+                      <td>${dateStr}</td>
+                    `;
+                    choferesTbody.appendChild(tr);
+                });
+            }
+        });
     });
 
     function closeModal() {
@@ -420,7 +418,8 @@
         document.getElementById('view-dashboard').style.display = (tab === 'dashboard') ? 'block' : 'none';
         document.getElementById('view-choferes').style.display = (tab === 'choferes') ? 'block' : 'none';
     }
-    </script>
+</script>
+
 <div class="modal-overlay" id="addModal">
 <div class="modal">
 <h2>Nuevo Negocio / Campaña</h2>
@@ -464,4 +463,4 @@
 </div>
 </body>
 </html>
-<!-- 1788643621.4208372 --><!-- v4 1788644835.507004 --><!-- v6 1788645702.3345118 --><!-- v7 1788657285.6522698 --><!-- v8 1788658146.5265121 -->
+<!-- 1788643621.4208372 --><!-- v4 1788644835.507004 --><!-- v6 1788645702.3345118 --><!-- v7 1788657285.6522698 --><!-- v8 1788658146.5265121 --><!-- v10 1788658633.7332523 -->
