@@ -72,9 +72,27 @@
   .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 25px; }
   .btn-cancel { background: transparent; color: #6B7280; border: none; cursor: pointer; padding: 10px 20px; font-weight: 500; }
   .btn-cancel:hover { color: #111827; }
+
+  /* LOGIN OVERLAY */
+  #login-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #F3F4F6; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+  .login-box { background: #FFF; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 350px; text-align: center; }
+  .login-box h2 { font-weight: 800; font-size: 24px; margin-bottom: 20px; color: #111827; }
+  .login-box input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #E5E7EB; border-radius: 8px; font-family: 'Inter', sans-serif; background: #F9FAFB; }
+  .login-box button { width: 100%; padding: 12px; background: #111827; color: #FFF; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+  .login-box button:hover { opacity: 0.9; }
 </style>
 </head>
 <body>
+<div id="login-overlay">
+<div class="login-box">
+<h2>🔒 EncaviGO Admin</h2>
+<input autocomplete="email" id="loginEmail" placeholder="Correo electrónico" type="email"/>
+<input id="loginPwd" placeholder="Contraseña" type="password"/>
+<button onclick="loginAdmin()">Ingresar</button>
+<p id="loginError" style="color: #EF4444; font-size: 12px; margin-top: 10px; display: none;">Credenciales incorrectas.</p>
+</div>
+</div>
+
 <div class="sidebar">
 <div class="brand">
 <div class="brand-icon">
@@ -217,6 +235,7 @@
 </div>
 <!-- FIREBASE SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <script>
   const firebaseConfig = {
@@ -231,6 +250,37 @@
   const db = firebase.firestore();
 </script>
 <script>
+    // FIREBASE AUTHENTICATION LOGIC
+    const auth = firebase.auth();
+
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            document.getElementById('login-overlay').style.display = 'none';
+            document.querySelector('.app-container').style.display = 'flex';
+        } else {
+            document.getElementById('login-overlay').style.display = 'flex';
+            document.querySelector('.app-container').style.display = 'none';
+        }
+    });
+
+    function loginAdmin() {
+        const email = document.getElementById('loginEmail').value;
+        const pwd = document.getElementById('loginPwd').value;
+        const errObj = document.getElementById('loginError');
+        errObj.style.display = 'none';
+        
+        auth.signInWithEmailAndPassword(email, pwd)
+            .catch(error => {
+                errObj.innerText = error.message;
+                errObj.style.display = 'block';
+            });
+    }
+
+    function logoutAdmin() {
+        auth.signOut();
+    }
+    
+
     document.addEventListener('DOMContentLoaded', () => {
         const valScans = document.getElementById('val-scans');
         const valClicks = document.getElementById('val-clicks');
@@ -414,4 +464,4 @@
 </div>
 </body>
 </html>
-<!-- 1788643621.4208372 --><!-- v4 1788644835.507004 --><!-- v6 1788645702.3345118 --><!-- v7 1788657285.6522698 -->
+<!-- 1788643621.4208372 --><!-- v4 1788644835.507004 --><!-- v6 1788645702.3345118 --><!-- v7 1788657285.6522698 --><!-- v8 1788658146.5265121 -->
