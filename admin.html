@@ -104,19 +104,16 @@
 <svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="16"><rect height="9" width="7" x="3" y="3"></rect><rect height="5" width="7" x="14" y="3"></rect><rect height="9" width="7" x="14" y="12"></rect><rect height="5" width="7" x="3" y="16"></rect></svg>
       Dashboard
     </div>
-<div class="nav-item" onclick="switchTab('dashboard')">
-<svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="16"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-      Negocios Activos
-    </div>
+
 <div class="nav-item" id="nav-choferes" onclick="switchTab('choferes')">
 <svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="16"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
       Flotilla Choferes
     </div>
-<div class="nav-item" onclick="alert('Módulo de analíticas avanzadas en construcción. Por ahora, revisa el Dashboard.')">
+<div class="nav-item" id="nav-analiticas" onclick="switchTab('analiticas')">
 <svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="16"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
       Analíticas
     </div>
-<div class="nav-item" id="nav-reportes" onclick="switchTab('reportes')"><svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="16"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> Reportes a Clientes</div>
+<div class="nav-item" id="nav-reportes" onclick="switchTab('reportes')"><svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="16"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" x2="8" y1="13" y2="13"></line><line x1="16" x2="8" y1="17" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> Reportes a Clientes</div>
 </div>
 </div>
 <div class="main"><div id="view-dashboard">
@@ -224,6 +221,46 @@
 </thead>
 <tbody id="choferes-tbody">
 <!-- Dynamic from Firebase -->
+</tbody>
+</table>
+</div>
+</div>
+
+<div id="view-analiticas" style="display: none; height: 100%; flex-direction: column;">
+<div class="top-bar" style="margin-bottom: 20px;">
+<h1 class="page-title">Analíticas Avanzadas</h1>
+</div>
+<div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
+<div style="width: 90px; height: 90px; background: rgba(249, 115, 22, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 24px; color: #F97316;">
+<svg fill="none" height="40" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="40"><line x1="18" x2="18" y1="20" y2="10"></line><line x1="12" x2="12" y1="20" y2="4"></line><line x1="6" x2="6" y1="20" y2="14"></line></svg>
+</div>
+<h2 style="font-size: 22px; font-weight: 700; color: #111827; margin: 0 0 10px 0;">Módulo en Construcción</h2>
+<p style="color: #6B7280; font-size: 15px; max-width: 450px; text-align: center; line-height: 1.6; margin: 0;">Estamos desarrollando un sistema de métricas de rendimiento y gráficas avanzadas exclusivas para la versión 2.0 de EncaviGO.</p>
+</div>
+</div>
+
+<div id="view-reportes" style="display: none;">
+<div class="top-bar">
+<h1 class="page-title">Reportes para Clientes</h1>
+<button class="btn-primary" onclick="generarReportePDF()">
+<svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="16"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" x2="12" y1="15" y2="3"></line></svg>
+                    Exportar PDF
+                </button>
+</div>
+<div class="data-section">
+<div class="data-header">
+<h3>Vista Previa del Reporte de Impacto</h3>
+</div>
+<table>
+<thead>
+<tr>
+<th>Nombre de la Campaña</th>
+<th>Tipo de Oferta</th>
+<th>Estado</th>
+<th>Clics / Impactos Generados</th>
+</tr>
+</thead>
+<tbody id="reportes-tbody">
 </tbody>
 </table>
 </div>
@@ -557,4 +594,4 @@
 </div>
 </body>
 </html>
-<!-- 1788643621.4208372 --><!-- v4 1788644835.507004 --><!-- v6 1788645702.3345118 --><!-- v7 1788657285.6522698 --><!-- v8 1788658146.5265121 --><!-- v10 1788658633.7332523 --><!-- v11 1788658746.0280507 --><!-- v12 1788658954.1285067 --><!-- v13 1788659375.369281 --><!-- v21 1788660497.1802418 --><!-- v22 1788660571.5987554 --><!-- v23 1788660619.9974518 -->
+<!-- 1788643621.4208372 --><!-- v4 1788644835.507004 --><!-- v6 1788645702.3345118 --><!-- v7 1788657285.6522698 --><!-- v8 1788658146.5265121 --><!-- v10 1788658633.7332523 --><!-- v11 1788658746.0280507 --><!-- v12 1788658954.1285067 --><!-- v13 1788659375.369281 --><!-- v21 1788660497.1802418 --><!-- v22 1788660571.5987554 --><!-- v23 1788660619.9974518 --><!-- v24 1788660754.0814111 -->
