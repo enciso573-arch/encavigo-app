@@ -1,10 +1,14 @@
 @echo off
 echo ===================================================
-echo     SUBIENDO NUEVAS IMAGENES AL SERVIDOR DE ENCAVIGO
+echo     AUTO-RECORTE Y SUBIDA A ENCAVIGO
 echo ===================================================
 echo.
+echo Procesando imagenes de "nuevas_fotos"...
+python optimizar_fotos.py
+echo.
+echo Detectando cambios...
 git add .
-git commit -m "Subida automatica de imagenes o cambios"
+git commit -m "Auto-procesamiento y subida de imagenes"
 echo.
 echo Subiendo a internet, por favor espera...
 git push
