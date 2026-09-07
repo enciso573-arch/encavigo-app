@@ -5422,17 +5422,37 @@
     }
     
     
-    /* Scratch Game Styles */
-    .scratch-banner { position: absolute; top: 60px; left: 20px; right: 20px; z-index: 100; background: linear-gradient(135deg, #F97316, #EAB308); color: white; padding: 15px; border-radius: 12px; text-align: center; font-weight: bold; font-size: 16px; box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4); cursor: pointer; animation: pulse 2s infinite; display: none; }
     
+
+
+    /* 6-Card Mini Game Styles */
+    .scratch-banner { position: absolute; top: 60px; left: 20px; right: 20px; z-index: 100; background: linear-gradient(135deg, #F97316, #EAB308); color: white; padding: 15px; border-radius: 12px; text-align: center; font-weight: bold; font-size: 16px; box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4); cursor: pointer; animation: pulse 2s infinite; display: none; }
     @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
-    .scratch-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; display: none; align-items: center; justify-content: center; flex-direction: column; }
-    .scratch-container { position: relative; width: 300px; height: 150px; background: #FFF; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-    .scratch-result { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; text-align: center; padding: 20px; box-sizing: border-box; flex-direction: column; }
-    .scratch-result h2 { margin: 0 0 10px 0; font-size: 22px; }
-    .scratch-result p { margin: 0; font-size: 14px; color: #4B5563; }
-    .scratch-canvas { position: absolute; top: 0; left: 0; z-index: 2; cursor: pointer; }
-    .scratch-close { margin-top: 20px; background: white; color: #111827; border: none; padding: 10px 20px; border-radius: 20px; font-weight: bold; cursor: pointer; display: none; }
+    
+    .game-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 1000; display: none; align-items: center; justify-content: center; flex-direction: column; overflow: hidden; }
+    .game-title { color: white; font-weight: bold; margin-bottom: 30px; font-size: 22px; text-align: center; }
+    
+    .cards-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; width: 320px; position: relative; }
+    
+    .flip-card { background-color: transparent; width: 90px; height: 110px; perspective: 1000px; cursor: pointer; }
+    .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s; transform-style: preserve-3d; }
+    .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
+    
+    .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+    
+    .flip-card-front { background: linear-gradient(135deg, #CBD5E1, #94A3B8); color: #111827; font-size: 24px; font-weight: bold; border: 2px solid #E2E8F0; }
+    .flip-card-front::after { content: '?'; color: rgba(255,255,255,0.5); font-size: 40px; }
+    
+    .flip-card-back { background: white; transform: rotateY(180deg); font-size: 45px; border: 2px solid #F97316; }
+    
+    /* Animation classes for merging */
+    .fade-out { opacity: 0; transition: opacity 0.5s ease; pointer-events: none; }
+    .merge-animate { position: absolute !important; z-index: 50; transition: all 1s ease-in-out !important; transform: rotateY(180deg) scale(1.5) translate(0, 0) !important; left: 50% !important; top: 50% !important; margin-left: -45px; margin-top: -55px; }
+    
+    .game-result { display: none; text-align: center; margin-top: 150px; z-index: 100; animation: popIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+    @keyframes popIn { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+    
+    .btn-close-game { margin-top: 25px; background: linear-gradient(135deg, #F97316, #EA580C); color: white; border: none; padding: 12px 30px; border-radius: 25px; font-weight: bold; font-size: 16px; cursor: pointer; box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4); }
 
 </style>
 </head>
@@ -5441,12 +5461,33 @@
 
 
 <div class="app-container">
-<div id="scratchBanner" class="scratch-banner" onclick="openScratchGame()">
-    🎁 ¡Raspa y Gana un Viaje GRATIS! 🎁
+
+<div id="scratchBanner" class="scratch-banner" onclick="openGame()">
+    🎁 ¡Encuentra tu Premio! 🎁
 </div>
 
-<div id="scratchModal" class="scratch-modal">
-    <div style="color: white; font-weight: bold; margin-bottom: 15px; font-size: 20px;">Talla la tarjeta 👇</div>
+<div id="gameModal" class="game-modal">
+    <div class="game-title" id="gameTitle">Elige 3 tarjetas <br><span style="font-size: 14px; font-weight: normal; color: #9CA3AF;">Tienes 3 intentos</span></div>
+    
+    <div class="cards-grid" id="cardsGrid">
+        <div class="flip-card" id="card-0" onclick="flipCard(0)"><div class="flip-card-inner" id="inner-0"><div class="flip-card-front"></div><div class="flip-card-back" id="back-0"></div></div></div>
+        <div class="flip-card" id="card-1" onclick="flipCard(1)"><div class="flip-card-inner" id="inner-1"><div class="flip-card-front"></div><div class="flip-card-back" id="back-1"></div></div></div>
+        <div class="flip-card" id="card-2" onclick="flipCard(2)"><div class="flip-card-inner" id="inner-2"><div class="flip-card-front"></div><div class="flip-card-back" id="back-2"></div></div></div>
+        <div class="flip-card" id="card-3" onclick="flipCard(3)"><div class="flip-card-inner" id="inner-3"><div class="flip-card-front"></div><div class="flip-card-back" id="back-3"></div></div></div>
+        <div class="flip-card" id="card-4" onclick="flipCard(4)"><div class="flip-card-inner" id="inner-4"><div class="flip-card-front"></div><div class="flip-card-back" id="back-4"></div></div></div>
+        <div class="flip-card" id="card-5" onclick="flipCard(5)"><div class="flip-card-inner" id="inner-5"><div class="flip-card-front"></div><div class="flip-card-back" id="back-5"></div></div></div>
+    </div>
+    
+    <div class="game-result" id="gameResult">
+        <h2 id="resultTitle" style="margin: 0 0 10px 0; font-size: 26px;"></h2>
+        <p id="resultMsg" style="margin: 0; font-size: 15px; color: #D1D5DB; padding: 0 20px;"></p>
+        <button class="btn-close-game" onclick="closeGame()">¡Canjear Cupón!</button>
+    </div>
+</div>
+
+
+
+
     <div class="scratch-container" id="scratchContainer">
         <div class="scratch-result" id="scratchResult">
             <!-- Dynamic Result -->
@@ -5775,181 +5816,115 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch(e) { console.error("Error Firebase:", e); }
 });
 
-    // Scratch Game Logic
-    let isDrawing = false;
-    let canvas, ctx;
+    
 
-    function initScratch() {
+
+    // 6-Card Mini Game Logic
+    let taps = 0;
+    let sequence = [];
+    let winData = {};
+    let isJackpot = false;
+    let selectedCards = [];
+
+    const logoImg = '<img src="logo_jackpot.jpg" style="width:50px; height:50px; border-radius:50%; vertical-align:middle; object-fit:cover; box-shadow:0 2px 8px rgba(0,0,0,0.15); margin: 0 5px;">';
+
+    function initGame() {
         const today = new Date().toDateString();
         const lastPlayed = localStorage.getItem('encavigo_played');
-        
-        // Show banner only if they haven't played today
         if (lastPlayed !== today) {
             document.getElementById('scratchBanner').style.display = 'block';
         }
     }
 
-    function openScratchGame() {
-        document.getElementById('scratchModal').style.display = 'flex';
-        setupCanvas();
-        decideWinner();
-    }
-
-    function decideWinner() {
-        const chance = Math.random();
-        const resultDiv = document.getElementById('scratchResult');
-        
-        let icons = [];
-        let title = "";
-        let msg = "";
-
-        if (chance <= 0.01) { // 1% Jackpot
-            icons = ['<img src="logo_jackpot.jpg" style="width:55px; height:55px; border-radius:50%; vertical-align:middle; object-fit:cover; box-shadow:0 2px 8px rgba(0,0,0,0.15); margin: 0 5px;">', '<img src="logo_jackpot.jpg" style="width:55px; height:55px; border-radius:50%; vertical-align:middle; object-fit:cover; box-shadow:0 2px 8px rgba(0,0,0,0.15); margin: 0 5px;">', '<img src="logo_jackpot.jpg" style="width:55px; height:55px; border-radius:50%; vertical-align:middle; object-fit:cover; box-shadow:0 2px 8px rgba(0,0,0,0.15); margin: 0 5px;">'];
-            title = '<span style="color: #10B981;">🎉 ¡VIAJE GRATIS! 🎉</span>';
-            msg = "Muéstrale esta pantalla a tu chofer ahora mismo.";
-        } else {
-            // 99% Consolation Prize
-            const foodTypes = [
-                { icon: '🍔', name: 'Hamburguesas' },
-                { icon: '🌮', name: 'Tacos' },
-                { icon: '🍕', name: 'Pizzas' },
-                { icon: '🍹', name: 'Bebidas' },
-                { icon: '✂️', name: 'Servicios' }
-            ];
-            
-            // Elegir el premio de consolación ganador (2 iguales)
-            const winFood = foodTypes[Math.floor(Math.random() * foodTypes.length)];
-            
-            // Elegir un ícono perdedor para la 3ra posición
-            let loseFood = foodTypes[Math.floor(Math.random() * foodTypes.length)];
-            while(loseFood.icon === winFood.icon) {
-                loseFood = foodTypes[Math.floor(Math.random() * foodTypes.length)];
-            }
-            
-            // El 50% de las veces, el ícono perdedor será 1 escudo de EncaviGO para emocionarlos
-            if(Math.random() > 0.5) {
-                loseFood = { icon: '<img src="logo_jackpot.jpg" style="width:55px; height:55px; border-radius:50%; vertical-align:middle; object-fit:cover; box-shadow:0 2px 8px rgba(0,0,0,0.15); margin: 0 5px;">', name: 'EncaviGO' };
-            }
-
-            icons = [winFood.icon, winFood.icon, loseFood.icon];
-            
-            // Revolver los íconos al azar
-            icons.sort(() => Math.random() - 0.5);
-            
-            title = `<span style="color: #F97316;">¡Descuento en ${winFood.name}!</span>`;
-            msg = `Juntaste 2 iguales. Busca tu oferta en la app 👇`;
-        }
-        
-        resultDiv.innerHTML = `
-            <div style="font-size: 50px; letter-spacing: 15px; margin-bottom: 5px; text-shadow: 0 4px 10px rgba(0,0,0,0.1);">${icons.join('')}</div>
-            <h2 style="margin: 0 0 5px 0; font-size: 20px;">${title}</h2>
-            <p style="margin: 0; font-size: 14px; color: #4B5563; padding: 0 10px;">${msg}</p>
-        `;
-        
-        // Guardar que ya jugó hoy
-        localStorage.setItem('encavigo_played', new Date().toDateString());
+    function openGame() {
+        document.getElementById('gameModal').style.display = 'flex';
         document.getElementById('scratchBanner').style.display = 'none';
-    }
-
-    function setupCanvas() {
-        canvas = document.getElementById('scratchCanvas');
-        ctx = canvas.getContext('2d');
         
-        // Pintar la capa plateada
-        ctx.fillStyle = '#C0C0C0';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        // Setup secret math
+        const chance = Math.random();
+        isJackpot = (chance <= 0.01);
         
-        // Texto de "Raspa Aquí"
-        ctx.fillStyle = '#4B5563';
-        ctx.font = '20px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText('Raspa con tu dedo', canvas.width / 2, canvas.height / 2 + 5);
+        const foodTypes = [
+            { icon: '🍔', name: 'Hamburguesas' },
+            { icon: '🌮', name: 'Tacos' },
+            { icon: '🍕', name: 'Pizzas' },
+            { icon: '🍹', name: 'Bebidas' },
+            { icon: '✂️', name: 'Servicios' }
+        ];
 
-        // Eventos táctiles y de mouse
-        canvas.addEventListener('mousedown', startScratch);
-        canvas.addEventListener('touchstart', startScratch, {passive: false});
-        canvas.addEventListener('mousemove', scratch);
-        canvas.addEventListener('touchmove', scratch, {passive: false});
-        window.addEventListener('mouseup', endScratch);
-        window.addEventListener('touchend', endScratch);
-    }
-
-    function getMousePos(evt) {
-        const rect = canvas.getBoundingClientRect();
-        let clientX = evt.clientX;
-        let clientY = evt.clientY;
-        
-        if(evt.touches && evt.touches.length > 0) {
-            clientX = evt.touches[0].clientX;
-            clientY = evt.touches[0].clientY;
+        if (isJackpot) {
+            sequence = [logoImg, logoImg, logoImg];
+            winData = { title: '<span style="color: #10B981;">🎉 VIAJE GRATIS 🎉</span>', msg: 'Muéstrale esta pantalla a tu chofer ahora.' };
+        } else {
+            // Consolation
+            const winFood = foodTypes[Math.floor(Math.random() * foodTypes.length)];
+            let loseFood = foodTypes[Math.floor(Math.random() * foodTypes.length)];
+            while(loseFood.icon === winFood.icon) { loseFood = foodTypes[Math.floor(Math.random() * foodTypes.length)]; }
+            if(Math.random() > 0.5) { loseFood = { icon: logoImg, name: 'EncaviGO' }; }
+            
+            // Build the sequence of reveals: Match, Miss, Match (Builds tension!)
+            sequence = [winFood.icon, loseFood.icon, winFood.icon];
+            winData = { title: `<span style="color: #F97316;">¡Descuento en ${winFood.name}!</span>`, msg: 'Juntaste 2 iguales. Cierra esto y busca tu promoción en la app.' };
         }
-        
-        return {
-            x: clientX - rect.left,
-            y: clientY - rect.top
-        };
     }
 
-    function startScratch(e) {
-        isDrawing = true;
-        scratch(e);
+    function flipCard(index) {
+        const card = document.getElementById('card-' + index);
+        // Prevent double clicking or clicking more than 3
+        if (taps >= 3 || card.classList.contains('flipped')) return;
+        
+        // Reveal the pre-determined icon
+        document.getElementById('back-' + index).innerHTML = sequence[taps];
+        card.classList.add('flipped');
+        selectedCards.push(index);
+        taps++;
+        
+        document.getElementById('gameTitle').innerHTML = `Llevas ${taps} de 3 intentos`;
+
+        if (taps === 3) {
+            setTimeout(triggerAnimation, 800);
+        }
     }
 
-    function scratch(e) {
-        if (!isDrawing) return;
-        e.preventDefault(); // Evitar que la pantalla haga scroll al raspar
+    function triggerAnimation() {
+        document.getElementById('gameTitle').style.display = 'none';
         
-        const pos = getMousePos(e);
-        
-        ctx.globalCompositeOperation = 'destination-out';
-        ctx.beginPath();
-        ctx.arc(pos.x, pos.y, 20, 0, Math.PI * 2); // 20 es el grosor del "dedo"
-        ctx.fill();
-        
-        checkWinCondition();
-    }
-
-    function endScratch() {
-        isDrawing = false;
-    }
-
-    let revealed = false;
-    function checkWinCondition() {
-        if(revealed) return;
-        
-        // Calcular qué porcentaje se ha borrado
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const pixels = imageData.data;
-        let transparentPixels = 0;
-        
-        for (let i = 3; i < pixels.length; i += 4) {
-            if (pixels[i] === 0) {
-                transparentPixels++;
+        // Fade out all unselected cards, and the 2nd selected card (the loser icon)
+        for (let i = 0; i < 6; i++) {
+            const card = document.getElementById('card-' + i);
+            if (!selectedCards.includes(i) || (i === selectedCards[1] && !isJackpot)) {
+                card.classList.add('fade-out');
             }
         }
-        
-        const transparentPercentage = (transparentPixels / (pixels.length / 4)) * 100;
-        
-        // Si borró más del 40%, revelamos todo el resultado y mostramos el botón
-        if (transparentPercentage > 40) {
-            revealed = true;
-            canvas.style.transition = 'opacity 0.5s';
-            canvas.style.opacity = '0';
+
+        // Animate the winning cards to the center
+        setTimeout(() => {
+            const match1 = document.getElementById('inner-' + selectedCards[0]);
+            let match2 = document.getElementById('inner-' + selectedCards[2]);
+            if(isJackpot) { match2 = document.getElementById('inner-' + selectedCards[1]); const match3 = document.getElementById('inner-' + selectedCards[2]); match3.classList.add('merge-animate'); }
+            
+            // Remove them from normal flow and throw them to center
+            match1.classList.add('merge-animate');
+            match2.classList.add('merge-animate');
+            
+            // Show result text
             setTimeout(() => {
-                canvas.style.display = 'none';
-                document.getElementById('scratchClose').style.display = 'block';
-            }, 500);
-        }
+                document.getElementById('resultTitle').innerHTML = winData.title;
+                document.getElementById('resultMsg').innerHTML = winData.msg;
+                document.getElementById('gameResult').style.display = 'block';
+                localStorage.setItem('encavigo_played', new Date().toDateString());
+            }, 800);
+            
+        }, 500);
     }
 
-    function closeScratchGame() {
-        document.getElementById('scratchModal').style.display = 'none';
+    function closeGame() {
+        document.getElementById('gameModal').style.display = 'none';
     }
 
-    // Call init on load
-    window.addEventListener('DOMContentLoaded', initScratch);
+    window.addEventListener('DOMContentLoaded', initGame);
 
 </script>
 </body>
 </html>
-<!-- 1788643621.4204273 --><!-- 1788644024.345812 --><!-- v3 1788644297.9113197 --><!-- v5 1788644868.7509923 --><!-- v30 1788754865.844323 --><!-- v31 1788755154.999888 --><!-- v32 1788755428.695934 --><!-- v33 1788755894.6145873 -->
+<!-- 1788643621.4204273 --><!-- 1788644024.345812 --><!-- v3 1788644297.9113197 --><!-- v5 1788644868.7509923 --><!-- v30 1788754865.844323 --><!-- v31 1788755154.999888 --><!-- v32 1788755428.695934 --><!-- v33 1788755894.6145873 --><!-- v34 1788756310.8182855 -->
