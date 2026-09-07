@@ -5686,11 +5686,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const drawerBadge = document.querySelector('.pullup-badge');
     const sheetContent = document.querySelector('.sheet-content');
-    let loadedCampaigns = []; // Store them for radar
+    window.loadedCampaigns = []; // Store them for radar
     
     function actualizarRadar(userLat, userLng) {
         let cercanas = [];
-        loadedCampaigns.forEach(camp => {
+        window.loadedCampaigns.forEach(camp => {
             if (camp.lat && camp.lng) {
                 const dist = haversine(userLat, userLng, parseFloat(camp.lat), parseFloat(camp.lng));
                 if (dist <= 2.0) { 
@@ -5731,7 +5731,7 @@ document.addEventListener('DOMContentLoaded', () => {
         snapshot.forEach(doc => {
             const camp = doc.data();
             camp.id = doc.id;
-            loadedCampaigns.push(camp);
+            window.loadedCampaigns.push(camp);
             
             // Build Whatsapp URL
             const waMsg = camp.waMsg || 'Hola';
@@ -5833,31 +5833,41 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('gameModal').style.display = 'flex';
         document.getElementById('scratchBanner').style.display = 'none';
         
-        // Setup secret math
         const chance = Math.random();
         isJackpot = (chance <= 0.01);
-        
-        const foodTypes = [
-            { icon: '🍔', name: 'Hamburguesas' },
-            { icon: '🌮', name: 'Tacos' },
-            { icon: '🍕', name: 'Pizzas' },
-            { icon: '🍹', name: 'Bebidas' },
-            { icon: '✂️', name: 'Servicios' }
-        ];
 
         if (isJackpot) {
             sequence = [logoImg, logoImg, logoImg];
             winData = { title: '<span style="color: #10B981;">🎉 VIAJE GRATIS 🎉</span>', msg: 'Muéstrale esta pantalla a tu chofer ahora.' };
         } else {
-            // Consolation
-            const winFood = foodTypes[Math.floor(Math.random() * foodTypes.length)];
-            let loseFood = foodTypes[Math.floor(Math.random() * foodTypes.length)];
-            while(loseFood.icon === winFood.icon) { loseFood = foodTypes[Math.floor(Math.random() * foodTypes.length)]; }
-            if(Math.random() > 0.5) { loseFood = { icon: logoImg, name: 'EncaviGO' }; }
+            // CONECTADO A BASE DE DATOS DE FIREBASE
+            const activeCampaigns = window.loadedCampaigns || [];
+            if (activeCampaigns.length === 0) {
+                // Fallback de seguridad si el internet falló
+                activeCampaigns.push({ title: 'Comida Local', imgUrl: null, fallbackIcon: '🍔' });
+                activeCampaigns.push({ title: 'Servicios', imgUrl: null, fallbackIcon: '✂️' });
+            }
             
-            // Build the sequence of reveals: Match, Miss, Match (Builds tension!)
-            sequence = [winFood.icon, loseFood.icon, winFood.icon];
-            winData = { title: `<span style="color: #F97316;">¡Descuento en ${winFood.name}!</span>`, msg: 'Juntaste 2 iguales. Cierra esto y busca tu promoción en la app.' };
+            const winIndex = Math.floor(Math.random() * activeCampaigns.length);
+            const winCamp = activeCampaigns[winIndex];
+            
+            let loseIndex = Math.floor(Math.random() * activeCampaigns.length);
+            while(loseIndex === winIndex && activeCampaigns.length > 1) { loseIndex = Math.floor(Math.random() * activeCampaigns.length); }
+            const loseCamp = activeCampaigns[loseIndex];
+            
+            // Build the HTML for the card faces (Use their actual image from Firebase!)
+            const getIconHTML = (camp) => {
+                if (camp.imgUrl) return `<img src="${camp.imgUrl}" style="width:100%; height:100%; object-fit:cover; border-radius:10px;">`;
+                return `<div style="font-size:45px;">${camp.fallbackIcon || '🎁'}</div>`;
+            };
+
+            const winIconHTML = getIconHTML(winCamp);
+            let loseIconHTML = getIconHTML(loseCamp);
+            
+            if(Math.random() > 0.5) { loseIconHTML = logoImg; } // EncaviGO tease
+            
+            sequence = [winIconHTML, loseIconHTML, winIconHTML];
+            winData = { title: `<span style="color: #F97316;">¡Cupón en <br>${winCamp.title}!</span>`, msg: 'Cierra esta pantalla y baja a reclamarlo.' };
         }
     }
 
@@ -5920,4 +5930,4 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
-<!-- 1788643621.4204273 --><!-- 1788644024.345812 --><!-- v3 1788644297.9113197 --><!-- v5 1788644868.7509923 --><!-- v30 1788754865.844323 --><!-- v31 1788755154.999888 --><!-- v32 1788755428.695934 --><!-- v33 1788755894.6145873 --><!-- v34 1788756310.8182855 --><!-- v35 1788756729.692731 -->
+<!-- 1788643621.4204273 --><!-- 1788644024.345812 --><!-- v3 1788644297.9113197 --><!-- v5 1788644868.7509923 --><!-- v30 1788754865.844323 --><!-- v31 1788755154.999888 --><!-- v32 1788755428.695934 --><!-- v33 1788755894.6145873 --><!-- v34 1788756310.8182855 --><!-- v35 1788756729.692731 --><!-- v36 1788757522.1940298 -->
