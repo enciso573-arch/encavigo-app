@@ -5862,7 +5862,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if(!gpsRequested && 'geolocation' in navigator) {
             gpsRequested = true;
             navigator.geolocation.watchPosition((position) => {
+                window.currentLat = position.coords.latitude;
+                window.currentLng = position.coords.longitude;
                 actualizarRadar(position.coords.latitude, position.coords.longitude);
+                if (typeof updateMapLive === 'function') { updateMapLive(window.currentLat, window.currentLng); }
             }, (err) => console.log(err), { enableHighAccuracy: true });
         }
     }, {once: true});
@@ -6013,73 +6016,71 @@ document.addEventListener('DOMContentLoaded', () => {
 <script>
     let mapInstance = null;
     let mapMarkers = [];
+    let uMarker = null;
+
+    const farIcon = L.divIcon({ className: 'custom-div-icon', html: "<div style='background:#9CA3AF; width:12px; height:12px; border-radius:50%; border:2px solid white;'></div>", iconSize: [12, 12] });
+    const closeIcon = L.divIcon({ className: 'custom-div-icon', html: "<div style='background:#F97316; width:18px; height:18px; border-radius:50%; border:2px solid white; box-shadow: 0 0 15px #F97316; animation: pulse 2s infinite;'></div>", iconSize: [18, 18] });
+    const userIcon = L.divIcon({ className: 'custom-div-icon', html: "<div style='background:#3B82F6; width:15px; height:15px; border-radius:50%; border:2px solid white; box-shadow: 0 0 10px #3B82F6;'></div>", iconSize: [15, 15] });
 
     function openMap() {
         document.getElementById('mapModal').style.display = 'flex';
         
         if (!mapInstance) {
-            // Inicializar mapa (Centro en Vallarta por defecto)
             mapInstance = L.map('map').setView([20.6534, -105.2253], 13);
             L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
                 attribution: '&copy; CARTO'
             }).addTo(mapInstance);
+            
+            // Crear marcador del usuario vacío (se llenará con el GPS)
+            uMarker = L.marker([0, 0], {icon: userIcon}).bindPopup("Tu ubicación");
+            
+            // Plottear campañas iniciales
+            plotCampaignsInicial();
         }
 
-        // Limpiar marcadores viejos
-        mapMarkers.forEach(m => mapInstance.removeLayer(m));
-        mapMarkers = [];
-
-        // Tratar de obtener GPS del usuario para centrar
-        let userLat = null, userLng = null;
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition((pos) => {
-                userLat = pos.coords.latitude;
-                userLng = pos.coords.longitude;
-                mapInstance.setView([userLat, userLng], 14);
-                
-                // Agregar marcador del usuario
-                const userIcon = L.divIcon({ className: 'custom-div-icon', html: "<div style='background:#3B82F6; width:15px; height:15px; border-radius:50%; border:2px solid white; box-shadow: 0 0 10px #3B82F6;'></div>", iconSize: [15, 15] });
-                const uMarker = L.marker([userLat, userLng], {icon: userIcon}).addTo(mapInstance).bindPopup("Tu ubicación");
-                mapMarkers.push(uMarker);
-                
-                plotCampaigns(userLat, userLng);
-            }, () => { plotCampaigns(null, null); });
-        } else {
-            plotCampaigns(null, null);
+        // Si tenemos la variable global de GPS (guardada por el watchPosition)
+        if (window.currentLat && window.currentLng) {
+            mapInstance.setView([window.currentLat, window.currentLng], 14);
+            updateMapLive(window.currentLat, window.currentLng);
         }
     }
 
-    function plotCampaigns(uLat, uLng) {
+    function plotCampaignsInicial() {
         const allCamps = window.loadedCampaigns || [];
-        
-        // Iconos
-        const farIcon = L.divIcon({ className: 'custom-div-icon', html: "<div style='background:#9CA3AF; width:12px; height:12px; border-radius:50%; border:2px solid white;'></div>", iconSize: [12, 12] });
-        const closeIcon = L.divIcon({ className: 'custom-div-icon', html: "<div style='background:#F97316; width:18px; height:18px; border-radius:50%; border:2px solid white; box-shadow: 0 0 15px #F97316; animation: pulse 2s infinite;'></div>", iconSize: [18, 18] });
-
         allCamps.forEach(camp => {
             if (camp.lat && camp.lng) {
-                let dist = 999;
-                if(uLat && uLng) { dist = haversine(uLat, uLng, parseFloat(camp.lat), parseFloat(camp.lng)); }
-                
-                // Si está a menos de 500m (0.5km), icono especial
-                const isClose = dist <= 0.5;
-                const iconToUse = isClose ? closeIcon : farIcon;
-                
-                const waMsg = camp.waMsg || 'Hola';
-                const waUrl = `https://wa.me/523221592596?text=${encodeURIComponent(waMsg)}`;
-                
-                const popupContent = `
-                    <div class="map-popup-title">${camp.title}</div>
-                    <div style="font-size:12px; margin-bottom:8px;">${isClose ? '🔥 A menos de 500m' : '📍 ' + (dist === 999 ? 'En Vallarta' : dist.toFixed(1) + ' km')}</div>
-                    <a href="${waUrl}" target="_blank" class="map-popup-btn">Activar Promo</a>
-                `;
-
-                const marker = L.marker([camp.lat, camp.lng], {icon: iconToUse})
-                    .addTo(mapInstance)
-                    .bindPopup(popupContent);
-                
+                const marker = L.marker([camp.lat, camp.lng], {icon: farIcon}).addTo(mapInstance);
+                marker.camp = camp; // Guardamos los datos en el marcador
                 mapMarkers.push(marker);
             }
+        });
+    }
+
+    // Esta función se llamará constantemente mientras el taxi avanza
+    function updateMapLive(uLat, uLng) {
+        if (!mapInstance) return;
+
+        // Mover el punto azul del usuario
+        if (!mapInstance.hasLayer(uMarker)) { uMarker.addTo(mapInstance); }
+        uMarker.setLatLng([uLat, uLng]);
+
+        // Actualizar todos los negocios en vivo
+        mapMarkers.forEach(marker => {
+            const camp = marker.camp;
+            const dist = haversine(uLat, uLng, parseFloat(camp.lat), parseFloat(camp.lng));
+            const isClose = dist <= 0.5; // 500 metros
+            
+            // Si te acercas a menos de 500m, se prende en naranja automáticamente!
+            marker.setIcon(isClose ? closeIcon : farIcon);
+            
+            const waMsg = camp.waMsg || 'Hola';
+            const waUrl = `https://wa.me/523221592596?text=${encodeURIComponent(waMsg)}`;
+            const popupContent = `
+                <div class="map-popup-title">${camp.title}</div>
+                <div style="font-size:12px; margin-bottom:8px;">${isClose ? '🔥 A menos de 500m de ti' : '📍 A ' + dist.toFixed(1) + ' km'}</div>
+                <a href="${waUrl}" target="_blank" class="map-popup-btn">Activar Promo</a>
+            `;
+            marker.setPopupContent(popupContent);
         });
     }
 
@@ -6089,4 +6090,4 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
-<!-- 1788643621.4204273 --><!-- 1788644024.345812 --><!-- v3 1788644297.9113197 --><!-- v5 1788644868.7509923 --><!-- v30 1788754865.844323 --><!-- v31 1788755154.999888 --><!-- v32 1788755428.695934 --><!-- v33 1788755894.6145873 --><!-- v34 1788756310.8182855 --><!-- v35 1788756729.692731 --><!-- v36 1788757522.1940298 --><!-- v37 1788757840.1574607 --><!-- v38 1788758750.122479 --><!-- v39 1788759085.4792051 --><!-- v40 1788759246.2474997 --><!-- v41 1788759387.4171386 -->
+<!-- 1788643621.4204273 --><!-- 1788644024.345812 --><!-- v3 1788644297.9113197 --><!-- v5 1788644868.7509923 --><!-- v30 1788754865.844323 --><!-- v31 1788755154.999888 --><!-- v32 1788755428.695934 --><!-- v33 1788755894.6145873 --><!-- v34 1788756310.8182855 --><!-- v35 1788756729.692731 --><!-- v36 1788757522.1940298 --><!-- v37 1788757840.1574607 --><!-- v38 1788758750.122479 --><!-- v39 1788759085.4792051 --><!-- v40 1788759246.2474997 --><!-- v41 1788759387.4171386 --><!-- v42 1788759604.4510093 -->
