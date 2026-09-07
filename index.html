@@ -5421,8 +5421,10 @@
         font-size: 11px; padding: 2px 6px; border-radius: 10px;
     }
     
+    
     /* Scratch Game Styles */
-    .scratch-banner { background: linear-gradient(135deg, #F97316, #EAB308); color: white; padding: 15px; border-radius: 12px; margin: 20px; text-align: center; font-weight: bold; font-size: 16px; box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4); cursor: pointer; animation: pulse 2s infinite; display: none; }
+    .scratch-banner { position: absolute; top: 60px; left: 20px; right: 20px; z-index: 100; background: linear-gradient(135deg, #F97316, #EAB308); color: white; padding: 15px; border-radius: 12px; text-align: center; font-weight: bold; font-size: 16px; box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4); cursor: pointer; animation: pulse 2s infinite; display: none; }
+    
     @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
     .scratch-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; display: none; align-items: center; justify-content: center; flex-direction: column; }
     .scratch-container { position: relative; width: 300px; height: 150px; background: #FFF; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
@@ -5436,6 +5438,9 @@
 </head>
 <body>
 
+
+
+<div class="app-container">
 <div id="scratchBanner" class="scratch-banner" onclick="openScratchGame()">
     🎁 ¡Raspa y Gana un Viaje GRATIS! 🎁
 </div>
@@ -5450,8 +5455,6 @@
     </div>
     <button id="scratchClose" class="scratch-close" onclick="closeScratchGame()">Ver Cupones</button>
 </div>
-
-<div class="app-container">
 <!-- HEADER ===================================== -->
 <header class="app-header">
 <!-- IZQUIERDA: logo + tÃ­tulo + ubicaciÃ³n -->
@@ -5909,4 +5912,4 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
-<!-- 1788643621.4204273 --><!-- 1788644024.345812 --><!-- v3 1788644297.9113197 --><!-- v5 1788644868.7509923 --><!-- v30 1788754865.844323 -->
+<!-- 1788643621.4204273 --><!-- 1788644024.345812 --><!-- v3 1788644297.9113197 --><!-- v5 1788644868.7509923 --><!-- v30 1788754865.844323 --><!-- v31 1788755154.999888 -->
