@@ -5796,15 +5796,55 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function decideWinner() {
-        // MATEMÁTICA SECRETA: 1% de ganar
         const chance = Math.random();
         const resultDiv = document.getElementById('scratchResult');
         
-        if (chance <= 0.01) { // 1%
-            resultDiv.innerHTML = '<h2 style="color: #10B981;">🎉 ¡VIAJE GRATIS! 🎉</h2><p>Muéstrale esta pantalla a tu chofer ahora mismo.</p>';
+        let icons = [];
+        let title = "";
+        let msg = "";
+
+        if (chance <= 0.01) { // 1% Jackpot
+            icons = ['🛡️', '🛡️', '🛡️'];
+            title = '<span style="color: #10B981;">🎉 ¡VIAJE GRATIS! 🎉</span>';
+            msg = "Muéstrale esta pantalla a tu chofer ahora mismo.";
         } else {
-            resultDiv.innerHTML = '<h2 style="color: #EF4444;">¡Casi! 😅</h2><p>Hoy no hubo suerte, pero baja a ver las ofertas increíbles.</p>';
+            // 99% Consolation Prize
+            const foodTypes = [
+                { icon: '🍔', name: 'Hamburguesas' },
+                { icon: '🌮', name: 'Tacos' },
+                { icon: '🍕', name: 'Pizzas' },
+                { icon: '🍹', name: 'Bebidas' },
+                { icon: '✂️', name: 'Servicios' }
+            ];
+            
+            // Elegir el premio de consolación ganador (2 iguales)
+            const winFood = foodTypes[Math.floor(Math.random() * foodTypes.length)];
+            
+            // Elegir un ícono perdedor para la 3ra posición
+            let loseFood = foodTypes[Math.floor(Math.random() * foodTypes.length)];
+            while(loseFood.icon === winFood.icon) {
+                loseFood = foodTypes[Math.floor(Math.random() * foodTypes.length)];
+            }
+            
+            // El 50% de las veces, el ícono perdedor será 1 escudo de EncaviGO para emocionarlos
+            if(Math.random() > 0.5) {
+                loseFood = { icon: '🛡️', name: 'EncaviGO' };
+            }
+
+            icons = [winFood.icon, winFood.icon, loseFood.icon];
+            
+            // Revolver los íconos al azar
+            icons.sort(() => Math.random() - 0.5);
+            
+            title = `<span style="color: #F97316;">¡Descuento en ${winFood.name}!</span>`;
+            msg = `Juntaste 2 iguales. Busca tu oferta en la app 👇`;
         }
+        
+        resultDiv.innerHTML = `
+            <div style="font-size: 50px; letter-spacing: 15px; margin-bottom: 5px; text-shadow: 0 4px 10px rgba(0,0,0,0.1);">${icons.join('')}</div>
+            <h2 style="margin: 0 0 5px 0; font-size: 20px;">${title}</h2>
+            <p style="margin: 0; font-size: 14px; color: #4B5563; padding: 0 10px;">${msg}</p>
+        `;
         
         // Guardar que ya jugó hoy
         localStorage.setItem('encavigo_played', new Date().toDateString());
@@ -5912,4 +5952,4 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
-<!-- 1788643621.4204273 --><!-- 1788644024.345812 --><!-- v3 1788644297.9113197 --><!-- v5 1788644868.7509923 --><!-- v30 1788754865.844323 --><!-- v31 1788755154.999888 -->
+<!-- 1788643621.4204273 --><!-- 1788644024.345812 --><!-- v3 1788644297.9113197 --><!-- v5 1788644868.7509923 --><!-- v30 1788754865.844323 --><!-- v31 1788755154.999888 --><!-- v32 1788755428.695934 -->
