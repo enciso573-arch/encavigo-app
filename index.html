@@ -6031,19 +6031,13 @@ document.addEventListener('DOMContentLoaded', () => {
     let mapMarkers = [];
     let uMarker = null;
 
-    
-    
-    
-    
     const getMarkerIcon = (camp, isClose) => {
-        // Marcador estilo gota (Teardrop) puro CSS para máxima nitidez (cero pixeles)
         const size = isClose ? 36 : 24;
-        const color = isClose ? '#F97316' : '#9CA3AF'; // Naranja si está cerca, Gris si está lejos
+        const color = isClose ? '#F97316' : '#9CA3AF';
         const shadow = isClose ? '-3px 3px 12px rgba(249,115,22,0.8)' : '-2px 2px 6px rgba(0,0,0,0.4)';
         const anim = isClose ? 'animation: pulse 1.5s infinite;' : '';
         const zindex = isClose ? 'z-index: 1000;' : '';
 
-        // El HTML es una gota rotada a -45 grados, con un circulito blanco en el centro
         const html = `
             <div style="
                 width: ${size}px; 
@@ -6069,8 +6063,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 "></div>
             </div>
         `;
-        
-        // iconAnchor asegura que la "punta" de la gota apunte exactamente a la calle (mitad del ancho, fondo total)
         return L.divIcon({ 
             className: 'custom-div-icon', 
             html: html, 
@@ -6082,20 +6074,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const userIcon = L.divIcon({ className: 'custom-div-icon', html: "<div style='background:#3B82F6; width:15px; height:15px; border-radius:50%; border:2px solid white; box-shadow: 0 0 10px #3B82F6;'></div>", iconSize: [15, 15] });
 
     function openMap() {
-
         if (!window.fakesAdded) {
             window.fakesAdded = true;
             const fakeSpots = [
-                { title: 'Fake Marina', lat: 20.6625, lng: -105.2530, waMsg: 'Hola', img: 'logo_jackpot.jpg' },
-                { title: 'Fake Centro', lat: 20.6125, lng: -105.2340, waMsg: 'Hola', img: 'logo_jackpot.jpg' },
-                { title: 'Fake Olas Altas', lat: 20.5980, lng: -105.2395, waMsg: 'Hola', img: 'logo_jackpot.jpg' },
-                { title: 'Fake Versalles', lat: 20.6400, lng: -105.2280, waMsg: 'Hola', img: 'logo_jackpot.jpg' },
-                { title: 'Fake Nvo Vallarta', lat: 20.6970, lng: -105.2890, waMsg: 'Hola', img: 'logo_jackpot.jpg' },
-                { title: 'Fake Bucerias', lat: 20.7550, lng: -105.3340, waMsg: 'Hola', img: 'logo_jackpot.jpg' },
-                { title: 'Fake La Cruz', lat: 20.7380, lng: -105.3780, waMsg: 'Hola', img: 'logo_jackpot.jpg' },
-                { title: 'Fake Fluvial', lat: 20.6480, lng: -105.2250, waMsg: 'Hola', img: 'logo_jackpot.jpg' },
-                { title: 'Fake Pitillal', lat: 20.6485, lng: -105.2100, waMsg: 'Hola', img: 'logo_jackpot.jpg' },
-                { title: 'Fake Malecon', lat: 20.6080, lng: -105.2350, waMsg: 'Hola', img: 'logo_jackpot.jpg' }
+                { title: 'Fake Marina', lat: 20.6625, lng: -105.2530, waMsg: 'Hola' },
+                { title: 'Fake Centro', lat: 20.6125, lng: -105.2340, waMsg: 'Hola' },
+                { title: 'Fake Olas Altas', lat: 20.5980, lng: -105.2395, waMsg: 'Hola' },
+                { title: 'Fake Versalles', lat: 20.6400, lng: -105.2280, waMsg: 'Hola' },
+                { title: 'Fake Nvo Vallarta', lat: 20.6970, lng: -105.2890, waMsg: 'Hola' },
+                { title: 'Fake Bucerias', lat: 20.7550, lng: -105.3340, waMsg: 'Hola' },
+                { title: 'Fake La Cruz', lat: 20.7380, lng: -105.3780, waMsg: 'Hola' },
+                { title: 'Fake Fluvial', lat: 20.6480, lng: -105.2250, waMsg: 'Hola' },
+                { title: 'Fake Pitillal', lat: 20.6485, lng: -105.2100, waMsg: 'Hola' },
+                { title: 'Fake Malecon', lat: 20.6080, lng: -105.2350, waMsg: 'Hola' }
             ];
             window.loadedCampaigns.push(...fakeSpots);
         }
@@ -6108,14 +6099,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 attribution: '&copy; Google Maps'
             }).addTo(mapInstance);
             
-            // Crear marcador del usuario vacío (se llenará con el GPS)
             uMarker = L.marker([0, 0], {icon: userIcon}).bindPopup("Tu ubicación");
-            
-            // Plottear campañas iniciales
             plotCampaignsInicial();
         }
 
-        // Si tenemos la variable global de GPS (guardada por el watchPosition)
         if (window.currentLat && window.currentLng) {
             mapInstance.setView([window.currentLat, window.currentLng], 14);
             updateMapLive(window.currentLat, window.currentLng);
@@ -6127,27 +6114,22 @@ document.addEventListener('DOMContentLoaded', () => {
         allCamps.forEach(camp => {
             if (camp.lat && camp.lng) {
                 const marker = L.marker([camp.lat, camp.lng], {icon: getMarkerIcon(camp, false)}).addTo(mapInstance);
-                marker.camp = camp; // Guardamos los datos en el marcador
+                marker.camp = camp;
                 mapMarkers.push(marker);
             }
         });
     }
 
-    // Esta función se llamará constantemente mientras el taxi avanza
     function updateMapLive(uLat, uLng) {
         if (!mapInstance) return;
-
-        // Mover el punto azul del usuario
         if (!mapInstance.hasLayer(uMarker)) { uMarker.addTo(mapInstance); }
         uMarker.setLatLng([uLat, uLng]);
 
-        // Actualizar todos los negocios en vivo
         mapMarkers.forEach(marker => {
             const camp = marker.camp;
             const dist = haversine(uLat, uLng, parseFloat(camp.lat), parseFloat(camp.lng));
-            const isClose = dist <= 0.5; // 500 metros
+            const isClose = dist <= 0.5;
             
-            // Si te acercas a menos de 500m, se prende en naranja automáticamente!
             marker.setIcon(getMarkerIcon(camp, isClose));
             
             const waMsg = camp.waMsg || 'Hola';
@@ -6161,7 +6143,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    
     function centerMapOnUser() {
         if (mapInstance && window.currentLat && window.currentLng) {
             mapInstance.setView([window.currentLat, window.currentLng], 15);
@@ -6174,4 +6155,4 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
-<!-- 1788643621.4204273 --><!-- 1788644024.345812 --><!-- v3 1788644297.9113197 --><!-- v5 1788644868.7509923 --><!-- v30 1788754865.844323 --><!-- v31 1788755154.999888 --><!-- v32 1788755428.695934 --><!-- v33 1788755894.6145873 --><!-- v34 1788756310.8182855 --><!-- v35 1788756729.692731 --><!-- v36 1788757522.1940298 --><!-- v37 1788757840.1574607 --><!-- v38 1788758750.122479 --><!-- v39 1788759085.4792051 --><!-- v40 1788759246.2474997 --><!-- v41 1788759387.4171386 --><!-- v42 1788759604.4510093 --><!-- v43 1788759871.4546046 --><!-- v44 1788760120.8591197 --><!-- v45 1788760584.5052683 --><!-- v46 1788760862.3821852 --><!-- v47 1788761039.3862772 --><!-- v48 1788761186.6315851 -->
+<!-- 1788643621.4204273 --><!-- 1788644024.345812 --><!-- v3 1788644297.9113197 --><!-- v5 1788644868.7509923 --><!-- v30 1788754865.844323 --><!-- v31 1788755154.999888 --><!-- v32 1788755428.695934 --><!-- v33 1788755894.6145873 --><!-- v34 1788756310.8182855 --><!-- v35 1788756729.692731 --><!-- v36 1788757522.1940298 --><!-- v37 1788757840.1574607 --><!-- v38 1788758750.122479 --><!-- v39 1788759085.4792051 --><!-- v40 1788759246.2474997 --><!-- v41 1788759387.4171386 --><!-- v42 1788759604.4510093 --><!-- v43 1788759871.4546046 --><!-- v44 1788760120.8591197 --><!-- v45 1788760584.5052683 --><!-- v46 1788760862.3821852 --><!-- v47 1788761039.3862772 --><!-- v48 1788761186.6315851 --><!-- v49 1788761273.7822204 -->
