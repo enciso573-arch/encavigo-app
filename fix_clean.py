@@ -1,162 +1,146 @@
-﻿from bs4 import BeautifulSoup
+﻿import re
+import time
 
 with open('index.html', 'r', encoding='utf-8') as f:
     html = f.read()
 
-soup = BeautifulSoup(html, 'html.parser')
+# I will completely replace the <script> block containing leaflet logic
+old_block_match = re.search(r'<script>\s*let mapInstance = null;.*?</script>', html, flags=re.DOTALL)
 
-# 1. Change all swipe-btn texts to "Activar código"
-for btn in soup.find_all('a', class_='swipe-btn'):
-    # Preserve SVG if it has one
-    svg = btn.find('svg')
-    btn.string = 'Activar código'
-    if svg:
-        btn.insert(0, svg)
+clean_script = """<script>
+    let mapInstance = null;
+    let mapMarkers = [];
+    let uMarker = null;
 
-# 2. Fix JS logic completely
-for s in soup.find_all('script'):
-    s.decompose()
+    const getMarkerIcon = (camp, isClose) => {
+        const size = isClose ? 36 : 24;
+        const color = isClose ? '#F97316' : '#9CA3AF';
+        const shadow = isClose ? '-3px 3px 12px rgba(249,115,22,0.8)' : '-2px 2px 6px rgba(0,0,0,0.4)';
+        const anim = isClose ? 'animation: pulse 1.5s infinite;' : '';
+        const zindex = isClose ? 'z-index: 1000;' : '';
 
-new_script = '''
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    // ------------------------------------------------------------
-    // 1. SISTEMA DE SESIÓN (24 HORAS) Y CÓDIGO ÚNICO
-    // ------------------------------------------------------------
-    const SESSION_HOURS = 24;
-    const SESSION_KEY = 'encavigo_session';
-    
-    // Obtener parámetros de la URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const paramChofer = urlParams.get('chofer');
-    
-    let session = null;
-    try {
-        session = JSON.parse(localStorage.getItem(SESSION_KEY));
-    } catch(e) {}
-    
-    const now = Date.now();
-    
-    // Resetear sesión si hay nuevo parámetro chofer en URL
-    if (paramChofer) {
-        session = null; 
-    }
-    
-    if (!session) {
-        // Generar código único aleatorio
-        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-        let uniqueCode = 'ENC-';
-        for(let i=0; i<4; i++) uniqueCode += chars.charAt(Math.floor(Math.random() * chars.length));
+        const html = `
+            <div style="
+                width: ${size}px; 
+                height: ${size}px; 
+                background: ${color}; 
+                border-radius: 50% 50% 50% 0; 
+                transform: rotate(-45deg); 
+                border: 2px solid white; 
+                box-shadow: ${shadow}; 
+                position: relative;
+                ${anim}
+                ${zindex}
+            ">
+                <div style="
+                    width: ${size/2.5}px; 
+                    height: ${size/2.5}px; 
+                    background: white; 
+                    border-radius: 50%; 
+                    position: absolute; 
+                    top: 50%; 
+                    left: 50%; 
+                    transform: translate(-50%, -50%);
+                "></div>
+            </div>
+        `;
+        return L.divIcon({ 
+            className: 'custom-div-icon', 
+            html: html, 
+            iconSize: [size, size],
+            iconAnchor: [size/2, size]
+        });
+    };
+
+    const userIcon = L.divIcon({ className: 'custom-div-icon', html: "<div style='background:#3B82F6; width:15px; height:15px; border-radius:50%; border:2px solid white; box-shadow: 0 0 10px #3B82F6;'></div>", iconSize: [15, 15] });
+
+    function openMap() {
+        if (!window.fakesAdded) {
+            window.fakesAdded = true;
+            const fakeSpots = [
+                { title: 'Fake Marina', lat: 20.6625, lng: -105.2530, waMsg: 'Hola' },
+                { title: 'Fake Centro', lat: 20.6125, lng: -105.2340, waMsg: 'Hola' },
+                { title: 'Fake Olas Altas', lat: 20.5980, lng: -105.2395, waMsg: 'Hola' },
+                { title: 'Fake Versalles', lat: 20.6400, lng: -105.2280, waMsg: 'Hola' },
+                { title: 'Fake Nvo Vallarta', lat: 20.6970, lng: -105.2890, waMsg: 'Hola' },
+                { title: 'Fake Bucerias', lat: 20.7550, lng: -105.3340, waMsg: 'Hola' },
+                { title: 'Fake La Cruz', lat: 20.7380, lng: -105.3780, waMsg: 'Hola' },
+                { title: 'Fake Fluvial', lat: 20.6480, lng: -105.2250, waMsg: 'Hola' },
+                { title: 'Fake Pitillal', lat: 20.6485, lng: -105.2100, waMsg: 'Hola' },
+                { title: 'Fake Malecon', lat: 20.6080, lng: -105.2350, waMsg: 'Hola' }
+            ];
+            window.loadedCampaigns.push(...fakeSpots);
+        }
+
+        document.getElementById('mapModal').style.display = 'flex';
         
-        session = {
-            timestamp: now,
-            code: uniqueCode,
-            chofer: paramChofer || 'orgánico'
-        };
-        localStorage.setItem(SESSION_KEY, JSON.stringify(session));
-        
-        // Limpiar URL
-        if(paramChofer) {
-            window.history.replaceState({}, document.title, window.location.pathname);
+        if (!mapInstance) {
+            mapInstance = L.map('map').setView([20.6534, -105.2253], 13);
+            L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+                attribution: '&copy; Google Maps'
+            }).addTo(mapInstance);
+            
+            uMarker = L.marker([0, 0], {icon: userIcon}).bindPopup("Tu ubicación");
+            plotCampaignsInicial();
         }
-    } else {
-        const diffHours = (now - session.timestamp) / (1000 * 60 * 60);
-        if (diffHours > SESSION_HOURS) {
-            document.body.innerHTML = 
-                <div style="height: 100dvh; width: 100vw; background: #000; color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; font-family: sans-serif;">
-                    <div style="font-size: 50px; margin-bottom: 20px;">🔒</div>
-                    <h1 style="font-size: 24px; font-weight: 900; margin-bottom: 10px;">Sesión Expirada</h1>
-                    <p style="color: #94A3B8; line-height: 1.5;">Tu código promocional ha caducado. Sube a un vehículo afiliado a EncaviGO y escanea un código QR nuevo para desbloquear las ofertas de hoy.</p>
-                </div>
-            ;
-            localStorage.removeItem(SESSION_KEY);
-            return;
-        }
-    }
-    
-    // ------------------------------------------------------------
-    // 2. AÑADIR EL CÓDIGO A WHATSAPP
-    // ------------------------------------------------------------
-    const waLinks = document.querySelectorAll('a[href*="wa.me"]');
-    waLinks.forEach(link => {
-        let originalHref = link.getAttribute('href');
-        if (!originalHref.includes('código')) {
-            const addText =  Mi código de promo es:  (Unidad: );
-            link.setAttribute('href', originalHref + encodeURIComponent(addText));
-        }
-    });
 
-    // ------------------------------------------------------------
-    // 3. RADAR GPS INTELIGENTE
-    // ------------------------------------------------------------
-    const cards = document.querySelectorAll('.immersive-card');
-    
-    // Asignamos coords a la segunda tarjeta (Restaurante) para que haya una de prueba
-    if(cards.length > 1) {
-        cards[1].setAttribute('data-lat', '20.6025');
-        cards[1].setAttribute('data-lng', '-105.2325');
-        cards[1].setAttribute('data-title', 'Cena al Carbón 2x1');
-        cards[1].setAttribute('data-desc', 'Muestra esta pantalla en Asador El Pariente');
-        cards[1].setAttribute('data-img', 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=300&q=80');
-    }
-    
-    function haversine(lat1, lon1, lat2, lon2) {
-        const R = 6371; 
-        const dLat = (lat2 - lat1) * Math.PI / 180;
-        const dLon = (lon2 - lon1) * Math.PI / 180;
-        const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
-        return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))); 
+        if (window.currentLat && window.currentLng) {
+            mapInstance.setView([window.currentLat, window.currentLng], 14);
+            updateMapLive(window.currentLat, window.currentLng);
+        }
     }
 
-    const drawerBadge = document.querySelector('.pullup-badge');
-    const sheetContent = document.querySelector('.sheet-content');
-    
-    function actualizarRadar(userLat, userLng) {
-        let cercanas = [];
-        cards.forEach(card => {
-            const cLat = card.getAttribute('data-lat');
-            const cLng = card.getAttribute('data-lng');
-            if (cLat && cLng) {
-                const dist = haversine(userLat, userLng, parseFloat(cLat), parseFloat(cLng));
-                if (dist <= 2.0) { // Ampliado a 2km para facilidad de prueba
-                    cercanas.push({
-                        title: card.getAttribute('data-title'),
-                        desc: card.getAttribute('data-desc'),
-                        img: card.getAttribute('data-img'),
-                        distKm: dist
-                    });
-                }
+    function plotCampaignsInicial() {
+        const allCamps = window.loadedCampaigns || [];
+        allCamps.forEach(camp => {
+            if (camp.lat && camp.lng) {
+                const marker = L.marker([camp.lat, camp.lng], {icon: getMarkerIcon(camp, false)}).addTo(mapInstance);
+                marker.camp = camp;
+                mapMarkers.push(marker);
             }
         });
-        
-        if (drawerBadge) drawerBadge.innerText = cercanas.length;
-        
-        if (sheetContent && cercanas.length > 0) {
-            let html = '<p style="font-size: 12px; color: #34D399; text-align: center; margin-top:0;">El conductor se acerca a estos lugares:</p>';
-            cercanas.forEach(local => {
-                const mins = Math.max(1, Math.round(local.distKm * 5));
-                html += <div class="mini-card"><div class="mini-card-img" style="background-image: url('');"></div><div class="mini-card-info"><h4 class="mini-title"></h4><p class="mini-desc"> A  mins.</p></div></div>;
-            });
-            sheetContent.innerHTML = html;
-        } else if (sheetContent) {
-            sheetContent.innerHTML = '<p style="text-align:center; color:#94A3B8; margin-top:20px;">No hay promociones extremadamente cerca de ti en este momento.</p>';
+    }
+
+    function updateMapLive(uLat, uLng) {
+        if (!mapInstance) return;
+        if (!mapInstance.hasLayer(uMarker)) { uMarker.addTo(mapInstance); }
+        uMarker.setLatLng([uLat, uLng]);
+
+        mapMarkers.forEach(marker => {
+            const camp = marker.camp;
+            const dist = haversine(uLat, uLng, parseFloat(camp.lat), parseFloat(camp.lng));
+            const isClose = dist <= 0.5;
+            
+            marker.setIcon(getMarkerIcon(camp, isClose));
+            
+            const waMsg = camp.waMsg || 'Hola';
+            const waUrl = `https://wa.me/523221592596?text=${encodeURIComponent(waMsg)}`;
+            const popupContent = `
+                <div class="map-popup-title">${camp.title}</div>
+                <div style="font-size:12px; margin-bottom:8px;">${isClose ? '🔥 A menos de 500m de ti' : '📍 A ' + dist.toFixed(1) + ' km'}</div>
+                <a href="${waUrl}" target="_blank" class="map-popup-btn">Activar Promo</a>
+            `;
+            marker.setPopupContent(popupContent);
+        });
+    }
+
+    function centerMapOnUser() {
+        if (mapInstance && window.currentLat && window.currentLng) {
+            mapInstance.setView([window.currentLat, window.currentLng], 15);
         }
     }
 
-    // Pedir permiso de GPS al tocar cualquier parte de la pantalla si no se ha pedido (Mejor UX para móviles que bloquean peticiones automáticas)
-    let gpsRequested = false;
-    document.body.addEventListener('click', () => {
-        if(!gpsRequested && 'geolocation' in navigator) {
-            gpsRequested = true;
-            navigator.geolocation.watchPosition((position) => {
-                actualizarRadar(position.coords.latitude, position.coords.longitude);
-            }, (err) => console.log(err), { enableHighAccuracy: true });
-        }
-    }, {once: true});
-});
-</script>
-'''
-soup.find('body').append(BeautifulSoup(new_script, 'html.parser'))
+    function closeMap() {
+        document.getElementById('mapModal').style.display = 'none';
+    }
+</script>"""
 
-with open('index.html', 'w', encoding='utf-8') as f:
-    f.write(str(soup))
+if old_block_match:
+    html = html.replace(old_block_match.group(0), clean_script)
+    html += f"<!-- v49 {time.time()} -->"
+    with open('index.html', 'w', encoding='utf-8') as f:
+        f.write(html)
+    print("Fixed script successfully")
+else:
+    print("Could not find the script block")
+
