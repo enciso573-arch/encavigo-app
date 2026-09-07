@@ -5477,6 +5477,34 @@
 </head>
 <body>
 
+<!-- SPLASH SCREEN DE BIENVENIDA -->
+<div id="splashScreen" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #0F172A; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; transition: opacity 0.4s ease, visibility 0.4s ease;">
+    <!-- LOGO TIPOGRAFICO GIGANTE -->
+    <div style="font-size: 60px; font-weight: 900; letter-spacing: 1px; margin-bottom: 20px; text-shadow: 0 4px 15px rgba(249,115,22,0.3);">
+        <span style="color: white;">Encavi</span><span style="color: #F97316;">GO</span>
+    </div>
+    
+    <h1 style="color: white; font-size: 24px; margin-bottom: 15px;">¡Bienvenido!</h1>
+    
+    <p style="color: #94A3B8; font-size: 16px; line-height: 1.5; max-width: 300px; margin-bottom: 40px;">
+        Descubre descuentos exclusivos y promociones dinámicas en tu ruta.<br><br>
+        Las mejores ofertas se mueven y cambian todos los días. ¡Atrápalas mientras viajas!
+    </p>
+    
+    <button onclick="cerrarSplash()" style="background: #F97316; color: white; border: none; padding: 15px 30px; border-radius: 30px; font-size: 18px; font-weight: bold; box-shadow: 0 4px 15px rgba(249,115,22,0.4); cursor: pointer;">
+        Comenzar a explorar 👉
+    </button>
+</div>
+
+<script>
+function cerrarSplash() {
+    const splash = document.getElementById('splashScreen');
+    splash.style.opacity = '0';
+    setTimeout(() => { splash.style.visibility = 'hidden'; }, 400);
+}
+</script>
+
+
 
 
 <div class="app-container">
@@ -5512,11 +5540,8 @@
 <header class="app-header">
 <!-- IZQUIERDA: logo + tÃ­tulo + ubicaciÃ³n -->
 <div class="header-left">
-<div class="header-logo" style="background: white; display: flex; align-items: center; justify-content: center; padding: 2px;">
-    <img src="logo_icon.png" style="width: 20px; height: 20px; object-fit: contain;">
-</div>
-<div class="header-brand-stack">
-<span class="header-title">Encavi<em>GO</em></span>
+<div class="header-brand-stack" style="margin-left: 5px;">
+    <span class="header-title" style="font-size: 20px; font-weight: 900; letter-spacing: 0.5px;">Encavi<span style="color: #F97316;">GO</span></span>
 <!-- UbicaciÃ³n colapsable â€” chevron indica que es interactiva -->
 <button aria-label="Cambiar zona" class="header-location">
 <!-- Pin -->
@@ -5759,15 +5784,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderDeck(deck) {
         if(!mainFeed) return;
         
-        // Inyectar tarjeta de bienvenida al principio
-        const welcomeCard = {
-            isWelcome: true,
-            title: "¡Bienvenido a EncaviGO!",
-            desc: "Desliza tu dedo hacia arriba para descubrir ofertas exclusivas, restaurantes y negocios cerca de tu ruta.<br><br>🎲 ¡Toca el botón naranja de arriba para jugar y ganar tu VIAJE GRATIS!",
-            badge: "¡GRACIAS POR ESCANEAR!",
-            img: "logo_full.png" 
-        };
-        deck.unshift(welcomeCard);
+        
         
 let html = '';
         deck.forEach(camp => {
@@ -5777,17 +5794,7 @@ let html = '';
             
             html += `
             <article class="immersive-card">
-                  <div class="card-bg" style="background-image: url('${camp.img || ''}'); ${camp.isWelcome ? 'background-color: #FFF6EC; background-size: contain; background-position: center 30%; background-repeat: no-repeat;' : ''}"></div>
-                <div class="card-overlay" style="background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.1) 100%);"></div>
-                <div class="card-ui">
-                    <div class="card-badge" style="background: rgba(245, 158, 11, 0.2); border-color: rgba(245, 158, 11, 0.5); color: #FBBF24;">
-                        ✨ ${camp.badge || 'PROMO ACTIVA'}
-                    </div>
-                    <h2 class="card-headline">${camp.title || ''}</h2>
-                    <p class="card-body">${camp.desc || ''}</p>
-                    ${camp.isWelcome 
-                        ? '<div class="swipe-btn" style="background:#F97316; cursor:default;">Desliza hacia arriba para empezar 👇</div>' 
-                        : `<a href="${waUrl}" target="_blank" rel="noopener" class="swipe-btn track-click" data-campid="${camp.id}">Activar código</a>`}
+                  <div class="card-bg" style="background-image: url('${camp.img || ''}'); <a href="${waUrl}" target="_blank" rel="noopener" class="swipe-btn track-click" data-campid="${camp.id}">Activar código</a>
                 </div>
             </article>
             `;
@@ -6148,4 +6155,4 @@ let html = '';
 </script>
 </body>
 </html>
-<!-- 1788643621.4204273 --><!-- 1788644024.345812 --><!-- v3 1788644297.9113197 --><!-- v5 1788644868.7509923 --><!-- v30 1788754865.844323 --><!-- v31 1788755154.999888 --><!-- v32 1788755428.695934 --><!-- v33 1788755894.6145873 --><!-- v34 1788756310.8182855 --><!-- v35 1788756729.692731 --><!-- v36 1788757522.1940298 --><!-- v37 1788757840.1574607 --><!-- v38 1788758750.122479 --><!-- v39 1788759085.4792051 --><!-- v40 1788759246.2474997 --><!-- v41 1788759387.4171386 --><!-- v42 1788759604.4510093 --><!-- v43 1788759871.4546046 --><!-- v44 1788760120.8591197 --><!-- v45 1788760584.5052683 --><!-- v46 1788760862.3821852 --><!-- v47 1788761039.3862772 --><!-- v48 1788761186.6315851 --><!-- v49 1788761273.7822204 --><!-- v50 1788761362.1666484 --><!-- v51 1788762352.3276358 --><!-- v52 1788762686.2584164 --><!-- force deployment 1788808941.4759107 --><!-- v53 1788809833.6565394 --><!-- v54 1788810003.285689 --><!-- v55 1788810586.1448035 --><!-- v56 1788810866.2603304 --><!-- v57 1788811008.826087 -->
+<!-- 1788643621.4204273 --><!-- 1788644024.345812 --><!-- v3 1788644297.9113197 --><!-- v5 1788644868.7509923 --><!-- v30 1788754865.844323 --><!-- v31 1788755154.999888 --><!-- v32 1788755428.695934 --><!-- v33 1788755894.6145873 --><!-- v34 1788756310.8182855 --><!-- v35 1788756729.692731 --><!-- v36 1788757522.1940298 --><!-- v37 1788757840.1574607 --><!-- v38 1788758750.122479 --><!-- v39 1788759085.4792051 --><!-- v40 1788759246.2474997 --><!-- v41 1788759387.4171386 --><!-- v42 1788759604.4510093 --><!-- v43 1788759871.4546046 --><!-- v44 1788760120.8591197 --><!-- v45 1788760584.5052683 --><!-- v46 1788760862.3821852 --><!-- v47 1788761039.3862772 --><!-- v48 1788761186.6315851 --><!-- v49 1788761273.7822204 --><!-- v50 1788761362.1666484 --><!-- v51 1788762352.3276358 --><!-- v52 1788762686.2584164 --><!-- force deployment 1788808941.4759107 --><!-- v53 1788809833.6565394 --><!-- v54 1788810003.285689 --><!-- v55 1788810586.1448035 --><!-- v56 1788810866.2603304 --><!-- v57 1788811008.826087 --><!-- v58 1788812730.3076658 -->
