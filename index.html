@@ -6034,18 +6034,51 @@ document.addEventListener('DOMContentLoaded', () => {
     
     
     
+    
     const getMarkerIcon = (camp, isClose) => {
-        const size = isClose ? 45 : 30; // Más grandes para que se vean bien
-        const border = isClose ? '3px solid #F97316' : '2px solid white';
-        const shadow = isClose ? '0 0 15px #F97316' : '0 3px 6px rgba(0,0,0,0.4)';
+        // Marcador estilo gota (Teardrop) puro CSS para máxima nitidez (cero pixeles)
+        const size = isClose ? 36 : 24;
+        const color = isClose ? '#F97316' : '#9CA3AF'; // Naranja si está cerca, Gris si está lejos
+        const shadow = isClose ? '-3px 3px 12px rgba(249,115,22,0.8)' : '-2px 2px 6px rgba(0,0,0,0.4)';
         const anim = isClose ? 'animation: pulse 1.5s infinite;' : '';
+        const zindex = isClose ? 'z-index: 1000;' : '';
+
+        // El HTML es una gota rotada a -45 grados, con un circulito blanco en el centro
+        const html = `
+            <div style="
+                width: ${size}px; 
+                height: ${size}px; 
+                background: ${color}; 
+                border-radius: 50% 50% 50% 0; 
+                transform: rotate(-45deg); 
+                border: 2px solid white; 
+                box-shadow: ${shadow}; 
+                position: relative;
+                ${anim}
+                ${zindex}
+            ">
+                <div style="
+                    width: ${size/2.5}px; 
+                    height: ${size/2.5}px; 
+                    background: white; 
+                    border-radius: 50%; 
+                    position: absolute; 
+                    top: 50%; 
+                    left: 50%; 
+                    transform: translate(-50%, -50%);
+                "></div>
+            </div>
+        `;
         
-        // Usar la foto del negocio o el logo por defecto
-        const bgImg = camp.img || 'logo_jackpot.jpg';
-        const bg = `background-image: url('${bgImg}'); background-size: cover; background-position: center;`;
-        
-        const html = `<div style="width:${size}px; height:${size}px; border-radius:50%; border:${border}; box-shadow:${shadow}; ${anim} ${bg}"></div>`;
-        return L.divIcon({ className: 'custom-div-icon', html: html, iconSize: [size, size] });
+        // iconAnchor asegura que la "punta" de la gota apunte exactamente a la calle (mitad del ancho, fondo total)
+        return L.divIcon({ 
+            className: 'custom-div-icon', 
+            html: html, 
+            iconSize: [size, size],
+            iconAnchor: [size/2, size]
+        });
+    };
+
     };
 
     const userIcon = L.divIcon({ className: 'custom-div-icon', html: "<div style='background:#3B82F6; width:15px; height:15px; border-radius:50%; border:2px solid white; box-shadow: 0 0 10px #3B82F6;'></div>", iconSize: [15, 15] });
@@ -6143,4 +6176,4 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
-<!-- 1788643621.4204273 --><!-- 1788644024.345812 --><!-- v3 1788644297.9113197 --><!-- v5 1788644868.7509923 --><!-- v30 1788754865.844323 --><!-- v31 1788755154.999888 --><!-- v32 1788755428.695934 --><!-- v33 1788755894.6145873 --><!-- v34 1788756310.8182855 --><!-- v35 1788756729.692731 --><!-- v36 1788757522.1940298 --><!-- v37 1788757840.1574607 --><!-- v38 1788758750.122479 --><!-- v39 1788759085.4792051 --><!-- v40 1788759246.2474997 --><!-- v41 1788759387.4171386 --><!-- v42 1788759604.4510093 --><!-- v43 1788759871.4546046 --><!-- v44 1788760120.8591197 --><!-- v45 1788760584.5052683 --><!-- v46 1788760862.3821852 -->
+<!-- 1788643621.4204273 --><!-- 1788644024.345812 --><!-- v3 1788644297.9113197 --><!-- v5 1788644868.7509923 --><!-- v30 1788754865.844323 --><!-- v31 1788755154.999888 --><!-- v32 1788755428.695934 --><!-- v33 1788755894.6145873 --><!-- v34 1788756310.8182855 --><!-- v35 1788756729.692731 --><!-- v36 1788757522.1940298 --><!-- v37 1788757840.1574607 --><!-- v38 1788758750.122479 --><!-- v39 1788759085.4792051 --><!-- v40 1788759246.2474997 --><!-- v41 1788759387.4171386 --><!-- v42 1788759604.4510093 --><!-- v43 1788759871.4546046 --><!-- v44 1788760120.8591197 --><!-- v45 1788760584.5052683 --><!-- v46 1788760862.3821852 --><!-- v47 1788761039.3862772 -->
