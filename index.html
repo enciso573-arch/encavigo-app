@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 
 <html lang="es-MX" translate="no">
 <head>
@@ -6134,14 +6134,15 @@ document.addEventListener('DOMContentLoaded', () => {
     function mostrarCodigo(campId, cajaId, title) {
         document.getElementById('codigoModal').style.display = 'flex';
         document.getElementById('codigoNegocio').innerText = title;
-        let codigoMostrar = (session && session.code) ? session.code : 'ENC-????';
-        if (session && !session.code) {
+        let _s = null;
+        try { _s = JSON.parse(localStorage.getItem('encavigo_session')); } catch(e) {}
+        let codigoMostrar = (_s && _s.code) ? _s.code : null;
+        if (!codigoMostrar) {
             const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
             let k = 'ENC-';
             for (let i = 0; i < 4; i++) k += chars[Math.floor(Math.random() * chars.length)];
-            session.code = k;
             codigoMostrar = k;
-            localStorage.setItem('encavigo_session', JSON.stringify(session));
+            if (_s) { _s.code = k; localStorage.setItem('encavigo_session', JSON.stringify(_s)); }
         }
         document.getElementById('codigoTexto').innerText = codigoMostrar;
         document.getElementById('btnEscanearCaja').onclick = function() {
