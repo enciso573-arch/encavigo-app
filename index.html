@@ -5783,21 +5783,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // ALGORITMO DE BARAJA INTELIGENTE (Max 15 Tarjetas)
     function renderDeck(deck) {
         if(!mainFeed) return;
-        
-        
-        
-let html = '';
+        let html = '';
         deck.forEach(camp => {
-            const fullMsg = `Hola, quiero activar la promo de ${camp.title}. Mi código es: ${session ? session.code : 'N/A'} (Unidad: ${session ? session.chofer : 'N/A'})`;
-            const waUrl = `https://wa.me/523221592596?text=${encodeURIComponent(fullMsg)}`;
-            
             html += `
             <article class="immersive-card">
                 <div class="card-bg" style="background-image: url('${camp.img || ''}'); background-size: cover; background-position: center;"></div>
                 <div class="card-overlay" style="background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.1) 100%);"></div>
                 <div class="card-ui">
                     <div class="card-badge" style="background: rgba(245, 158, 11, 0.2); border-color: rgba(245, 158, 11, 0.5); color: #FBBF24;">
-                        ✨ ${camp.badge || 'PROMO ACTIVA'}
+                        ★ ${camp.badge || 'PROMO ACTIVA'}
                     </div>
                     <h2 class="card-headline">${camp.title || ''}</h2>
                     <p class="card-body">${camp.desc || ''}</p>
@@ -5839,15 +5833,6 @@ let html = '';
                 }
                 
                 abrirScanner(cid, cajaId, title);
-            });
-        });
-                    if (session && session.chofer !== 'orgánico') {
-                        db.collection('choferes').doc(session.chofer).update({ clicks: firebase.firestore.FieldValue.increment(1) });
-                    }
-                    if (cid) {
-                        db.collection('campaigns').doc(cid).update({ clicks: firebase.firestore.FieldValue.increment(1) });
-                    }
-                } catch(err) { console.error(err); }
             });
         });
     }
