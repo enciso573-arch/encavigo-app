@@ -307,6 +307,13 @@
         });
         
         // Leer Top Chofer
+        // Contar tickets quemados
+        db.collection('tickets').where('status', '==', 'quemado').onSnapshot(snap => {
+            const total = snap.size;
+            const el = document.getElementById('val-quemados');
+            if(el) el.innerText = total;
+        });
+
         db.collection('choferes').orderBy('scans', 'desc').limit(1).onSnapshot(snapshot => {
             if(!snapshot.empty) {
                 const topChofer = snapshot.docs[0];
@@ -493,7 +500,9 @@ function closeModal() {
                                 <th>Nombre de la Campaña</th>
                                 <th>Tipo de Oferta</th>
                                 <th>Estado</th>
-                                <th>Clics Generados</th>
+                                <th>Clics</th>
+                                  <th>Stock</th>
+                                  <th>Quemados</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -510,6 +519,8 @@ function closeModal() {
                                 <td>${c.badge || '-'}</td>
                                 <td>${c.active ? '<span style="color: #10B981;">● Activo</span>' : '<span style="color: #EF4444;">● Pausado</span>'}</td>
                                 <td class="highlight">+${clics} interacciones</td>
+                                  <td>${c.stock !== undefined ? c.stock : 'N/A'}</td>
+                                  <td id="burned-${doc.id}">...</td>
                             </tr>
                 `;
             });
