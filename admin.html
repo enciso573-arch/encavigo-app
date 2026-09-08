@@ -380,7 +380,31 @@
         });
     });
 
-    function closeModal() {
+    
+    let editModeId = null;
+
+    function openEditModal(id, title, desc, img, badge, lat, lng, stock, caja_id, start, end) {
+        document.getElementById('cTitle').value = title || '';
+        document.getElementById('cDesc').value = desc || '';
+        document.getElementById('cImg').value = img || '';
+        document.getElementById('cBadge').value = badge || '';
+        document.getElementById('cLat').value = lat || '';
+        document.getElementById('cLng').value = lng || '';
+        document.getElementById('cStock').value = stock || '50';
+        document.getElementById('cCaja').value = caja_id || '';
+        document.getElementById('cStart').value = start || '';
+        document.getElementById('cEnd').value = end || '';
+        
+        editModeId = id;
+        document.getElementById('addModal').style.display = 'flex';
+    }
+
+    function openAddModal() {
+        limpiarFormulario();
+        document.getElementById('addModal').style.display = 'flex';
+    }
+
+function closeModal() {
         document.getElementById('addModal').style.display = 'none';
     }
 
