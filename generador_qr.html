@@ -1,0 +1,66 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Generador de Acrílicos QR - EncaviGO</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        body { font-family: sans-serif; background: #f3f4f6; display: flex; flex-direction: column; align-items: center; padding: 40px; }
+        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; max-width: 400px; width: 100%; }
+        input { width: 100%; padding: 12px; margin: 15px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
+        button { background: #F97316; color: white; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-size: 16px; width: 100%; font-weight: bold; }
+        #qr-container { margin-top: 30px; display: flex; justify-content: center; padding: 20px; background: white; border: 2px dashed #ccc; border-radius: 12px; }
+        .print-btn { background: #111827; margin-top: 15px; }
+        @media print {
+            body * { visibility: hidden; }
+            #print-area, #print-area * { visibility: visible; }
+            #print-area { position: absolute; left: 0; top: 0; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-top: 100px;}
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>Generador de Acrílico QR</h2>
+        <p style="color: #64748b; font-size: 14px;">Ingresa el "Código Secreto (Caja ID)" que le asignaste al negocio en tu Panel de Administrador.</p>
+        
+        <input type="text" id="cajaId" placeholder="Ej. pizzerialosarcos">
+        <input type="text" id="nombreNegocio" placeholder="Nombre visible (Ej. Pizzería Los Arcos)">
+        
+        <button onclick="generarQR()">Generar Código QR</button>
+        
+        <div id="print-area">
+            <h1 id="displayNombre" style="margin-bottom: 5px; display: none;"></h1>
+            <h3 id="displayTexto" style="color: #F97316; margin-top: 0; display: none;">Escanea aquí para validar tu promo</h3>
+            <div id="qr-container"></div>
+        </div>
+        
+        <button class="print-btn" onclick="window.print()" id="btnImprimir" style="display:none;">🖨️ Imprimir Acrílico</button>
+    </div>
+
+    <script>
+        let qrcode = null;
+        function generarQR() {
+            const texto = document.getElementById('cajaId').value.trim();
+            const nombre = document.getElementById('nombreNegocio').value.trim();
+            
+            if(!texto) { alert("Ingresa el ID secreto de la caja."); return; }
+            
+            document.getElementById('qr-container').innerHTML = "";
+            document.getElementById('displayNombre').innerText = nombre;
+            document.getElementById('displayNombre').style.display = 'block';
+            document.getElementById('displayTexto').style.display = 'block';
+            document.getElementById('btnImprimir').style.display = 'block';
+            
+            qrcode = new QRCode(document.getElementById("qr-container"), {
+                text: texto,
+                width: 256,
+                height: 256,
+                colorDark : "#000000",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+        }
+    </script>
+</body>
+</html>
