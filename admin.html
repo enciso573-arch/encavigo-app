@@ -413,7 +413,6 @@ function closeModal() {
         const desc = document.getElementById('cDesc').value;
         const img = document.getElementById('cImg').value;
         const badge = document.getElementById('cBadge').value;
-        
         const lat = document.getElementById('cLat').value;
         const lng = document.getElementById('cLng').value;
         const startDate = document.getElementById('cStart').value;
@@ -423,26 +422,18 @@ function closeModal() {
 
         if(!title || !img) { alert('Título e Imagen son obligatorios'); return; }
 
-        db.collection('campaigns').add({
-            title: title,
-            desc: desc,
-            img: img,
-            badge: badge,
-            waMsg: waMsg || 'Hola',
-            lat: lat,
-            lng: lng,
-            clicks: 0,
-            active: true,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(() => {
-            closeModal();
-            // Limpiar form
-            document.getElementById('cTitle').value = '';
-            document.getElementById('cDesc').value = '';
-            document.getElementById('cImg').value = '';
-            document.getElementById('cBadge').value = '';
-            document.getElementById('cWaMsg').value = '';
-        }).catch(err => alert('Error guardando: ' + err));
+        const data = { title, desc, img, badge, lat, lng, stock, caja_id, startDate: startDate || null, endDate: endDate || null, active: true };
+
+        if (typeof editModeId !== 'undefined' && editModeId) {
+            db.collection('campaigns').doc(editModeId).update(data).then(() => { alert('¡Campaña Actualizada exitosamente!'); closeModal(); limpiarFormulario(); }).catch(err => alert('Error: ' + err));
+        } else {
+            data.clicks = 0; data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+            db.collection('campaigns').add(data).then(() => { alert('¡Campaña Creada exitosamente!'); closeModal(); limpiarFormulario(); }).catch(err => alert('Error: ' + err));
+        }
+    }
+
+    function limpiarFormulario() {
+        document.getElementById('cTitle').value = ''; document.getElementById('cDesc').value = ''; document.getElementById('cImg').value = ''; document.getElementById('cBadge').value = ''; document.getElementById('cLat').value = ''; document.getElementById('cLng').value = ''; document.getElementById('cStock').value = '50'; document.getElementById('cCaja').value = ''; document.getElementById('cStart').value = ''; document.getElementById('cEnd').value = ''; if(typeof editModeId !== 'undefined') editModeId = null;
     }
 
     function deleteCampaign(id) {
