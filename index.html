@@ -6134,7 +6134,16 @@ document.addEventListener('DOMContentLoaded', () => {
     function mostrarCodigo(campId, cajaId, title) {
         document.getElementById('codigoModal').style.display = 'flex';
         document.getElementById('codigoNegocio').innerText = title;
-        document.getElementById('codigoTexto').innerText = session ? session.code : 'ENC-????';
+        let codigoMostrar = (session && session.code) ? session.code : 'ENC-????';
+        if (session && !session.code) {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let k = 'ENC-';
+            for (let i = 0; i < 4; i++) k += chars[Math.floor(Math.random() * chars.length)];
+            session.code = k;
+            codigoMostrar = k;
+            localStorage.setItem('encavigo_session', JSON.stringify(session));
+        }
+        document.getElementById('codigoTexto').innerText = codigoMostrar;
         document.getElementById('btnEscanearCaja').onclick = function() {
             document.getElementById('codigoModal').style.display = 'none';
             abrirScanner(campId, cajaId, title);
