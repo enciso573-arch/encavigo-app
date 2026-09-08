@@ -5493,7 +5493,7 @@
     </p>
     
     <button onclick="cerrarSplash()" style="background: #F97316; color: white; border: none; padding: 15px 30px; border-radius: 30px; font-size: 18px; font-weight: bold; box-shadow: 0 4px 15px rgba(249,115,22,0.4); cursor: pointer;">
-        Comenzar a explorar 👉
+        Comenzar a explorar
     </button>
 </div>
 
@@ -5811,12 +5811,37 @@ let html = '';
         });
         mainFeed.innerHTML = html;
 
-        // Re-attach click listeners
+        // Re-attach click listeners para el Escáner O2O
         document.querySelectorAll('.track-click').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const cid = e.target.getAttribute('data-campid');
+                const cajaId = e.target.getAttribute('data-cajaid');
+                const title = e.target.getAttribute('data-title');
+                let stock = parseInt(e.target.getAttribute('data-stock'));
+                
                 try {
                     db.collection('stats').doc('global').update({ clicks: firebase.firestore.FieldValue.increment(1) });
+                    if (session && session.chofer !== 'orgánico') {
+                        db.collection('choferes').doc(session.chofer).update({ clicks: firebase.firestore.FieldValue.increment(1) });
+                    }
+                    if (cid) {
+                        db.collection('campaigns').doc(cid).update({ clicks: firebase.firestore.FieldValue.increment(1) });
+                    }
+                } catch(err) { console.error(err); }
+
+                if (stock <= 0) {
+                    alert('Lo sentimos, los cupones para esta promoción se han agotado por hoy.');
+                    return;
+                }
+                
+                if (!cajaId || cajaId === 'undefined') {
+                    alert('Este negocio aún no tiene activado el escáner QR en caja.');
+                    return;
+                }
+                
+                abrirScanner(cid, cajaId, title);
+            });
+        });
                     if (session && session.chofer !== 'orgánico') {
                         db.collection('choferes').doc(session.chofer).update({ clicks: firebase.firestore.FieldValue.increment(1) });
                     }
