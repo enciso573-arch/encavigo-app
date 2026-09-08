@@ -392,6 +392,8 @@
         
         const lat = document.getElementById('cLat').value;
         const lng = document.getElementById('cLng').value;
+        const stock = parseInt(document.getElementById('cStock').value) || 0;
+        const caja_id = document.getElementById('cCaja').value.trim();
 
         if(!title || !img) { alert('Título e Imagen son obligatorios'); return; }
 
@@ -551,15 +553,25 @@
 
 </div>
 <div class="form-group" style="display:flex; gap:10px;">
-<div style="flex:1;">
-<label>Latitud GPS (Para Radar)</label>
-<input id="cLat" placeholder="Ej. 20.6025" type="text"/>
-</div>
-<div style="flex:1;">
-<label>Longitud GPS (Para Radar)</label>
-<input id="cLng" placeholder="Ej. -105.2325" type="text"/>
-</div>
-</div>
+        <div style="flex:1;">
+            <label>Latitud GPS (Para Radar)</label>
+            <input id="cLat" placeholder="Ej. 20.6025" type="text"/>
+        </div>
+        <div style="flex:1;">
+            <label>Longitud GPS (Para Radar)</label>
+            <input id="cLng" placeholder="Ej. -105.2325" type="text"/>
+        </div>
+    </div>
+    <div class="form-group" style="display:flex; gap:10px; margin-top: 15px;">
+        <div style="flex:1;">
+            <label>Inventario (Stock de Cupones)</label>
+            <input id="cStock" placeholder="Ej. 50" type="number" value="50"/>
+        </div>
+        <div style="flex:1;">
+            <label>Código Secreto del Acrílico (Caja ID)</label>
+            <input id="cCaja" placeholder="Ej. pizzerialosarcos" type="text"/>
+        </div>
+    </div>
 <div class="modal-actions">
 <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
 <button class="btn-primary" onclick="saveCampaign()">Guardar Campaña</button>
