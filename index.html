@@ -6128,6 +6128,67 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    
+    let html5QrcodeScanner = null;
+
+    function abrirScanner(campId, expectedCajaId, title) {
+        document.getElementById('scannerModal').style.display = 'flex';
+        
+        if (!html5QrcodeScanner) {
+            html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: {width: 250, height: 250} }, false);
+        }
+        
+        html5QrcodeScanner.render((decodedText, decodedResult) => {
+            console.log("QR Leido: ", decodedText);
+            if (decodedText.includes(expectedCajaId) || decodedText === expectedCajaId) {
+                html5QrcodeScanner.clear();
+                document.getElementById('scannerModal').style.display = 'none';
+                quemarCupon(campId, title);
+            } else {
+                alert('Código incorrecto. Asegúrate de escanear el QR de la caja de este negocio.');
+            }
+        }, (error) => {});
+    }
+
+    function cerrarScanner() {
+        document.getElementById('scannerModal').style.display = 'none';
+        if (html5QrcodeScanner) { html5QrcodeScanner.clear(); }
+    }
+
+    async function quemarCupon(campId, title) {
+        try {
+            await db.collection('campaigns').doc(campId).update({ stock: firebase.firestore.FieldValue.increment(-1) });
+            await db.collection('tickets').add({
+                camp_id: campId,
+                chofer: session ? session.chofer : 'DESCONOCIDO',
+                status: 'quemado',
+                fecha: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            if (session && session.chofer) {
+                await db.collection('drivers').doc(session.chofer).set({
+                    earnings: firebase.firestore.FieldValue.increment(5),
+                    redemptions: firebase.firestore.FieldValue.increment(1)
+                }, {merge: true});
+            }
+            mostrarSuccess(title);
+        } catch (error) {
+            console.error(error);
+            alert('Hubo un error de conexión.');
+        }
+    }
+
+    function mostrarSuccess(title) {
+        document.getElementById('successRestaurante').innerText = title;
+        const timeStr = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) + ' hrs';
+        document.getElementById('successTime').innerText = timeStr;
+        document.getElementById('successModal').style.display = 'flex';
+    }
+
+    function cerrarSuccess() {
+        document.getElementById('successModal').style.display = 'none';
+    }
+
+
     function plotCampaignsInicial() {
         const allCamps = window.loadedCampaigns || [];
         allCamps.forEach(camp => {
