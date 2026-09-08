@@ -5832,7 +5832,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
                 
-                abrirScanner(cid, cajaId, title);
+                mostrarCodigo(cid, cajaId, title);
             });
         });
     }
@@ -6131,6 +6131,16 @@ document.addEventListener('DOMContentLoaded', () => {
     
     let html5QrcodeScanner = null;
 
+    function mostrarCodigo(campId, cajaId, title) {
+        document.getElementById('codigoModal').style.display = 'flex';
+        document.getElementById('codigoNegocio').innerText = title;
+        document.getElementById('codigoTexto').innerText = session ? session.code : 'ENC-????';
+        document.getElementById('btnEscanearCaja').onclick = function() {
+            document.getElementById('codigoModal').style.display = 'none';
+            abrirScanner(campId, cajaId, title);
+        };
+    }
+
     function abrirScanner(campId, expectedCajaId, title) {
         document.getElementById('scannerModal').style.display = 'flex';
         
@@ -6233,6 +6243,20 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('mapModal').style.display = 'none';
     }
 </script>
+
+
+<!-- CODIGO MODAL -->
+<div id="codigoModal" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.92);z-index:10000;display:none;flex-direction:column;align-items:center;justify-content:center;padding:30px;text-align:center;">
+    <p style="color:#94A3B8;font-size:14px;margin-bottom:5px;">Tu cup&oacute;n para</p>
+    <h2 id="codigoNegocio" style="color:white;font-size:22px;margin:0 0 25px 0;"></h2>
+    <div style="background:#1F2937;border:2px solid #F97316;border-radius:16px;padding:25px 40px;margin-bottom:10px;">
+        <p style="color:#94A3B8;font-size:12px;margin:0 0 8px 0;letter-spacing:2px;">TU C&Oacute;DIGO</p>
+        <div id="codigoTexto" style="color:#F97316;font-size:36px;font-weight:900;font-family:monospace;letter-spacing:4px;"></div>
+    </div>
+    <p style="color:#64748B;font-size:12px;margin-bottom:30px;">V&aacute;lido por 24 hrs &middot; Uso &uacute;nico</p>
+    <button id="btnEscanearCaja" style="background:#F97316;color:white;border:none;padding:16px 40px;border-radius:30px;font-size:18px;font-weight:bold;width:100%;max-width:320px;margin-bottom:12px;">Escanear en Caja</button>
+    <button onclick="document.getElementById('codigoModal').style.display='none'" style="background:transparent;color:#64748B;border:1px solid #374151;padding:12px 30px;border-radius:30px;font-size:15px;">Cerrar</button>
+</div>
 
 <!-- SCANNER MODAL -->
 <div id="scannerModal" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.95); z-index: 10000; display: none; flex-direction: column; align-items: center; justify-content: center;">
