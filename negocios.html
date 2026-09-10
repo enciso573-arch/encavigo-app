@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EncaviGO para Negocios — Clientes que llegan desde el viaje</title>
+<meta name="description" content="Tus promociones frente a los pasajeros del transporte de Puerto Vallarta y Bahía de Banderas. Pagas cuando el cliente llega a tu negocio." />
+<meta name="theme-color" content="#12100B" />
+
+<meta property="og:title" content="EncaviGO para Negocios" />
+<meta property="og:description" content="Tus promociones frente a los pasajeros del transporte de Puerto Vallarta. Pagas cuando el cliente llega a tu negocio." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://encavigo.com/negocios.html" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --dark:#12100B;
+  --page:#FFFFFF;
+  --card:#F7F5F2;
+  --ink:#14141A;
+  --body:#4E4E5A;
+  --soft:#7B7B8A;
+  --line:rgba(0,0,0,.08);
+
+  --orange:#E07800;
+  --orange-bright:#FF8C00;
+  --teal:#0F7A66;
+
+  --on-dark:#FFFFFF;
+  --on-dark-mid:rgba(255,255,255,.66);
+  --on-dark-soft:rgba(255,255,255,.42);
+
+  --radius:16px;
+  --font:'Inter',system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--page);color:var(--body);
+  font-family:var(--font);font-size:16px;line-height:1.65;font-weight:400;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+img{max-width:100%}
+a{color:inherit}
+strong{font-weight:600;color:var(--ink)}
+
+.wrap{max-width:1000px;margin:0 auto;padding:0 22px}
+.col{max-width:640px}
+
+/* ══════ HERO (oscuro) ══════ */
+.hero{
+  background:
+    radial-gradient(110% 90% at 18% 0%, rgba(255,122,0,.20) 0%, rgba(255,122,0,0) 60%),
+    radial-gradient(80% 70% at 95% 15%, rgba(0,191,160,.10) 0%, rgba(0,191,160,0) 58%),
+    var(--dark);
+  color:var(--on-dark);
+  padding:44px 0 52px;
+  overflow:hidden;
+}
+.hero-inner{max-width:640px}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:32px}
+.brand .name{font-size:20px;font-weight:600;letter-spacing:-.4px}
+.brand .go{color:var(--orange-bright)}
+.brand .tag{
+  font-size:10.5px;font-weight:500;letter-spacing:.9px;text-transform:uppercase;
+  color:var(--orange-bright);border:1px solid rgba(255,140,0,.32);
+  padding:4px 10px;border-radius:50px;
+}
+h1{
+  font-size:clamp(30px,6.4vw,44px);line-height:1.13;
+  font-weight:600;letter-spacing:-1.3px;color:var(--on-dark);margin-bottom:18px;
+}
+h1 .hl{color:var(--orange-bright)}
+.sub{font-size:17px;color:var(--on-dark-mid);max-width:32em;margin-bottom:28px}
+.cta-row{display:flex;flex-wrap:wrap;gap:11px;align-items:center}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  padding:15px 26px;border-radius:50px;font-size:16px;font-weight:600;
+  text-decoration:none;border:none;cursor:pointer;
+  transition:transform .15s ease,box-shadow .15s ease;
+}
+.btn-primary{background:var(--orange-bright);color:#221400;box-shadow:0 6px 20px rgba(255,140,0,.26)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(255,140,0,.36)}
+.btn-ghost{background:rgba(255,255,255,.08);color:var(--on-dark);border:1px solid rgba(255,255,255,.18);font-weight:500}
+.btn-ghost:hover{background:rgba(255,255,255,.13)}
+.note{font-size:13.5px;color:var(--on-dark-soft);margin-top:16px}
+
+/* ── celular (sobre fondo claro) ── */
+.phone-slot{display:flex;justify-content:center}
+.phone{
+  width:252px;flex:0 0 auto;
+  background:#221E17;border-radius:34px;padding:9px;
+  box-shadow:0 18px 44px rgba(20,15,5,.26), 0 3px 10px rgba(20,15,5,.14);
+}
+.screen{background:#0F0B00;border-radius:26px;overflow:hidden;padding:12px 11px 13px}
+.s-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}
+.s-logo{font-size:12.5px;font-weight:600;color:#fff;letter-spacing:-.2px}
+.s-logo i{color:var(--orange-bright);font-style:normal}
+.s-zone{font-size:8.5px;color:rgba(255,255,255,.45)}
+.s-banner{
+  background:linear-gradient(135deg,#FF7A00,#FFB020);color:#241400;
+  font-size:9.5px;font-weight:700;letter-spacing:.5px;text-align:center;
+  padding:8px;border-radius:9px;margin-bottom:10px;
+}
+.s-card{border-radius:14px;overflow:hidden;background:#1A1508;border:1px solid rgba(255,255,255,.07)}
+.s-img{
+  height:118px;position:relative;
+  background:
+    radial-gradient(70% 90% at 30% 20%, rgba(255,190,90,.55) 0%, rgba(255,190,90,0) 60%),
+    linear-gradient(155deg,#B44A12 0%,#8A2F0C 45%,#4A1A08 100%);
+}
+.s-badge{
+  position:absolute;left:9px;bottom:9px;
+  background:#FFB020;color:#2B1600;font-size:9px;font-weight:700;
+  padding:3px 8px;border-radius:20px;
+}
+.s-body{padding:10px 11px 12px}
+.s-body h6{font-size:13.5px;font-weight:600;color:#fff;letter-spacing:-.2px;margin-bottom:2px}
+.s-body p{font-size:10px;color:rgba(255,255,255,.5);line-height:1.45;margin-bottom:9px}
+.s-btn{
+  background:var(--orange-bright);color:#241400;text-align:center;
+  font-size:11px;font-weight:600;padding:8px;border-radius:20px;
+}
+.s-foot{
+  margin-top:9px;text-align:center;font-size:9px;color:rgba(255,255,255,.45);
+  background:rgba(255,255,255,.06);padding:6px;border-radius:20px;
+}
+.phone-cap{
+  text-align:center;font-size:13px;color:var(--soft);margin-top:14px;max-width:22em;
+}
+
+/* dos columnas: pasos + celular */
+.flow-grid{display:grid;gap:34px;margin-top:26px}
+@media(min-width:900px){
+  .flow-grid{grid-template-columns:1fr 280px;gap:44px;align-items:start}
+  .flow-phone{position:sticky;top:32px}
+}
+.flow-phone{order:-1}
+@media(min-width:900px){.flow-phone{order:0}}
+
+/* ══════ CUERPO (claro) ══════ */
+section{padding:54px 0}
+.eyebrow{
+  font-size:11.5px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;
+  color:var(--orange);margin-bottom:9px;
+}
+h2{
+  font-size:clamp(24px,4.6vw,32px);line-height:1.2;font-weight:600;
+  letter-spacing:-.9px;color:var(--ink);margin-bottom:13px;
+}
+.lead{font-size:16.5px;color:var(--body);max-width:34em}
+
+.sheet{
+  background:var(--card);border:1px solid var(--line);
+  border-radius:var(--radius);
+}
+.sheet h3{color:var(--ink);font-weight:600}
+.sheet p{max-width:62ch}
+
+/* pitch */
+.pitch{padding:28px 26px;max-width:760px}
+.pitch .big{
+  font-size:clamp(20px,3.6vw,26px);line-height:1.3;font-weight:600;
+  letter-spacing:-.6px;color:var(--ink);margin-bottom:12px;max-width:20ch;
+}
+.pitch p{font-size:16px}
+
+/* pasos */
+.steps{display:grid;gap:11px;margin-top:26px;max-width:760px}
+.step{display:flex;gap:15px;align-items:flex-start;padding:18px 20px}
+.step .n{
+  flex:0 0 30px;height:30px;border-radius:50%;background:var(--orange);color:#fff;
+  font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;
+}
+.step h3{font-size:16.5px;margin-bottom:4px}
+.step p{font-size:15px}
+
+/* valor */
+.cards{display:grid;gap:11px;margin-top:26px}
+@media(min-width:720px){.cards{grid-template-columns:repeat(3,1fr)}}
+.card{padding:22px 20px;position:relative}
+.card::before{content:'';position:absolute;top:22px;left:20px;width:22px;height:3px;border-radius:2px;background:var(--orange)}
+.card h3{font-size:16.5px;margin:15px 0 6px}
+.card p{font-size:14.5px}
+
+/* precio — destacada */
+.price-box{
+  background:var(--page);border:2px solid var(--orange);
+  border-radius:20px;padding:32px 28px;max-width:640px;
+  box-shadow:0 10px 34px rgba(224,120,0,.14);
+}
+.amount{display:flex;align-items:baseline;gap:9px;margin-bottom:6px}
+.amount .num{font-size:56px;font-weight:700;letter-spacing:-2.4px;color:var(--ink);line-height:1}
+.amount .per{font-size:16px;color:var(--soft)}
+.incl{font-size:16.5px;color:var(--body);margin-bottom:22px}
+.plist{list-style:none;display:grid;gap:12px;margin-bottom:22px}
+.plist li{display:flex;gap:11px;align-items:flex-start;font-size:15px;max-width:60ch}
+.plist .dot{flex:0 0 auto;margin-top:.62em;width:5px;height:5px;border-radius:50%;background:var(--orange)}
+.extra{border-top:1px solid var(--line);padding-top:18px;font-size:14.5px;color:var(--soft);max-width:60ch}
+.extra b{color:var(--orange);font-weight:600}
+
+/* fotos */
+.photo-box{padding:26px 24px;margin-top:14px;max-width:640px;border-left:3px solid var(--teal)}
+.photo-box .kicker{
+  font-size:11px;font-weight:600;letter-spacing:1.1px;text-transform:uppercase;
+  color:var(--teal);margin-bottom:8px;
+}
+.photo-box h3{font-size:19px;letter-spacing:-.4px;margin-bottom:10px}
+.photo-box p{font-size:15px}
+.photo-box p + p{margin-top:10px}
+.photo-box .up{margin-top:15px;padding-top:15px;border-top:1px solid var(--line);font-size:14px;color:var(--soft)}
+
+/* costo */
+.math{padding:26px 24px;margin-top:14px;max-width:640px}
+.math .eyebrow{margin-bottom:14px}
+.math .row{display:flex;justify-content:space-between;gap:16px;padding:12px 0;border-bottom:1px solid var(--line)}
+.math .row > span:first-child{flex:1 1 auto;min-width:0;font-size:15.5px;color:var(--ink)}
+.math .row > span:last-child{flex:0 0 auto;white-space:nowrap;font-size:19px;font-weight:600;color:var(--ink)}
+.math .hint{display:block;font-size:12.5px;color:var(--soft);font-weight:400;line-height:1.45;margin-top:2px;white-space:normal}
+.math .yours{color:var(--teal)!important;font-size:14.5px!important;font-weight:500!important;font-style:italic}
+.math .after{font-size:15px;margin-top:18px;line-height:1.7;max-width:60ch}
+.math .after + .after{margin-top:12px}
+
+/* preguntas */
+.faq{display:grid;gap:9px;margin-top:24px;max-width:760px}
+details{padding:16px 20px}
+summary{
+  cursor:pointer;font-size:15.5px;font-weight:500;color:var(--ink);list-style:none;
+  display:flex;justify-content:space-between;gap:14px;align-items:center;
+}
+summary::-webkit-details-marker{display:none}
+summary::after{content:'+';color:var(--orange);font-size:20px;font-weight:500;flex-shrink:0;line-height:1}
+details[open] summary::after{content:'–'}
+details p{font-size:15px;margin-top:11px}
+
+/* cierre oscuro */
+.final{
+  background:radial-gradient(100% 90% at 50% 100%, rgba(255,122,0,.20) 0%, rgba(255,122,0,0) 62%), var(--dark);
+  color:var(--on-dark);text-align:center;padding:58px 0 64px;
+}
+.final h2{color:var(--on-dark);margin-bottom:12px}
+.final .lead{color:var(--on-dark-mid);margin:0 auto 28px}
+.final .cta-row{justify-content:center}
+
+footer{background:var(--dark);border-top:1px solid rgba(255,255,255,.08);padding:24px 0 40px;font-size:13.5px;color:var(--on-dark-soft)}
+footer a{color:var(--on-dark-mid);text-decoration:none}
+footer a:hover{color:var(--orange-bright)}
+.foot-row{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;justify-content:space-between}
+</style>
+</head>
+<body>
+
+<!-- ══ HERO ══ -->
+<header class="hero">
+  <div class="wrap">
+    <div class="brand">
+      <span class="name">Encavi<span class="go">GO</span></span>
+      <span class="tag">Negocios</span>
+    </div>
+
+    <div class="hero-inner">
+      <h1>Tu promoción, en <span class="hl">cada viaje</span> por Vallarta.</h1>
+      <p class="sub">
+        Dentro de las unidades de transporte dejamos un código. El pasajero lo
+        escanea y ve las promociones de los negocios de la zona por la que va
+        pasando. Tú pagas cuando esa persona llega a tu puerta.
+      </p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="registro.html">Quiero mi lugar</a>
+        <a class="btn btn-ghost" href="index.html">Ver la app</a>
+      </div>
+      <p class="note">Sin contratos largos · Sin costo de instalación · Cancelas cuando quieras</p>
+    </div>
+  </div>
+</header>
+
+<!-- ══ PITCH ══ -->
+<section>
+  <div class="wrap">
+    <div class="sheet pitch">
+      <p class="big">Un espectacular no te dice quién entró. Nosotros sí.</p>
+      <p>
+        Cuando pagas una lona, un volante o una publicación, nadie te puede decir
+        cuánta gente entró por eso. Aquí cada cliente llega con un código, y ese
+        código se quema en tu negocio. Al final del mes sabes
+        <strong>exactamente cuántas personas te mandamos</strong>.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CÓMO FUNCIONA ══ -->
+<section>
+  <div class="wrap">
+    <div class="col">
+      <p class="eyebrow">Cómo funciona</p>
+      <h2>Cuatro pasos, y ninguno es tuyo</h2>
+      <p class="lead">Nosotros ponemos las unidades, la app y los códigos. Tú nada más atiendes al cliente cuando llegue.</p>
+    </div>
+
+    <div class="flow-grid">
+    <div class="steps">
+      <div class="sheet step">
+        <div class="n">1</div>
+        <div>
+          <h3>El pasajero escanea</h3>
+          <p>Dentro de la unidad hay un código QR. El pasajero lo escanea desde su celular, sin descargar nada.</p>
+        </div>
+      </div>
+      <div class="sheet step">
+        <div class="n">2</div>
+        <div>
+          <h3>Ve tu promoción</h3>
+          <p>Le aparecen las promociones de los negocios de la zona por la que va pasando. La tuya entre ellas.</p>
+        </div>
+      </div>
+      <div class="sheet step">
+        <div class="n">3</div>
+        <div>
+          <h3>Reclama su código</h3>
+          <p>Si le interesa, reclama el cupón. Tiene 24 horas para usarlo, así que va con prisa a tu negocio.</p>
+        </div>
+      </div>
+      <div class="sheet step">
+        <div class="n">4</div>
+        <div>
+          <h3>Llega contigo y escanea tu QR</h3>
+          <p>En tu caja dejamos un código impreso. Al pagar, el cliente lo escanea con su celular y le aparece la confirmación, que le muestra a tu cajero para aplicar el descuento. <strong>Tú no necesitas ningún aparato.</strong></p>
+        </div>
+      </div>
+    </div><!-- /steps -->
+
+    <div class="flow-phone">
+      <div class="phone-slot">
+        <div>
+          <div class="phone">
+            <div class="screen">
+              <div class="s-top">
+                <span class="s-logo">Encavi<i>GO</i></span>
+                <span class="s-zone">Zona Romántica</span>
+              </div>
+              <div class="s-banner">ENCUENTRA EL VIAJE GRATIS</div>
+              <div class="s-card">
+                <div class="s-img"><span class="s-badge">2x1 hamburguesas</span></div>
+                <div class="s-body">
+                  <h6>Asador El Pariente</h6>
+                  <p>Zona Romántica · válido hoy</p>
+                  <div class="s-btn">Reclamar</div>
+                </div>
+              </div>
+              <div class="s-foot">3 promos cerca de ti</div>
+            </div>
+          </div>
+          <p class="phone-cap">Así ve tu negocio el pasajero, desde su asiento</p>
+        </div>
+      </div>
+    </div>
+
+    </div><!-- /flow-grid -->
+  </div>
+</section>
+
+<!-- ══ QUÉ TE LLEVAS ══ -->
+<section>
+  <div class="wrap">
+    <div class="col">
+      <p class="eyebrow">Qué te llevas</p>
+      <h2>Clientes contados, no promesas</h2>
+    </div>
+    <div class="cards">
+      <div class="sheet card">
+        <h3>Clientes nuevos</h3>
+        <p>Gente que iba pasando y que no te conocía. No le estás dando descuento a quien ya iba a entrar.</p>
+      </div>
+      <div class="sheet card">
+        <h3>Números reales</h3>
+        <p>Cuántos vieron tu promoción, cuántos la reclamaron y cuántos llegaron. Sin adivinar.</p>
+      </div>
+      <div class="sheet card">
+        <h3>Pagas por resultado</h3>
+        <p>Después de tus clientes incluidos, solo pagas por cada persona que de verdad llegó.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ PRECIO ══ -->
+<section id="precio">
+  <div class="wrap">
+    <div class="col">
+      <p class="eyebrow">Precio</p>
+      <h2>Claro y sin letras chiquitas</h2>
+    </div>
+
+    <div class="price-box">
+      <div class="amount">
+        <span class="num">$500</span>
+        <span class="per">al mes</span>
+      </div>
+      <p class="incl">Incluye tus primeros <strong>15 clientes</strong>.</p>
+      <ul class="plist">
+        <li><span class="dot"></span><span>Del cliente 16 en adelante, $30 por cada uno que llegue y escanee su código.</span></li>
+        <li><span class="dot"></span><span>Cambias tu promoción las veces que quieras, sin costo.</span></li>
+        <li><span class="dot"></span><span>Sin cuota de alta ni de instalación.</span></li>
+        <li><span class="dot"></span><span>Se paga por adelantado, así que <strong>no hay cobranza ni deudas</strong>. Si un mes no quieres, tu promoción se pausa.</span></li>
+      </ul>
+      <div class="extra">
+        <b>Exclusiva de tu giro:</b> solo entra un negocio por categoría en cada ruta.
+        Si quieres ser el único de lo tuyo, pregúntanos por la disponibilidad de tu zona.
+      </div>
+    </div>
+
+    <div class="sheet photo-box">
+      <p class="kicker">Servicio adicional · opcional</p>
+      <h3>Fotografía profesional, si la necesitas</h3>
+      <p>La foto es lo que hace que el pasajero se detenga en tu tarjeta en vez de pasarle de largo. Si no tienes fotos que te convenzan, CreaFilms —nuestro equipo de producción— va a tu negocio y las hace.</p>
+      <p>Es un servicio aparte, con su propio costo, y <strong>no es obligatorio</strong>: si ya tienes buenas fotos, con esas armamos tu tarjeta y listo.</p>
+      <p class="up">También producimos video y contenido para tus redes. Pregúntanos por el paquete.</p>
+    </div>
+
+    <div class="sheet math">
+      <p class="eyebrow">¿Cuánto te cuesta traer un cliente?</p>
+      <div class="row">
+        <span>Nuestra comisión<span class="hint">lo único fijo, siempre igual</span></span>
+        <span>$30</span>
+      </div>
+      <div class="row">
+        <span>El descuento de tu promoción<span class="hint">lo decides tú, del tamaño que quieras</span></span>
+        <span class="yours">lo pones tú</span>
+      </div>
+      <p class="after">
+        <strong>De nuestra parte, un cliente te cuesta $30.</strong>
+        El descuento no nos lo pagas a nosotros: se lo das tú a tu cliente, y tú decides
+        de cuánto es. Puede ser un postre, un 2x1 o un 10%. Entre más atractivo, más
+        gente llega; entre más chico, menos te cuesta. Ahí mandas tú.
+      </p>
+      <p class="after">
+        Si por ejemplo das 20% sobre un consumo de $200, ese cliente te salió en $70
+        entre descuento y comisión, y dejó $200 en tu caja. Nadie mejor que tú sabe si
+        eso te conviene.
+      </p>
+      <p class="after">
+        Y es solo la primera visita: <strong>si el cliente regresa, ya no hay descuento
+        y a nosotros no nos pagas nada.</strong>
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ PREGUNTAS ══ -->
+<section>
+  <div class="wrap">
+    <div class="col">
+      <p class="eyebrow">Lo que todos preguntan</p>
+      <h2>Preguntas directas</h2>
+    </div>
+    <div class="faq">
+      <details class="sheet">
+        <summary>¿Y si no me llega nadie?</summary>
+        <p>Pierdes los $500 del mes y nada más. No hay contrato que te amarre ni cargos escondidos, y si un mes no te sirvió, no lo vuelves a pagar. Por eso cobramos poco de entrada: para que la prueba no te duela.</p>
+      </details>
+      <details class="sheet">
+        <summary>¿Cuánto me amarro?</summary>
+        <p>Nada. Es mes con mes, se paga adelantado y se corta cuando tú digas.</p>
+      </details>
+      <details class="sheet">
+        <summary>¿Tengo que instalar algo o comprar equipo?</summary>
+        <p>Nada. Te dejamos un código impreso en la caja y el cliente lo escanea con <em>su</em> celular. Tu cajero solo ve la confirmación en la pantalla del cliente y aplica el descuento como cualquier otro. No hay aparatos, ni cables, ni sistema que aprender.</p>
+      </details>
+      <details class="sheet">
+        <summary>¿Quién escoge la promoción?</summary>
+        <p>Tú decides el descuento. Nosotros te ayudamos a redactarlo para que jale: una promoción con un número claro trae mucha más gente que un "descuentos especiales".</p>
+      </details>
+      <details class="sheet">
+        <summary>¿Y si no tengo fotos buenas de mi negocio?</summary>
+        <p>Podemos tomarlas. CreaFilms, nuestro equipo de producción, va a tu negocio y hace la sesión. Es un servicio aparte con su propio costo, y es opcional: si ya tienes fotos que te gusten, con esas armamos tu tarjeta.</p>
+      </details>
+      <details class="sheet">
+        <summary>¿Cómo sé que los clientes son de ustedes?</summary>
+        <p>Porque cada uno llega con un código que solo sirve una vez y que se quema con el código de tu caja. Si ese cliente no lo escaneó ahí, no cuenta y no se te cobra.</p>
+      </details>
+      <details class="sheet">
+        <summary>¿En qué zonas están?</summary>
+        <p>Puerto Vallarta y Bahía de Banderas. Vamos sumando unidades por ruta, así que pregúntanos cómo va la tuya.</p>
+      </details>
+      <details class="sheet">
+        <summary>¿Cuándo empiezo a aparecer?</summary>
+        <p>En cuanto tengamos tu promoción y tus fotos. Normalmente en pocos días ya estás en la app.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CIERRE ══ -->
+<section class="final">
+  <div class="wrap">
+    <h2>Las unidades ya están rodando.</h2>
+    <p class="lead">Falta que la gente que va adentro vea tu negocio. Déjanos tus datos y te contactamos hoy mismo.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="registro.html">Quiero mi lugar</a>
+      <a class="btn btn-ghost" href="https://wa.me/523221592596?text=Hola%20EncaviGO%2C%20quiero%20informaci%C3%B3n%20para%20mi%20negocio" target="_blank" rel="noopener">Escríbenos por WhatsApp</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-row">
+    <span>EncaviGO · Puerto Vallarta y Bahía de Banderas</span>
+    <span><a href="index.html">App</a> · <a href="privacidad.html">Aviso de privacidad</a></span>
+  </div>
+</footer>
+
+</body>
+</html>
