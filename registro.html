@@ -495,6 +495,19 @@
 
   function shake(id) {
     const el = document.getElementById(id);
+    if (!el) return;
     let n = 0;
     const iv = setInterval(() => {
-      el.style.trans
+      el.style.transform = 'translateX(' + (n % 2 ? -7 : 7) + 'px)';
+      n++;
+      if (n > 5) {
+        clearInterval(iv);
+        el.style.transform = '';
+      }
+    }, 55);
+    try { el.focus({ preventScroll: false }); } catch (e) { el.focus(); }
+  }
+
+</script>
+</body>
+</html>
