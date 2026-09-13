@@ -1,3 +1,10 @@
 ﻿node_modules/
 .DS_Store
 *.log
+
+# Scripts de trabajo, no son parte del sitio
+fix_*.py
+build_*.py
+check_*.py
+add_*.py
+test_*.py
