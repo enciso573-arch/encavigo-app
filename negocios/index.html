@@ -253,18 +253,38 @@ h2{
 .extra-box p{font-size:15px;line-height:1.7;max-width:62ch}
 .extra-box b{color:var(--teal);font-weight:600}
 
-/* dos tipos de promocion */
-.tipos{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0}
-@media(max-width:720px){.tipos{grid-template-columns:1fr}}
-.tipo{background:var(--page);border:1px solid var(--line);border-radius:12px;padding:16px 16px 18px}
-.tlabel{
-  display:inline-block;font-size:10.5px;letter-spacing:1px;text-transform:uppercase;
-  font-weight:700;padding:4px 9px;border-radius:20px;margin-bottom:10px;
+/* los cinco formatos de promocion */
+.formatos{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:20px 0 0}
+@media(max-width:820px){.formatos{grid-template-columns:1fr}}
+.fmt{position:relative;padding:24px 22px 22px;padding-top:26px}
+.fmt .fnum{
+  position:absolute;top:22px;left:22px;width:26px;height:26px;border-radius:50%;
+  background:var(--orange);color:#fff;font-size:13px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
 }
-.tlabel.plano{background:#EFEDEA;color:#7A7A86}
-.tlabel.piso{background:rgba(224,120,0,.12);color:var(--orange)}
-.tej{font-size:15.5px;font-weight:600;color:var(--ink);line-height:1.4;margin-bottom:8px}
-.tdesc{font-size:14px;color:var(--body);line-height:1.6;margin:0}
+.fmt h3{font-size:17px;letter-spacing:-.3px;margin:0 0 10px;padding-left:36px;min-height:26px;line-height:1.35}
+.fmt p{font-size:14.5px;line-height:1.65;color:var(--body);margin:0}
+.fmt p + p{margin-top:10px}
+.fmt .fej{
+  font-size:15.5px;font-weight:600;color:var(--ink);line-height:1.5;
+  padding:12px 14px;background:var(--page);border-radius:9px;border:1px solid var(--line);
+}
+.fmt .fpara{font-size:12.5px;color:var(--soft);border-top:1px solid var(--line);padding-top:11px;margin-top:13px}
+.fmt.destacado{grid-column:1/-1;border-color:var(--orange);background:#FFF9F2}
+.fmt.destacado .fej{background:#fff;border-color:rgba(224,120,0,.28)}
+.fsolo{
+  position:absolute;top:24px;right:22px;font-size:10px;letter-spacing:1px;
+  text-transform:uppercase;font-weight:700;color:var(--orange);
+  background:rgba(224,120,0,.12);padding:4px 10px;border-radius:20px;
+}
+@media(max-width:520px){
+  .fsolo{position:static;display:inline-block;margin:0 0 10px 36px}
+  .fmt h3{padding-left:36px}
+}
+.nota-piso{padding:20px 22px;margin-top:16px;max-width:760px;border-left:3px solid var(--line)}
+.nota-piso p{font-size:14.5px;line-height:1.7;color:var(--body);margin:0}
+.nota-piso b{color:var(--ink);font-weight:600}
+.nota-piso em{color:var(--ink);font-style:italic}
 
 /* cuenta de ejemplo */
 .cuenta{margin:14px 0 4px;max-width:460px}
@@ -444,37 +464,90 @@ footer a:hover{color:var(--orange-bright)}
       <h2>Tú no tienes que inventar la promoción</h2>
       <p class="lead">
         Es la parte que a todo mundo le cuesta, y la que decide si esto funciona
-        o no. Así que la hacemos nosotros.
+        o no. Aquí están las que sí jalan, para que escojas la tuya. Y si prefieres,
+        la armamos contigo.
       </p>
     </div>
 
     <div class="sheet promo-box">
-      <p class="big">Hay dos formas de hacer un cupón. Solo una te conviene.</p>
+      <p class="big">Un descuento no mueve a un desconocido.</p>
+      <p>
+        Alguien que va en un taxi, camino a otro lado, no se desvía por un 10%.
+        Lo que lo detiene <strong>no es el precio: es quitarle el miedo a probar
+        un lugar que no conoce.</strong> Por eso las promociones que sirven aquí
+        casi nunca son un porcentaje.
+      </p>
+      <p>
+        Éstas son las cinco que mejor funcionan. Escoge la que vaya con tu negocio,
+        o dinos qué puedes dar y nosotros la acomodamos.
+      </p>
+    </div>
 
-      <div class="tipos">
-        <div class="tipo">
-          <span class="tlabel plano">Descuento plano</span>
-          <p class="tej">"10% de descuento en tu consumo"</p>
-          <p class="tdesc">El cliente pide lo mismo que iba a pedir y paga menos.
-             El descuento sale de tu margen y la venta no crece.</p>
-        </div>
-        <div class="tipo">
-          <span class="tlabel piso">Promoción con piso de compra</span>
-          <p class="tej">"Pide dos platos fuertes y el postre va por nuestra cuenta"</p>
-          <p class="tdesc">Para llevarse el postre tiene que pedir dos platos.
-             El que iba a pedir uno, pide dos. La venta sube en lugar de bajar.</p>
-        </div>
+    <div class="formatos">
+
+      <div class="sheet fmt">
+        <span class="fnum">1</span>
+        <h3>Regala una sola cosa, sin condición</h3>
+        <p class="fej">"Tu primer taco va por nuestra cuenta. No tienes que comprar nada."</p>
+        <p>Un regalo chico sin condiciones le gana a un descuento grande con condiciones,
+           porque el descuento lo obliga a gastar antes de saber si le va a gustar.
+           El taco te cuesta seis pesos y el cliente termina pidiendo cuatro más.</p>
+        <p class="fpara">Va bien para: comida rápida, cafeterías, panaderías, heladerías</p>
       </div>
 
-      <p>
-        Para quien la lee, las dos se ven igual de atractivas. En tu caja dan
-        resultados opuestos. <strong>A la segunda le llamamos promoción con piso:
-        siempre hay algo que el cliente tiene que comprar para ganarse lo demás.</strong>
-      </p>
-      <p>
-        Armar una promoción así, que jale sin regalarte el margen, es un oficio.
-        No tienes por qué tenerlo.
-      </p>
+      <div class="sheet fmt">
+        <span class="fnum">2</span>
+        <h3>Vende acceso, no precio</h3>
+        <p class="fej">"Mesa en la terraza sin esperar." · "El chef te saca algo que no está en la carta."</p>
+        <p>No regalas comida ni bajas precios. Das algo que te cuesta casi nada
+           y que suena a mucho. Sirve sobre todo si tu lugar ya se llena y no
+           quieres sacrificar margen.</p>
+        <p class="fpara">Va bien para: restaurantes con lista de espera, bares, rooftops</p>
+      </div>
+
+      <div class="sheet fmt">
+        <span class="fnum">3</span>
+        <h3>Deja que pruebe sin comprometerse</h3>
+        <p class="fej">"Quince minutos de masaje, gratis. Si te gusta, te quedas la hora."</p>
+        <p>El cliente ya está adentro, ya se sentó, ya se quitó los zapatos.
+           De ahí a que se quede el servicio completo hay un paso muy corto.
+           Es la que mejor funciona cuando tu servicio es caro y hay que probarlo
+           para entenderlo.</p>
+        <p class="fpara">Va bien para: spas, estéticas, gimnasios, talleres, clínicas</p>
+      </div>
+
+      <div class="sheet fmt">
+        <span class="fnum">4</span>
+        <h3>Diseña la promoción para dos</h3>
+        <p class="fej">"Vienen dos, paga uno."</p>
+        <p>En un taxi casi nunca va una sola persona, y deciden juntas a dónde
+           bajarse. Una promoción pensada para dos se aprovecha de la situación
+           real en vez de imaginar un cliente que anda solo.</p>
+        <p class="fpara">Va bien para: casi cualquier giro de consumo</p>
+      </div>
+
+      <div class="sheet fmt destacado">
+        <span class="fnum">5</span>
+        <span class="fsolo">Solo se puede aquí</span>
+        <h3>Paga el viaje</h3>
+        <p class="fej">"Come con nosotros y el regreso corre por nuestra cuenta."</p>
+        <p>Un negocio que suelta ochenta pesos de taxi para sentar una mesa de
+           quinientos hizo un buen negocio. Y es la única promoción que ninguna
+           lona, ningún volante y ninguna publicación puede ofrecer, porque
+           <strong>nadie más está dentro del vehículo en el momento en que la
+           persona decide.</strong></p>
+        <p class="fpara">Va bien para: ticket alto, lugares fuera del centro, negocios de destino</p>
+      </div>
+
+    </div>
+
+    <div class="sheet nota-piso">
+      <p><b>Un apunte:</b> estas cinco están hechas para el cliente que todavía no
+      te conoce, y por eso ninguna le pide comprar primero. La segunda visita se
+      trabaja al revés, con una promoción que sí pide un piso de compra
+      &mdash;&nbsp;<em>"pide dos platos fuertes y el postre va por nuestra cuenta"</em>&nbsp;&mdash;
+      porque ahí ya no hay que convencerlo de entrar, sino subir lo que se lleva.
+      Eso lo vemos contigo cuando ya tengas gente repitiendo.</p>
     </div>
 
     <div class="cards">
@@ -590,17 +663,16 @@ footer a:hover{color:var(--orange-bright)}
         es alguien que gana cuando tú ganas.
       </p>
       <p class="after">
-        <strong>Pongámoslo en números.</strong> Llega un cliente con tu cupón y consume $200:
+        <strong>Pongámoslo en números</strong>, con la promoción del primer taco gratis:
       </p>
       <div class="cuenta">
-        <div class="crow"><span>Le descuentas 20%</span><span>&minus;$40</span></div>
+        <div class="crow"><span>Lo que te cuesta el taco que regalas</span><span>&minus;$6</span></div>
         <div class="crow"><span>Comisión del chofer que lo trajo</span><span>&minus;$25</span></div>
-        <div class="crow total"><span>Traer a ese cliente te costó</span><span>$65</span></div>
+        <div class="crow total"><span>Traer a ese cliente te costó</span><span>$31</span></div>
       </div>
       <p class="after">
-        En tu caja quedaron $160 de una venta que no ibas a tener. Y es solo la primera
-        visita: <strong>si ese cliente regresa, entra completo. Ya no hay descuento
-        ni comisión.</strong>
+        Ese cliente se sentó y pidió lo demás pagando precio normal. Y es solo la primera
+        visita: <strong>si regresa, entra completo. Ya no hay regalo ni comisión.</strong>
       </p>
     </div>
   </div>
