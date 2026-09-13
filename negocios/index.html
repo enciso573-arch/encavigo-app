@@ -204,10 +204,10 @@ h2{
 .extra b{color:var(--orange);font-weight:600}
 
 /* fotos */
-.photo-box{padding:26px 24px;margin-top:14px;max-width:640px;border-left:3px solid var(--teal)}
+.photo-box{padding:26px 24px;margin-top:14px;max-width:640px;border-left:3px solid var(--orange)}
 .photo-box .kicker{
   font-size:11px;font-weight:600;letter-spacing:1.1px;text-transform:uppercase;
-  color:var(--teal);margin-bottom:8px;
+  color:var(--orange);margin-bottom:8px;
 }
 .photo-box h3{font-size:19px;letter-spacing:-.4px;margin-bottom:10px}
 .photo-box p{font-size:15px}
@@ -252,6 +252,26 @@ h2{
 .extra-box{padding:22px 24px;margin-top:18px;max-width:720px;border-left:3px solid var(--teal)}
 .extra-box p{font-size:15px;line-height:1.7;max-width:62ch}
 .extra-box b{color:var(--teal);font-weight:600}
+
+/* dos tipos de promocion */
+.tipos{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0}
+@media(max-width:720px){.tipos{grid-template-columns:1fr}}
+.tipo{background:var(--page);border:1px solid var(--line);border-radius:12px;padding:16px 16px 18px}
+.tlabel{
+  display:inline-block;font-size:10.5px;letter-spacing:1px;text-transform:uppercase;
+  font-weight:700;padding:4px 9px;border-radius:20px;margin-bottom:10px;
+}
+.tlabel.plano{background:#EFEDEA;color:#7A7A86}
+.tlabel.piso{background:rgba(224,120,0,.12);color:var(--orange)}
+.tej{font-size:15.5px;font-weight:600;color:var(--ink);line-height:1.4;margin-bottom:8px}
+.tdesc{font-size:14px;color:var(--body);line-height:1.6;margin:0}
+
+/* cuenta de ejemplo */
+.cuenta{margin:14px 0 4px;max-width:460px}
+.cuenta .crow{display:flex;justify-content:space-between;gap:14px;padding:10px 0;border-bottom:1px solid var(--line);font-size:14.5px;color:var(--body)}
+.cuenta .crow span:last-child{font-weight:600;color:var(--ink);white-space:nowrap}
+.cuenta .crow.total{border-bottom:none;border-top:2px solid var(--ink);margin-top:2px;font-weight:600;color:var(--ink)}
+.cuenta .crow.total span:last-child{color:var(--orange);font-size:17px}
 
 /* preguntas */
 .faq{display:grid;gap:9px;margin-top:24px;max-width:760px}
@@ -429,41 +449,60 @@ footer a:hover{color:var(--orange-bright)}
     </div>
 
     <div class="sheet promo-box">
-      <p class="big">Un buen cupón no te regala margen. Te obliga a vender más.</p>
+      <p class="big">Hay dos formas de hacer un cupón. Solo una te conviene.</p>
+
+      <div class="tipos">
+        <div class="tipo">
+          <span class="tlabel plano">Descuento plano</span>
+          <p class="tej">"10% de descuento en tu consumo"</p>
+          <p class="tdesc">El cliente pide lo mismo que iba a pedir y paga menos.
+             El descuento sale de tu margen y la venta no crece.</p>
+        </div>
+        <div class="tipo">
+          <span class="tlabel piso">Promoción con piso de compra</span>
+          <p class="tej">"Pide dos platos fuertes y el postre va por nuestra cuenta"</p>
+          <p class="tdesc">Para llevarse el postre tiene que pedir dos platos.
+             El que iba a pedir uno, pide dos. La venta sube en lugar de bajar.</p>
+        </div>
+      </div>
+
       <p>
-        <strong>"10% de descuento"</strong> te quita dinero del que ya ibas a ganar.
-        <strong>"En la compra de 5 tacos, te regalo 2 para tu acompañante"</strong> no:
-        ahí el cliente que iba a comprar 5 compró 5 y llegó acompañado. Es la misma
-        promoción para el que la ve, y el resultado en tu caja es al revés.
+        Para quien la lee, las dos se ven igual de atractivas. En tu caja dan
+        resultados opuestos. <strong>A la segunda le llamamos promoción con piso:
+        siempre hay algo que el cliente tiene que comprar para ganarse lo demás.</strong>
       </p>
       <p>
-        Escribir promociones así, cada semana, sin repetirte y sin regalar margen,
-        es un oficio. No tienes por qué tenerlo.
+        Armar una promoción así, que jale sin regalarte el margen, es un oficio.
+        No tienes por qué tenerlo.
       </p>
     </div>
 
     <div class="cards">
       <div class="sheet card">
-        <h3>Llegamos con las promos escritas</h3>
-        <p>Te presentamos de 8 a 10 promociones pensadas para tu giro. Tú apruebas
-           las que te laten y tachas las que no. Una sola plática, al firmar.</p>
+        <h3>Tú pones lo que puedes dar</h3>
+        <p>Nos sentamos contigo a revisar tu carta y tus costos. Tú dices qué
+           puedes ofrecer sin lastimarte, y de ahí salen las promociones. Nadie
+           llega a decirte qué regalar sin conocer tus números.</p>
       </div>
       <div class="sheet card">
-        <h3>Una a la vez, cambiando cada semana</h3>
-        <p>Nunca tienes tres promociones abiertas peleándose entre ellas. Corre una,
-           la siguiente semana entra otra. Si una jala mucho, la repetimos.</p>
+        <h3>Tres promociones por semana</h3>
+        <p>Lunes y miércoles van las más agresivas, para llenar los días flojos.
+           El fin de semana va otra, más moderada: es cuando más gente anda
+           en taxi y no tiene caso desaparecer.</p>
       </div>
       <div class="sheet card">
-        <h3>En tu día flojo, no en el lleno</h3>
-        <p>No tiene caso mandarte gente el sábado que ya estás a reventar.
-           La promoción se programa el día que tienes mesas vacías.</p>
+        <h3>La que funciona se repite</h3>
+        <p>Cada promoción deja su número de cuántos la pidieron y cuántos
+           llegaron. Con eso sabemos cuál vuelve a salir y cuál se cambia.
+           No es corazonada, es el registro.</p>
       </div>
     </div>
 
     <div class="sheet extra-box">
-      <p><b>Además, sin costo:</b> juntamos lo que dicen los clientes que llegaron
-      contigo y te pasamos un reporte de lo que hay que arreglar. No para calificarte
-      — para que el siguiente que llegue sí regrese, porque ése ya no te cuesta nada.</p>
+      <p><b>Incluido sin costo adicional:</b> recopilamos la opinión de los clientes
+      que llegaron con tu promoción y te entregamos un reporte con los puntos a mejorar.
+      El propósito es que el siguiente cliente regrese por su cuenta, y ése ya no
+      genera comisión.</p>
     </div>
   </div>
 </section>
@@ -551,18 +590,17 @@ footer a:hover{color:var(--orange-bright)}
         es alguien que gana cuando tú ganas.
       </p>
       <p class="after">
-        El descuento tampoco nos lo pagas: se lo das tú a tu cliente, y tú decides
-        de cuánto es. Puede ser un postre, un 2x1 o un 10%. Entre más atractivo, más
-        gente llega; entre más chico, menos te cuesta. Ahí mandas tú.
+        <strong>Pongámoslo en números.</strong> Llega un cliente con tu cupón y consume $200:
       </p>
+      <div class="cuenta">
+        <div class="crow"><span>Le descuentas 20%</span><span>&minus;$40</span></div>
+        <div class="crow"><span>Comisión del chofer que lo trajo</span><span>&minus;$25</span></div>
+        <div class="crow total"><span>Traer a ese cliente te costó</span><span>$65</span></div>
+      </div>
       <p class="after">
-        Si por ejemplo das 20% sobre un consumo de $200, ese cliente te salió en $65
-        entre descuento y comisión, y dejó $200 en tu caja. Nadie mejor que tú sabe si
-        eso te conviene.
-      </p>
-      <p class="after">
-        Y es solo la primera visita: <strong>si el cliente regresa, ya no hay descuento
-        y a nosotros no nos pagas nada.</strong>
+        En tu caja quedaron $160 de una venta que no ibas a tener. Y es solo la primera
+        visita: <strong>si ese cliente regresa, entra completo. Ya no hay descuento
+        ni comisión.</strong>
       </p>
     </div>
   </div>
@@ -578,11 +616,11 @@ footer a:hover{color:var(--orange-bright)}
     <div class="faq">
       <details class="sheet">
         <summary>¿Y si no me llega nadie?</summary>
-        <p>Pierdes los $500 del mes y nada más. No hay contrato que te amarre ni cargos escondidos, y si un mes no te sirvió, no lo vuelves a pagar. Por eso cobramos poco de entrada: para que la prueba no te duela.</p>
+        <p>Pierdes los $500 del mes y nada más. No hay plazo forzoso ni cargos adicionales, y si un mes no te sirvió, no lo vuelves a pagar. La mensualidad es baja justamente para que probarlo no represente un riesgo.</p>
       </details>
       <details class="sheet">
-        <summary>¿Cuánto me amarro?</summary>
-        <p>Nada. Es mes con mes, se paga adelantado y se corta cuando tú digas.</p>
+        <summary>¿Hay plazo forzoso?</summary>
+        <p>No. El servicio es mes con mes, se paga por adelantado y puedes darlo de baja cuando lo decidas, sin penalización.</p>
       </details>
       <details class="sheet">
         <summary>¿Tengo que instalar algo o comprar equipo?</summary>
@@ -590,7 +628,7 @@ footer a:hover{color:var(--orange-bright)}
       </details>
       <details class="sheet">
         <summary>¿Quién escoge la promoción?</summary>
-        <p>Tú decides el descuento. Nosotros te ayudamos a redactarlo para que jale: una promoción con un número claro trae mucha más gente que un "descuentos especiales".</p>
+        <p>Tú. Revisamos juntos tu carta y tus costos, y tú defines qué puedes ofrecer. Nosotros le damos la forma que hace que funcione y la programamos tres veces por semana. Ninguna promoción sale sin tu aprobación.</p>
       </details>
       <details class="sheet">
         <summary>¿Y si no tengo fotos buenas de mi negocio?</summary>
