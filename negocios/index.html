@@ -242,41 +242,29 @@ h2{
 .nota-tarifa strong{color:var(--ink)}
 
 /* seccion de promociones */
-.promo-box{padding:26px 24px;margin-bottom:22px;max-width:720px;border-left:3px solid var(--orange)}
-.promo-box .big{
-  font-size:20px;font-weight:600;letter-spacing:-.4px;color:var(--ink);
-  line-height:1.35;margin-bottom:14px;max-width:24ch;
+.ideas{padding:26px 24px;max-width:740px}
+.ideas-top{font-size:15.5px;line-height:1.7;color:var(--body);max-width:60ch;margin-bottom:16px}
+.ilist{list-style:none;counter-reset:i;margin:0;padding:0}
+.ilist li{
+  counter-increment:i;display:flex;gap:14px;align-items:baseline;
+  padding:13px 0;border-top:1px solid var(--line);
 }
-.promo-box p + p{margin-top:12px}
-.promo-box p{font-size:15.5px;line-height:1.7;max-width:62ch}
-.extra-box{padding:22px 24px;margin-top:18px;max-width:720px;border-left:3px solid var(--teal)}
-.extra-box p{font-size:15px;line-height:1.7;max-width:62ch}
+.ilist li::before{
+  content:counter(i);flex:0 0 22px;height:22px;border-radius:50%;
+  background:var(--orange);color:#fff;font-size:11.5px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;align-self:flex-start;
+}
+.iname{flex:0 0 230px;font-size:15px;font-weight:600;color:var(--ink);line-height:1.45}
+.iej{flex:1 1 auto;font-size:14.5px;color:var(--body);font-style:italic;line-height:1.5}
+@media(max-width:700px){
+  .ilist li{flex-wrap:wrap;gap:0 14px}
+  .iname{flex:1 1 auto}
+  .iej{flex:1 1 100%;margin-left:36px;margin-top:4px}
+}
+.ideas-bot{font-size:13.5px;color:var(--soft);line-height:1.6;margin-top:16px;padding-top:14px;border-top:1px solid var(--line);max-width:58ch}
+.extra-box{padding:20px 22px;margin-top:16px;max-width:740px;border-left:3px solid var(--teal)}
+.extra-box p{font-size:14.5px;line-height:1.7;max-width:62ch;margin:0}
 .extra-box b{color:var(--teal);font-weight:600}
-
-/* los cinco formatos de promocion */
-.formatos{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:20px 0 0}
-.formatos .fmt:last-child{grid-column:1/-1}
-@media(max-width:820px){.formatos{grid-template-columns:1fr}}
-.fmt{position:relative;padding:24px 22px 22px;padding-top:26px}
-.fmt .fnum{
-  position:absolute;top:22px;left:22px;width:26px;height:26px;border-radius:50%;
-  background:var(--orange);color:#fff;font-size:13px;font-weight:700;
-  display:flex;align-items:center;justify-content:center;
-}
-.fmt h3{font-size:17px;letter-spacing:-.3px;margin:0 0 10px;padding-left:36px;min-height:26px;line-height:1.35}
-.fmt p{font-size:14.5px;line-height:1.65;color:var(--body);margin:0}
-.fmt p + p{margin-top:10px}
-.fmt .fej{
-  font-size:15.5px;font-weight:600;color:var(--ink);line-height:1.5;
-  padding:12px 14px;background:var(--page);border-radius:9px;border:1px solid var(--line);
-}
-
-
-.nota-piso{padding:20px 22px;margin-top:16px;max-width:760px;border-left:3px solid var(--line)}
-.nota-piso p{font-size:14.5px;line-height:1.7;color:var(--body);margin:0}
-.nota-piso b{color:var(--ink);font-weight:600}
-.aviso-ej{font-size:12.5px;color:var(--soft);line-height:1.55;margin-top:10px;max-width:48ch;font-style:italic}
-.nota-piso em{color:var(--ink);font-style:italic}
 
 /* cuenta de ejemplo */
 .cuenta{margin:14px 0 4px;max-width:460px}
@@ -458,98 +446,50 @@ footer a:hover{color:var(--orange-bright)}
       <p class="eyebrow">Lo que nadie más te da</p>
       <h2>Tú no tienes que inventar la promoción</h2>
       <p class="lead">
-        Tres promociones por semana son más de ciento cincuenta al año. Nadie que
-        además está atendiendo su negocio las saca solo. Por eso alguien se encarga
-        de las tuyas, todas las semanas, y cada una deja su número para saber cuál
-        vuelve a salir.
+        Tres por semana son más de ciento cincuenta al año. Nadie que además está
+        atendiendo su negocio las saca solo. Alguien se encarga de las tuyas, y cada
+        una deja su número para saber cuál vuelve a salir.
       </p>
     </div>
 
-    <div class="sheet promo-box">
-      <p class="big">Un descuento no mueve a un desconocido.</p>
-      <p>
-        Alguien que va en un taxi, camino a otro lado, no se desvía por un 10%.
-        Lo que lo detiene <strong>no es el precio: es quitarle el miedo a probar
-        un lugar que no conoce.</strong> Éstas son cinco formas que funcionan
-        mejor que un porcentaje.
+    <div class="sheet ideas">
+      <p class="ideas-top">
+        Un desconocido no se desvía por un 10%. Lo que lo detiene <strong>no es el
+        precio: es quitarle el miedo a probar un lugar que no conoce.</strong>
+        Éstas jalan más que un descuento:
       </p>
-    </div>
-
-    <div class="formatos">
-
-      <div class="sheet fmt">
-        <span class="fnum">1</span>
-        <h3>Regala algo, sin condiciones</h3>
-        <p class="fej">"Tu primer taco va por nuestra cuenta."</p>
-        <p>Nada que comprar antes. Es lo que mejor funciona con quien no te conoce,
-           y lo que pones es tu costo, no el precio de tu carta.</p>
-      </div>
-
-      <div class="sheet fmt">
-        <span class="fnum">2</span>
-        <h3>Da acceso, no descuento</h3>
-        <p class="fej">"Mesa en la terraza sin esperar."</p>
-        <p>Te cuesta casi nada y suena a mucho. Buena opción si tu lugar ya se llena
-           y no quieres regalar consumo.</p>
-      </div>
-
-      <div class="sheet fmt">
-        <span class="fnum">3</span>
-        <h3>Deja que pruebe</h3>
-        <p class="fej">"Quince minutos de masaje. Si te gusta, te quedas la hora."</p>
-        <p>Para servicios caros que hay que sentir para entenderlos. Una vez adentro,
-           la mayoría se queda.</p>
-      </div>
-
-      <div class="sheet fmt">
-        <span class="fnum">4</span>
-        <h3>Piensa en dos</h3>
-        <p class="fej">"Vienen dos, paga uno."</p>
-        <p>En un taxi casi nunca va una sola persona, y deciden juntas dónde bajarse.</p>
-      </div>
-
-      <div class="sheet fmt">
-        <span class="fnum">5</span>
-        <h3>Paga el regreso</h3>
-        <p class="fej">"El taxi de vuelta corre por nuestra cuenta."</p>
-        <p>La más fuerte de las cinco, y la única que solo se puede ofrecer desde aquí.
-           Tiene sentido si estás fuera del centro y tu ticket la aguanta.</p>
-      </div>
-
-    </div>
-
-    <div class="sheet nota-piso">
-      <p><b>Un apunte:</b> ninguna de las cinco le pide comprar primero, porque
-      están hechas para quien todavía no te conoce. La segunda visita se trabaja
-      al revés &mdash; ahí ya no hay que convencerlo de entrar, sino subir lo que
-      se lleva. Eso lo vemos contigo cuando tengas gente repitiendo.</p>
+      <ol class="ilist">
+        <li><span class="iname">Regala algo, sin condiciones</span><span class="iej">"Tu primer taco va por nuestra cuenta."</span></li>
+        <li><span class="iname">Da acceso, no descuento</span><span class="iej">"Mesa en la terraza sin esperar."</span></li>
+        <li><span class="iname">Deja que pruebe</span><span class="iej">"Agenda tu masaje y los primeros quince minutos van gratis."</span></li>
+        <li><span class="iname">Piensa en dos</span><span class="iej">"Vienen dos, paga uno."</span></li>
+        <li><span class="iname">Paga el regreso</span><span class="iej">"El taxi de vuelta corre por nuestra cuenta."</span></li>
+      </ol>
+      <p class="ideas-bot">La tuya no sale de esta lista, sale de tus números. Éstas
+        son para que veas de qué estamos hablando.</p>
     </div>
 
     <div class="cards">
       <div class="sheet card">
         <h3>Tú pones lo que puedes dar</h3>
-        <p>Revisamos contigo tu carta y tus costos. Tú dices qué puedes ofrecer
-           sin lastimarte. Nadie llega a decirte qué regalar sin conocer tus números.</p>
+        <p>Revisamos contigo tu carta y tus costos. Nadie te dice qué regalar sin
+           conocer tus números.</p>
       </div>
       <div class="sheet card">
-        <h3>Tres promociones por semana</h3>
-        <p>Lunes y miércoles van las más agresivas, para llenar los días flojos.
-           El fin de semana va otra, más moderada: es cuando más gente anda
-           en taxi y no tiene caso desaparecer.</p>
+        <h3>Tres por semana</h3>
+        <p>Lunes y miércoles las más fuertes, para los días flojos. El fin de semana
+           una más suave, que es cuando más gente anda en taxi.</p>
       </div>
       <div class="sheet card">
         <h3>La que funciona se repite</h3>
-        <p>Cada promoción deja su número de cuántos la pidieron y cuántos
-           llegaron. Con eso sabemos cuál vuelve a salir y cuál se cambia.
-           No es corazonada, es el registro.</p>
+        <p>Cada promoción deja cuántos la pidieron y cuántos llegaron. No es
+           corazonada, es el registro.</p>
       </div>
     </div>
 
     <div class="sheet extra-box">
-      <p><b>Incluido sin costo adicional:</b> recopilamos la opinión de los clientes
-      que llegaron con tu promoción y te entregamos un reporte con los puntos a mejorar.
-      El propósito es que el siguiente cliente regrese por su cuenta, y ése ya no
-      genera comisión.</p>
+      <p><b>Incluido sin costo:</b> un reporte con lo que opinaron los clientes que
+      llegaron contigo, para que el siguiente regrese por su cuenta.</p>
     </div>
   </div>
 </section>
