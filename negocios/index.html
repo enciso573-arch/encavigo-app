@@ -255,6 +255,7 @@ h2{
 
 /* los cinco formatos de promocion */
 .formatos{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:20px 0 0}
+.formatos .fmt:last-child{grid-column:1/-1}
 @media(max-width:820px){.formatos{grid-template-columns:1fr}}
 .fmt{position:relative;padding:24px 22px 22px;padding-top:26px}
 .fmt .fnum{
@@ -269,21 +270,12 @@ h2{
   font-size:15.5px;font-weight:600;color:var(--ink);line-height:1.5;
   padding:12px 14px;background:var(--page);border-radius:9px;border:1px solid var(--line);
 }
-.fmt .fpara{font-size:12.5px;color:var(--soft);border-top:1px solid var(--line);padding-top:11px;margin-top:13px}
-.fmt.destacado{grid-column:1/-1;border-color:var(--orange);background:#FFF9F2}
-.fmt.destacado .fej{background:#fff;border-color:rgba(224,120,0,.28)}
-.fsolo{
-  position:absolute;top:24px;right:22px;font-size:10px;letter-spacing:1px;
-  text-transform:uppercase;font-weight:700;color:var(--orange);
-  background:rgba(224,120,0,.12);padding:4px 10px;border-radius:20px;
-}
-@media(max-width:520px){
-  .fsolo{position:static;display:inline-block;margin:0 0 10px 36px}
-  .fmt h3{padding-left:36px}
-}
+
+
 .nota-piso{padding:20px 22px;margin-top:16px;max-width:760px;border-left:3px solid var(--line)}
 .nota-piso p{font-size:14.5px;line-height:1.7;color:var(--body);margin:0}
 .nota-piso b{color:var(--ink);font-weight:600}
+.aviso-ej{font-size:12.5px;color:var(--soft);line-height:1.55;margin-top:10px;max-width:48ch;font-style:italic}
 .nota-piso em{color:var(--ink);font-style:italic}
 
 /* cuenta de ejemplo */
@@ -466,9 +458,10 @@ footer a:hover{color:var(--orange-bright)}
       <p class="eyebrow">Lo que nadie más te da</p>
       <h2>Tú no tienes que inventar la promoción</h2>
       <p class="lead">
-        Es la parte que a todo mundo le cuesta, y la que decide si esto funciona
-        o no. Aquí están las que sí jalan, para que escojas la tuya. Y si prefieres,
-        la armamos contigo.
+        Tres promociones por semana son más de ciento cincuenta al año. Nadie que
+        además está atendiendo su negocio las saca solo. Por eso alguien se encarga
+        de las tuyas, todas las semanas, y cada una deja su número para saber cuál
+        vuelve a salir.
       </p>
     </div>
 
@@ -477,12 +470,8 @@ footer a:hover{color:var(--orange-bright)}
       <p>
         Alguien que va en un taxi, camino a otro lado, no se desvía por un 10%.
         Lo que lo detiene <strong>no es el precio: es quitarle el miedo a probar
-        un lugar que no conoce.</strong> Por eso las promociones que sirven aquí
-        casi nunca son un porcentaje.
-      </p>
-      <p>
-        Éstas son las cinco que mejor funcionan. Escoge la que vaya con tu negocio,
-        o dinos qué puedes dar y nosotros la acomodamos.
+        un lugar que no conoce.</strong> Éstas son cinco formas que funcionan
+        mejor que un porcentaje.
       </p>
     </div>
 
@@ -490,77 +479,57 @@ footer a:hover{color:var(--orange-bright)}
 
       <div class="sheet fmt">
         <span class="fnum">1</span>
-        <h3>Regala una sola cosa, sin condición</h3>
-        <p class="fej">"Tu primer taco va por nuestra cuenta. No tienes que comprar nada."</p>
-        <p>Un regalo chico sin condiciones le gana a un descuento grande con condiciones,
-           porque el descuento lo obliga a gastar antes de saber si le va a gustar.
-           Y ojo con la cuenta: <strong>no estás regalando los $22 de tu carta,
-           estás poniendo lo que te cuesta hacerlo.</strong> El cliente se sienta
-           y pide los demás a precio normal.</p>
-        <p class="fpara">Va bien para: comida rápida, cafeterías, panaderías, heladerías</p>
+        <h3>Regala algo, sin condiciones</h3>
+        <p class="fej">"Tu primer taco va por nuestra cuenta."</p>
+        <p>Nada que comprar antes. Es lo que mejor funciona con quien no te conoce,
+           y lo que pones es tu costo, no el precio de tu carta.</p>
       </div>
 
       <div class="sheet fmt">
         <span class="fnum">2</span>
-        <h3>Vende acceso, no precio</h3>
-        <p class="fej">"Mesa en la terraza sin esperar." · "El chef te saca algo que no está en la carta."</p>
-        <p>No regalas comida ni bajas precios. Das algo que te cuesta casi nada
-           y que suena a mucho. Sirve sobre todo si tu lugar ya se llena y no
-           quieres sacrificar margen.</p>
-        <p class="fpara">Va bien para: restaurantes con lista de espera, bares, rooftops</p>
+        <h3>Da acceso, no descuento</h3>
+        <p class="fej">"Mesa en la terraza sin esperar."</p>
+        <p>Te cuesta casi nada y suena a mucho. Buena opción si tu lugar ya se llena
+           y no quieres regalar consumo.</p>
       </div>
 
       <div class="sheet fmt">
         <span class="fnum">3</span>
-        <h3>Deja que pruebe sin comprometerse</h3>
-        <p class="fej">"Quince minutos de masaje, gratis. Si te gusta, te quedas la hora."</p>
-        <p>El cliente ya está adentro, ya se sentó, ya se quitó los zapatos.
-           De ahí a que se quede el servicio completo hay un paso muy corto.
-           Es la que mejor funciona cuando tu servicio es caro y hay que probarlo
-           para entenderlo.</p>
-        <p class="fpara">Va bien para: spas, estéticas, gimnasios, talleres, clínicas</p>
+        <h3>Deja que pruebe</h3>
+        <p class="fej">"Quince minutos de masaje. Si te gusta, te quedas la hora."</p>
+        <p>Para servicios caros que hay que sentir para entenderlos. Una vez adentro,
+           la mayoría se queda.</p>
       </div>
 
       <div class="sheet fmt">
         <span class="fnum">4</span>
-        <h3>Diseña la promoción para dos</h3>
+        <h3>Piensa en dos</h3>
         <p class="fej">"Vienen dos, paga uno."</p>
-        <p>En un taxi casi nunca va una sola persona, y deciden juntas a dónde
-           bajarse. Una promoción pensada para dos se aprovecha de la situación
-           real en vez de imaginar un cliente que anda solo.</p>
-        <p class="fpara">Va bien para: casi cualquier giro de consumo</p>
+        <p>En un taxi casi nunca va una sola persona, y deciden juntas dónde bajarse.</p>
       </div>
 
-      <div class="sheet fmt destacado">
+      <div class="sheet fmt">
         <span class="fnum">5</span>
-        <span class="fsolo">Solo se puede aquí</span>
-        <h3>Paga el viaje</h3>
-        <p class="fej">"Come con nosotros y el regreso corre por nuestra cuenta."</p>
-        <p>Un negocio que suelta ochenta pesos de taxi para sentar una mesa de
-           quinientos hizo un buen negocio. Y es la única promoción que ninguna
-           lona, ningún volante y ninguna publicación puede ofrecer, porque
-           <strong>nadie más está dentro del vehículo en el momento en que la
-           persona decide.</strong></p>
-        <p class="fpara">Va bien para: ticket alto, lugares fuera del centro, negocios de destino</p>
+        <h3>Paga el regreso</h3>
+        <p class="fej">"El taxi de vuelta corre por nuestra cuenta."</p>
+        <p>La más fuerte de las cinco, y la única que solo se puede ofrecer desde aquí.
+           Tiene sentido si estás fuera del centro y tu ticket la aguanta.</p>
       </div>
 
     </div>
 
     <div class="sheet nota-piso">
-      <p><b>Un apunte:</b> estas cinco están hechas para el cliente que todavía no
-      te conoce, y por eso ninguna le pide comprar primero. La segunda visita se
-      trabaja al revés, con una promoción que sí pide un piso de compra
-      &mdash;&nbsp;<em>"pide dos platos fuertes y el postre va por nuestra cuenta"</em>&nbsp;&mdash;
-      porque ahí ya no hay que convencerlo de entrar, sino subir lo que se lleva.
-      Eso lo vemos contigo cuando ya tengas gente repitiendo.</p>
+      <p><b>Un apunte:</b> ninguna de las cinco le pide comprar primero, porque
+      están hechas para quien todavía no te conoce. La segunda visita se trabaja
+      al revés &mdash; ahí ya no hay que convencerlo de entrar, sino subir lo que
+      se lleva. Eso lo vemos contigo cuando tengas gente repitiendo.</p>
     </div>
 
     <div class="cards">
       <div class="sheet card">
         <h3>Tú pones lo que puedes dar</h3>
-        <p>Nos sentamos contigo a revisar tu carta y tus costos. Tú dices qué
-           puedes ofrecer sin lastimarte, y de ahí salen las promociones. Nadie
-           llega a decirte qué regalar sin conocer tus números.</p>
+        <p>Revisamos contigo tu carta y tus costos. Tú dices qué puedes ofrecer
+           sin lastimarte. Nadie llega a decirte qué regalar sin conocer tus números.</p>
       </div>
       <div class="sheet card">
         <h3>Tres promociones por semana</h3>
@@ -668,13 +637,15 @@ footer a:hover{color:var(--orange-bright)}
         es alguien que gana cuando tú ganas.
       </p>
       <p class="after">
-        <strong>Pongámoslo en números</strong>, con la promoción del primer taco gratis:
+        <strong>Pongámoslo en números.</strong> Tomemos la promoción del primer taco gratis:
       </p>
       <div class="cuenta">
-        <div class="crow"><span>Lo que te cuesta <em>producir</em> el taco que regalas<span class="chint">no los $22 que cuesta en tu carta &mdash; eso nunca lo ibas a cobrar</span></span><span>&minus;$8</span></div>
+        <div class="crow"><span>Lo que te cuesta <em>producir</em> el taco que regalas<span class="chint">tu costo, no el precio de tu carta &mdash; eso nunca lo ibas a cobrar</span></span><span>&minus;$8</span></div>
         <div class="crow"><span>Comisión del chofer que lo trajo</span><span>&minus;$25</span></div>
         <div class="crow total"><span>Traer a ese cliente te costó</span><span>$33</span></div>
       </div>
+      <p class="aviso-ej">Cifras de ejemplo. Cada negocio tiene sus propios costos,
+      y los tuyos los pones tú cuando armemos tu promoción.</p>
       <p class="after">
         Ese cliente se sentó y pidió lo demás pagando precio normal. Y es solo la primera
         visita: <strong>si regresa, entra completo. Ya no hay regalo ni comisión.</strong>
