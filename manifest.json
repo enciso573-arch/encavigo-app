@@ -1,6 +1,6 @@
 {
-  "name": "Bastión — Promociones en tu Ruta",
-  "short_name": "Bastión",
+  "name": "EncaviGO — Promociones en tu Ruta",
+  "short_name": "EncaviGO",
   "description": "Descubre promociones exclusivas mientras viajas en Uber, taxi o colectivo por Puerto Vallarta y Bahía de Banderas.",
   "start_url": "./index.html",
   "scope": "./",
@@ -42,7 +42,7 @@
       "name": "Anunciarme",
       "short_name": "Registro",
       "url": "./registro.html",
-      "description": "Registrar mi negocio en Bastión"
+      "description": "Registrar mi negocio en EncaviGO"
     }
   ],
   "screenshots": [],

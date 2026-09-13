@@ -3,7 +3,7 @@
    PWA offline cache + Push notifications
 ============================================= */
 
-const CACHE_NAME = 'bastion-v4'; /* bump → invalida caches con el JS viejo */
+const CACHE_NAME = 'encavigo-v5'; /* bump → invalida caches con el JS viejo */
 const PRECACHE = [
   './',
   './index.html',
@@ -52,10 +52,10 @@ self.addEventListener('fetch', e => {
 /* ── Push: mostrar notificación de promo cercana ── */
 self.addEventListener('push', e => {
   const data = e.data ? e.data.json() : {};
-  const title   = data.title   || '¡Bastión — Promo cerca de ti!';
+  const title   = data.title   || '¡EncaviGO — Promo cerca de ti!';
   const body    = data.body    || 'Hay una promoción activa a menos de 300 m.';
   const icon    = data.icon    || './icon-192.png';
-  const tag     = data.tag     || 'bastion-promo';
+  const tag     = data.tag     || 'encavigo-promo';
   const url     = data.url     || './index.html';
 
   e.waitUntil(
@@ -88,11 +88,11 @@ self.addEventListener('notificationclick', e => {
 /* ── Mensaje desde la app: notificación local de proximidad ── */
 self.addEventListener('message', e => {
   if (e.data && e.data.type === 'PROMO_CERCA') {
-    self.registration.showNotification(`¡Bastión · ${e.data.negocio}!`, {
+    self.registration.showNotification(`¡EncaviGO · ${e.data.negocio}!`, {
       body: e.data.promo + ' — A solo ' + e.data.dist,
       icon: './icon-192.png',
       badge: './icon-192.png',
-      tag: 'bastion-geo-' + e.data.id,
+      tag: 'encavigo-geo-' + e.data.id,
       renotify: false,
       vibrate: [100, 50, 100],
       data: { url: './index.html' }

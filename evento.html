@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
-  <title>Bastión — Evento Pre-Lanzamiento</title>
+  <title>EncaviGO — Evento Pre-Lanzamiento</title>
   <meta name="description" content="Sé el primero. Recomienda tu lugar favorito de Puerto Vallarta y Bahía de Banderas."/>
   <meta name="theme-color" content="#FF8C00"/>
   <meta http-equiv="X-Frame-Options" content="SAMEORIGIN"/>
@@ -584,7 +584,7 @@
 
 <!-- ══ HERO ══════════════════════════════════════════════ -->
 <div class="hero">
-  <div class="hero-logo">⚡ Bastión</div>
+  <div class="hero-logo">⚡ EncaviGO</div>
   <h1 class="hero-title">¿Cuál es tu lugar<br>favorito?</h1>
   <p class="hero-sub">Recomiéndalo. La comunidad lo califica.</p>
 </div>
@@ -782,7 +782,7 @@
 
 <!-- ══ FOOTER ═════════════════════════════════════════════ -->
 <div class="event-footer">
-  <strong>Bastión</strong> llega pronto a Puerto Vallarta y Bahía de Banderas.<br>
+  <strong>EncaviGO</strong> llega pronto a Puerto Vallarta y Bahía de Banderas.<br>
   Promociones en tiempo real · A bordo de tu transporte.
 </div>
 
@@ -827,13 +827,13 @@ function actualizarContador(total) {
 /* Incrementar y escuchar el contador en Firebase */
 (function initContador() {
   const ref = db.ref('evento/contador');
-  const yaContado = localStorage.getItem('bastion_evento_contado');
+  const yaContado = localStorage.getItem('encavigo_evento_contado');
 
   if (!yaContado) {
     /* Primera visita — incrementar */
     ref.transaction(val => (val || 0) + 1, (err, committed, snap) => {
       if (!err && committed) {
-        localStorage.setItem('bastion_evento_contado', '1');
+        localStorage.setItem('encavigo_evento_contado', '1');
         actualizarContador(snap.val());
       }
     });
@@ -853,7 +853,7 @@ function actualizarContador(total) {
 /* ════════════════════════════════════════════════════════
    SPOTS DE FOTO
 ════════════════════════════════════════════════════════ */
-const _votedSpots = JSON.parse(localStorage.getItem('bastion_spots') || '[]');
+const _votedSpots = JSON.parse(localStorage.getItem('encavigo_spots') || '[]');
 
 /* Marcar spots ya votados al cargar */
 _votedSpots.forEach(spotId => {
@@ -875,7 +875,7 @@ function votarSpot(card) {
   if (card.classList.contains('voted')) return;
   card.classList.add('voted');
   _votedSpots.push(spotId);
-  localStorage.setItem('bastion_spots', JSON.stringify(_votedSpots));
+  localStorage.setItem('encavigo_spots', JSON.stringify(_votedSpots));
   db.ref(`evento/spots/${spotId}`).transaction(v => (v || 0) + 1);
   gtag?.('event', 'spot_vote', { spot: spotId });
 }
@@ -1034,7 +1034,7 @@ function resetForm() {
    LISTA DE LA COMUNIDAD — tiempo real desde Firebase
 ════════════════════════════════════════════════════════ */
 const ICONOS = { restaurant:'🍽️', bar:'🍹', spa:'💆', lodging:'🏨', beach:'🏖️', store:'🛍️', lugar:'📍' };
-const _ratedPlaces = JSON.parse(localStorage.getItem('bastion_rated') || '[]');
+const _ratedPlaces = JSON.parse(localStorage.getItem('encavigo_rated') || '[]');
 
 db.ref('evento/lugares').orderByChild('ts').limitToLast(20)
   .on('value', snap => {
@@ -1150,7 +1150,7 @@ function enviarCalificacion() {
   });
 
   _ratedPlaces.push(_modalKey);
-  localStorage.setItem('bastion_rated', JSON.stringify(_ratedPlaces));
+  localStorage.setItem('encavigo_rated', JSON.stringify(_ratedPlaces));
   document.getElementById('rateModal').classList.remove('open');
   gtag?.('event', 'lugar_calificado', { lugar_key: _modalKey });
 }

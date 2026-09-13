@@ -7,12 +7,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
   <meta name="theme-color" content="#000814"/>
-  <title>Bastión — Mapa de Promos</title>
+  <title>EncaviGO — Mapa de Promos</title>
   <meta name="description" content="Encuentra promociones activas cerca de ti en el mapa. Negocios de Puerto Vallarta y Bahía de Banderas en tiempo real." />
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="Bastión — Mapa de Promos" />
+  <meta property="og:title" content="EncaviGO — Mapa de Promos" />
   <meta property="og:description" content="Encuentra promociones activas cerca de ti. Negocios de Puerto Vallarta y Bahía de Banderas en tiempo real." />
-  <meta property="og:image" content="img/og-bastion.jpg" />
+  <meta property="og:image" content="img/og-encavigo.jpg" />
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="manifest" href="./manifest.json"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
@@ -307,7 +307,7 @@
       <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
       Feed
     </a>
-    <div class="wordmark-map">Bastión</div>
+    <div class="wordmark-map">EncaviGO</div>
     <div class="active-count" id="activeCount">…</div>
   </header>
 
@@ -372,8 +372,8 @@ const PROMOS = [
     badge: '30%\nOFF',
     start: '11:00', end: '22:00',
     lat: 20.6046, lng: -105.2366,
-    coupon: '#BASTION-101',
-    wa: 'Hola, vengo de la app Bastión. Me interesa el 30% de descuento en Mariscos La Marina. Mi código de cupón es #BASTION-101. ¿Me pueden confirmar la promoción?'
+    coupon: '#ENCAVI-101',
+    wa: 'Hola, vengo de la app EncaviGO. Me interesa el 30% de descuento en Mariscos La Marina. Mi código de cupón es #ENCAVI-101. ¿Me pueden confirmar la promoción?'
   },
   {
     id: 2,
@@ -383,8 +383,8 @@ const PROMOS = [
     badge: '2×1',
     start: '14:00', end: '18:00',
     lat: 20.6074, lng: -105.2361,
-    coupon: '#BASTION-102',
-    wa: 'Hola, vengo de la app Bastión. Me interesa el 2x1 en tacos de canasta en Tacos El Güero. Mi código de cupón es #BASTION-102. ¿Me pueden confirmar la promoción?'
+    coupon: '#ENCAVI-102',
+    wa: 'Hola, vengo de la app EncaviGO. Me interesa el 2x1 en tacos de canasta en Tacos El Güero. Mi código de cupón es #ENCAVI-102. ¿Me pueden confirmar la promoción?'
   },
   {
     id: 3,
@@ -394,8 +394,8 @@ const PROMOS = [
     badge: '$199\nMXN',
     start: '09:00', end: '20:00',
     lat: 20.6618, lng: -105.2469,
-    coupon: '#BASTION-103',
-    wa: 'Hola, vengo de la app Bastión. Me interesa el masaje de 60 minutos por $199 MXN en Spa Pacífico. Mi código de cupón es #BASTION-103. ¿Me pueden confirmar disponibilidad?'
+    coupon: '#ENCAVI-103',
+    wa: 'Hola, vengo de la app EncaviGO. Me interesa el masaje de 60 minutos por $199 MXN en Spa Pacífico. Mi código de cupón es #ENCAVI-103. ¿Me pueden confirmar disponibilidad?'
   },
   {
     id: 4,
@@ -405,8 +405,8 @@ const PROMOS = [
     badge: 'HH',
     start: '16:00', end: '20:00',
     lat: 20.6196, lng: -105.2381,
-    coupon: '#BASTION-104',
-    wa: 'Hola, vengo de la app Bastión. Me interesa el Happy Hour de 4 cervezas artesanales por $120 en Cervecería del Muelle. Mi código de cupón es #BASTION-104. ¿Me pueden confirmar?'
+    coupon: '#ENCAVI-104',
+    wa: 'Hola, vengo de la app EncaviGO. Me interesa el Happy Hour de 4 cervezas artesanales por $120 en Cervecería del Muelle. Mi código de cupón es #ENCAVI-104. ¿Me pueden confirmar?'
   }
 ];
 
@@ -596,11 +596,11 @@ function notificarEntrada(p, dist) {
   setTimeout(() => _notifiedIds.delete(p.id), 10 * 60 * 1000); // re-avisar tras 10 min
 
   if (!('Notification' in window) || Notification.permission !== 'granted') return;
-  const title = `Bastión · ${p.biz} en tu radio`;
+  const title = `EncaviGO · ${p.biz} en tu radio`;
   const opts  = {
     body: `${p.promo} — a ${fmtDist(dist)}`,
     icon: './icon-192.png', badge: './icon-192.png',
-    tag: 'bastion-radio-' + p.id, renotify: false,
+    tag: 'encavigo-radio-' + p.id, renotify: false,
     vibrate: [120, 60, 120], data: { url: './mapa.html' }
   };
   if (navigator.serviceWorker) {
