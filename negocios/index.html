@@ -225,6 +225,34 @@ h2{
 .math .after{font-size:15px;margin-top:18px;line-height:1.7;max-width:60ch}
 .math .after + .after{margin-top:12px}
 
+/* tabla de tarifas */
+.tarifas{width:100%;border-collapse:collapse;margin:4px 0 20px}
+.tarifas th{
+  text-align:left;font-size:11.5px;letter-spacing:.9px;text-transform:uppercase;
+  color:var(--soft);font-weight:600;padding:0 0 10px;border-bottom:1px solid var(--line);
+}
+.tarifas th:last-child,.tarifas td:last-child{text-align:right}
+.tarifas td{padding:14px 0;border-bottom:1px solid var(--line);vertical-align:top}
+.tarifas tr:last-child td{border-bottom:none}
+.tarifas .rango{font-size:15.5px;font-weight:600;color:var(--ink);white-space:nowrap}
+.tarifas .giro{display:block;font-size:12.5px;color:var(--soft);font-weight:400;margin-top:3px;line-height:1.45}
+.tarifas .tarifa{font-size:21px;font-weight:700;color:var(--orange);white-space:nowrap;line-height:1.1}
+.tarifas .pct{display:block;font-size:12.5px;color:var(--soft);font-weight:400;margin-top:3px;line-height:1.45}
+.nota-tarifa{font-size:14px;color:var(--soft);line-height:1.65;max-width:60ch;margin-bottom:20px}
+.nota-tarifa strong{color:var(--ink)}
+
+/* seccion de promociones */
+.promo-box{padding:26px 24px;margin-bottom:22px;max-width:720px;border-left:3px solid var(--orange)}
+.promo-box .big{
+  font-size:20px;font-weight:600;letter-spacing:-.4px;color:var(--ink);
+  line-height:1.35;margin-bottom:14px;max-width:24ch;
+}
+.promo-box p + p{margin-top:12px}
+.promo-box p{font-size:15.5px;line-height:1.7;max-width:62ch}
+.extra-box{padding:22px 24px;margin-top:18px;max-width:720px;border-left:3px solid var(--teal)}
+.extra-box p{font-size:15px;line-height:1.7;max-width:62ch}
+.extra-box b{color:var(--teal);font-weight:600}
+
 /* preguntas */
 .faq{display:grid;gap:9px;margin-top:24px;max-width:760px}
 details{padding:16px 20px}
@@ -388,6 +416,58 @@ footer a:hover{color:var(--orange-bright)}
   </div>
 </section>
 
+<!-- ══ PROMOCIONES ══ -->
+<section>
+  <div class="wrap">
+    <div class="col">
+      <p class="eyebrow">Lo que nadie más te da</p>
+      <h2>Tú no tienes que inventar la promoción</h2>
+      <p class="lead">
+        Es la parte que a todo mundo le cuesta, y la que decide si esto funciona
+        o no. Así que la hacemos nosotros.
+      </p>
+    </div>
+
+    <div class="sheet promo-box">
+      <p class="big">Un buen cupón no te regala margen. Te obliga a vender más.</p>
+      <p>
+        <strong>"10% de descuento"</strong> te quita dinero del que ya ibas a ganar.
+        <strong>"En la compra de 5 tacos, te regalo 2 para tu acompañante"</strong> no:
+        ahí el cliente que iba a comprar 5 compró 5 y llegó acompañado. Es la misma
+        promoción para el que la ve, y el resultado en tu caja es al revés.
+      </p>
+      <p>
+        Escribir promociones así, cada semana, sin repetirte y sin regalar margen,
+        es un oficio. No tienes por qué tenerlo.
+      </p>
+    </div>
+
+    <div class="cards">
+      <div class="sheet card">
+        <h3>Llegamos con las promos escritas</h3>
+        <p>Te presentamos de 8 a 10 promociones pensadas para tu giro. Tú apruebas
+           las que te laten y tachas las que no. Una sola plática, al firmar.</p>
+      </div>
+      <div class="sheet card">
+        <h3>Una a la vez, cambiando cada semana</h3>
+        <p>Nunca tienes tres promociones abiertas peleándose entre ellas. Corre una,
+           la siguiente semana entra otra. Si una jala mucho, la repetimos.</p>
+      </div>
+      <div class="sheet card">
+        <h3>En tu día flojo, no en el lleno</h3>
+        <p>No tiene caso mandarte gente el sábado que ya estás a reventar.
+           La promoción se programa el día que tienes mesas vacías.</p>
+      </div>
+    </div>
+
+    <div class="sheet extra-box">
+      <p><b>Además, sin costo:</b> juntamos lo que dicen los clientes que llegaron
+      contigo y te pasamos un reporte de lo que hay que arreglar. No para calificarte
+      — para que el siguiente que llegue sí regrese, porque ése ya no te cuesta nada.</p>
+    </div>
+  </div>
+</section>
+
 <!-- ══ PRECIO ══ -->
 <section id="precio">
   <div class="wrap">
@@ -401,9 +481,42 @@ footer a:hover{color:var(--orange-bright)}
         <span class="num">$500</span>
         <span class="per">al mes</span>
       </div>
-      <p class="incl">Tu lugar en la plataforma, más <strong>$30 por cada cliente que llegue</strong>.</p>
+      <p class="incl">Tu lugar en la plataforma. Aparte, pagas por cada cliente que llega.</p>
+
+      <table class="tarifas">
+        <thead>
+          <tr><th>Tu ticket promedio</th><th>Por cliente que llega</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="rango">Hasta $250</span>
+                <span class="giro">Taquerías, cafés, fondas, barberías</span></td>
+            <td><span class="tarifa">$25</span>
+                <span class="pct">10% de un ticket de $250</span></td>
+          </tr>
+          <tr>
+            <td><span class="rango">$250 a $500</span>
+                <span class="giro">Restaurantes, bares, estéticas</span></td>
+            <td><span class="tarifa">$45</span>
+                <span class="pct">9% de un ticket de $500</span></td>
+          </tr>
+          <tr>
+            <td><span class="rango">$500 a $1,000</span>
+                <span class="giro">Spas, tours, talleres, clínicas</span></td>
+            <td><span class="tarifa">$80</span>
+                <span class="pct">8% de un ticket de $1,000</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="nota-tarifa">
+        Tu rango se fija <strong>una sola vez, al firmar</strong>, según el ticket promedio
+        de tu negocio. No cambia de un cliente a otro ni te cobramos según lo que cada
+        quien consuma.
+      </p>
+
       <ul class="plist">
-        <li><span class="dot"></span><span>Los $30 se cobran <strong>solo cuando el cliente llega a tu negocio</strong> y quema su código. Si no llegó, no se cobra.</span></li>
+        <li><span class="dot"></span><span>Se cobra <strong>solo cuando el cliente llega a tu negocio</strong> y quema su código. Si no llegó, no se cobra.</span></li>
         <li><span class="dot"></span><span>Cambias tu promoción las veces que quieras, sin costo.</span></li>
         <li><span class="dot"></span><span>Sin cuota de alta ni de instalación.</span></li>
         <li><span class="dot"></span><span>Se paga por adelantado, así que <strong>no hay cobranza ni deudas</strong>. Si un mes no quieres, tu promoción se pausa.</span></li>
@@ -426,14 +539,14 @@ footer a:hover{color:var(--orange-bright)}
       <p class="eyebrow">¿Cuánto te cuesta traer un cliente?</p>
       <div class="row">
         <span>Por cada cliente que llega<span class="hint">va completo al chofer que te lo trajo</span></span>
-        <span>$30</span>
+        <span>$25 a $80</span>
       </div>
       <div class="row">
         <span>El descuento de tu promoción<span class="hint">lo decides tú, del tamaño que quieras</span></span>
         <span class="yours">lo pones tú</span>
       </div>
       <p class="after">
-        <strong>Esos $30 no se quedan con nosotros: son del chofer que te llevó al cliente.</strong>
+        <strong>Ese dinero no se queda con nosotros: es del chofer que te llevó al cliente.</strong>
         Por eso te recomienda de verdad. No es un anuncio pegado en un vidrio —
         es alguien que gana cuando tú ganas.
       </p>
@@ -443,7 +556,7 @@ footer a:hover{color:var(--orange-bright)}
         gente llega; entre más chico, menos te cuesta. Ahí mandas tú.
       </p>
       <p class="after">
-        Si por ejemplo das 20% sobre un consumo de $200, ese cliente te salió en $70
+        Si por ejemplo das 20% sobre un consumo de $200, ese cliente te salió en $65
         entre descuento y comisión, y dejó $200 en tu caja. Nadie mejor que tú sabe si
         eso te conviene.
       </p>
