@@ -1,0 +1,91 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ─────────────────────────────────────────────────────────────
+    // ESTADISTICAS GLOBALES
+    // Cualquiera puede leer y sumar EXACTAMENTE 1 a "clicks".
+    // No puede tocar ningun otro campo, ni sumar mas de uno.
+    // ─────────────────────────────────────────────────────────────
+    match /stats/{doc} {
+      allow read: if true;
+
+      allow update: if request.resource.data.diff(resource.data)
+                         .affectedKeys().hasOnly(['clicks'])
+                    && request.resource.data.clicks == resource.data.clicks + 1;
+
+      allow create, delete: if request.auth != null;
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // CHOFERES
+    // Igual que arriba: solo se puede sumar 1 a "clicks".
+    // Esto evita que alguien se infle su propio contador de pago.
+    // ─────────────────────────────────────────────────────────────
+    match /choferes/{doc} {
+      allow read: if true;
+
+      allow update: if request.resource.data.diff(resource.data)
+                         .affectedKeys().hasOnly(['clicks'])
+                    && request.resource.data.clicks == resource.data.clicks + 1;
+
+      allow create, delete: if request.auth != null;
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // CAMPANAS (promociones)
+    // Leer: cualquiera.
+    // Escribir: SOLO dos movimientos permitidos —
+    //   a) sumar 1 a "clicks"
+    //   b) restar 1 a "stock", y nunca dejarlo en negativo
+    // Crear y borrar: solo tu, con sesion iniciada.
+    // ─────────────────────────────────────────────────────────────
+    match /campaigns/{doc} {
+      allow read: if true;
+
+      allow update: if (
+                      request.resource.data.diff(resource.data)
+                        .affectedKeys().hasOnly(['clicks'])
+                      && request.resource.data.clicks == resource.data.clicks + 1
+                    ) || (
+                      request.resource.data.diff(resource.data)
+                        .affectedKeys().hasOnly(['stock'])
+                      && request.resource.data.stock == resource.data.stock - 1
+                      && resource.data.stock > 0
+                    );
+
+      allow create, delete: if request.auth != null;
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // TICKETS (cupones reclamados)
+    // El pasajero puede crear el suyo.
+    // Leerlos, cambiarlos o borrarlos: solo tu.
+    // ─────────────────────────────────────────────────────────────
+    match /tickets/{doc} {
+      allow create: if true;
+      allow read, update, delete: if request.auth != null;
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // REGISTRO DE CLICKS (anti-inflado)
+    // Cada registro se llama: promo + celular + fecha.
+    // Crear: cualquiera, pero SOLO la primera vez.
+    // Si ese registro ya existe, el segundo intento cuenta como
+    // "update" y aqui update esta prohibido -> el click no se repite.
+    // Leer: solo tu, con sesion iniciada.
+    // ─────────────────────────────────────────────────────────────
+    match /click_log/{id} {
+      allow create: if true;
+      allow read: if request.auth != null;
+      allow update, delete: if false;
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // TODO LO DEMAS QUEDA CERRADO
+    // ─────────────────────────────────────────────────────────────
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

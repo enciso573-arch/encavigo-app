@@ -5812,14 +5812,42 @@ document.addEventListener('DOMContentLoaded', () => {
                 const title = e.target.getAttribute('data-title');
                 let stock = parseInt(e.target.getAttribute('data-stock'));
                 
+                // ─────────────────────────────────────────────────────────
+                // CLICK UNICO: 1 celular = 1 click por promo por dia.
+                // Se guarda un registro con nombre fijo (promo + celular + fecha).
+                // Si ese registro YA existe, Firestore lo rechaza y no se
+                // vuelve a contar. Asi nadie infla el contador picandole
+                // muchas veces al mismo boton.
+                // ─────────────────────────────────────────────────────────
                 try {
-                    db.collection('stats').doc('global').update({ clicks: firebase.firestore.FieldValue.increment(1) });
-                    if (session && session.chofer !== 'orgánico') {
-                        db.collection('choferes').doc(session.chofer).update({ clicks: firebase.firestore.FieldValue.increment(1) });
+                    if (!window.encaviDevId) {
+                        var d = null;
+                        try { d = localStorage.getItem('encavi_dev_id'); } catch(e) {}
+                        if (!d) {
+                            d = 'd' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+                            try { localStorage.setItem('encavi_dev_id', d); } catch(e) {}
+                        }
+                        window.encaviDevId = d;
                     }
-                    if (cid) {
-                        db.collection('campaigns').doc(cid).update({ clicks: firebase.firestore.FieldValue.increment(1) });
-                    }
+                    var hoy = new Date().toISOString().slice(0, 10);
+                    var huella = (cid || 'sin-promo') + '_' + window.encaviDevId + '_' + hoy;
+
+                    db.collection('click_log').doc(huella).set({
+                        camp_id: cid || null,
+                        chofer: (session && session.chofer) ? session.chofer : 'orgánico',
+                        fecha: firebase.firestore.FieldValue.serverTimestamp()
+                    }).then(function () {
+                        // Primer click de este celular a esta promo hoy: SI cuenta.
+                        db.collection('stats').doc('global').update({ clicks: firebase.firestore.FieldValue.increment(1) });
+                        if (session && session.chofer !== 'orgánico') {
+                            db.collection('choferes').doc(session.chofer).update({ clicks: firebase.firestore.FieldValue.increment(1) });
+                        }
+                        if (cid) {
+                            db.collection('campaigns').doc(cid).update({ clicks: firebase.firestore.FieldValue.increment(1) });
+                        }
+                    }).catch(function () {
+                        // Click repetido del mismo celular: se ignora a proposito.
+                    });
                 } catch(err) { console.error(err); }
 
                 if (stock <= 0) {
