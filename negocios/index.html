@@ -277,6 +277,37 @@ h2{
 .cuenta .crow.total > span:last-child{color:var(--orange);font-size:17px}
 .aviso-ej{font-size:12.5px;color:var(--soft);line-height:1.55;margin-top:12px;max-width:48ch;font-style:italic}
 
+/* ══════ APARICION AL BAJAR ══════
+   Solo se activa si el navegador lo soporta y si la persona no pidio
+   menos movimiento. Si algo de eso falla, todo se ve normal: nada
+   queda escondido, porque no hay javascript de por medio. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports ((animation-timeline: view()) and (animation-range: entry)) {
+
+    @keyframes aparecer {
+      from { opacity: 0; transform: translateY(26px); }
+    }
+
+    section .col,
+    section .sheet,
+    section .step,
+    section .price-box {
+      animation: aparecer auto ease-out backwards;
+      animation-timeline: view();
+      animation-range: entry 8% entry 62%;
+    }
+
+    /* las tarjetas en fila entran escalonadas, no todas de golpe */
+    .cards > *:nth-child(2),
+    .formatos > *:nth-child(2) { animation-range: entry 16% entry 70%; }
+    .cards > *:nth-child(3),
+    .formatos > *:nth-child(3) { animation-range: entry 24% entry 78%; }
+
+    /* el celular va pegado al hacer scroll: transformarlo lo rompe */
+    .flow-phone, .flow-phone * { animation: none; }
+  }
+}
+
 /* precio a dos columnas en pantalla ancha */
 @media(min-width:1000px){
   #precio .wrap{
