@@ -1,6320 +1,784 @@
 <!DOCTYPE html>
-
-<html lang="es-MX" translate="no">
+<html lang="es">
 <head>
-<meta charset="utf-8"/>
-<meta content="notranslate" name="google"/>
-<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
-<link href="./manifest.json" rel="manifest"/>
-<meta content="#000814" name="theme-color"/>
-<meta content="yes" name="apple-mobile-web-app-capable"/>
-<meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
-<title>EncaviGO — Promociones en tu Ruta</title>
-<meta content="Descubre promociones exclusivas de negocios locales en Puerto Vallarta y Bahía de Banderas. Ofertas en tiempo real a bordo de tu transporte." name="description"/>
-<meta content="website" property="og:type"/>
-<meta content="EncaviGO - Promociones en tu Ruta" property="og:title"/>
-<meta content="Descubre promociones exclusivas de negocios locales en Puerto Vallarta y Bahía de Banderas." property="og:description"/>
-<meta content="img/og-encavigo.jpg" property="og:image"/>
-<meta content="summary_large_image" name="twitter:card"/>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EncaviGO para Negocios — Clientes que llegan desde el viaje</title>
+<meta name="description" content="Tus promociones frente a los pasajeros del transporte de Puerto Vallarta y Bahía de Banderas. Pagas cuando el cliente llega a tu negocio." />
+<meta name="theme-color" content="#12100B" />
+
+<meta property="og:title" content="EncaviGO para Negocios" />
+<meta property="og:description" content="Tus promociones frente a los pasajeros del transporte de Puerto Vallarta. Pagas cuando el cliente llega a tu negocio." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://encavigo.com/negocios/" />
+<meta property="og:image" content="https://encavigo.com/img/og-encavigo.jpg" />
+
+<link rel="icon" href="/favicon.png" type="image/png" />
+<link rel="apple-touch-icon" href="/icon-192.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
-
-
-
-    /* =============================================
-
-
-
-       SISTEMA DE DISEÃ‘O â€” ENCAVIGO (DÃA)
-
-
-
-    ============================================= */
-
-
-
-    :root {
-
-
-
-      /* â”€â”€ Fondos â€” Limpio / Corporativo (OpciÃ³n 2) â”€â”€ */
-
-
-
-      /* ── Fondos — Azul Profundo (Premium) ── */
-
-
-
-      --bg-root:        #060B14;
-
-
-
-      --bg-app:         #0A1121;
-
-
-
-      --bg-card:        #1F2E47;
-
-
-
-      --bg-card-alt:    #253655;
-
-
-
-
-
-
-
-      /* ── Acento — Naranja EncaviGO ── */
-
-
-
-      --accent:         #F97316;
-
-
-
-      --accent-soft:    rgba(249,115,22,0.15);
-
-
-
-      --accent-border:  rgba(249,115,22,0.30);
-
-
-
-      --accent-glow:    rgba(249,115,22,0.20);
-
-
-
-      --accent-text:    #FFFFFF;
-
-
-
-      
-
-
-
-      /* Acento secundario (para la tarjeta de negocio) */
-
-
-
-      --secondary:      #2563EB;
-
-
-
-
-
-
-
-      /* ── Fondos tarjeta ── */
-
-
-
-      --mascot-1: linear-gradient(160deg, #111827 0%, #1F2937 100%);
-
-
-
-      --mascot-2: linear-gradient(160deg, #111827 0%, #1F2937 100%);
-
-
-
-      --mascot-3: linear-gradient(160deg, #1D4ED8 0%, #1E3A8A 100%);
-
-
-
-      --mascot-4: linear-gradient(160deg, #1D4ED8 0%, #1E3A8A 100%);
-
-
-
-
-
-
-
-      /* ── Texto Oscuro ── */
-
-
-
-      --text-primary:   #F8FAFC;
-
-
-
-      --text-secondary: #94A3B8;
-
-
-
-      --text-muted:     #64748B;
-
-
-
-
-
-
-
-      /* ── Estructura ── */
-
-
-
-      --border:         #334A6E;
-
-
-
-      --border-strong:  #334155;
-
-
-
-      --shadow-card:    0 8px 16px -4px rgba(0,0,0,0.4), 0 4px 6px -2px rgba(0,0,0,0.2);
-
-
-
-      --shadow-app:     0 0 0 1px rgba(255,255,255,0.05), 0 8px 32px rgba(0,0,0,0.5);
-
-
-
-      --radius-card:    24px;
-
-
-
-      --radius-btn:     999px;
-
-
-
-      --radius-pill:    999px;
-
-
-
-
-
-
-
-      /* ── Tipografía nativa - Inter ── */
-
-
-
-      --font: 'Montserrat', system-ui, -apple-system, sans-serif;
-
-
-
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /* =============================================
-
-
-
-       RESET
-
-
-
-    ============================================= */
-
-
-
-    *, *::before, *::after {
-
-
-
-      box-sizing: border-box;
-
-
-
-      margin: 0; padding: 0;
-
-
-
-      -webkit-tap-highlight-color: transparent;
-
-
-
-    }
-
-
-
-    html { background: var(--bg-root); -webkit-text-size-adjust: 100%; }
-
-
-
-    body {
-
-
-
-      font-family: var(--font);
-
-
-
-      background: var(--bg-root);
-
-
-
-      color: var(--text-primary);
-
-
-
-      height: 100dvh;
-
-
-
-      overflow: hidden; /* el scroll vive dentro de .promo-feed */
-
-
-
-      display: flex;
-
-
-
-      justify-content: center;
-
-
-
-      align-items: flex-start;
-
-
-
-      -webkit-font-smoothing: antialiased;
-
-
-
-    }
-
-
-
-
-
-
-
-    /* =============================================
-
-
-
-       CONTENEDOR PRINCIPAL â€” SIMULACIÃ“N MÃ“VIL
-
-
-
-    ============================================= */
-
-
-
-    .app-container {
-
-
-
-      width: 100%;
-
-
-
-      max-width: 430px;
-
-
-
-      height: 100dvh; /* alto fijo: la zona superior queda anclada */
-
-
-
-      background: var(--bg-app);
-
-
-
-      box-shadow: var(--shadow-app);
-
-
-
-      position: relative;
-
-
-
-      display: flex;
-
-
-
-      flex-direction: column;
-
-
-
-      overflow-x: hidden;
-
-
-
-    }
-
-
-
-    /* â”€â”€ ZONA SUPERIOR ANCLADA â”€â”€
-
-
-
-       Header, perfil, destacadas, filtro, categorÃ­as y canales
-
-
-
-       (todo lo anterior al feed) quedan fijos; solo .promo-feed
-
-
-
-       se desliza. */
-
-
-
-    .app-container > *:not(.promo-feed) { flex-shrink: 0; }
-
-
-
-
-
-
-
-    /* =============================================
-
-
-
-       HEADER â€” Premium compacto con blur
-
-
-
-    ============================================= */
-
-
-
-    .app-header {
-
-
-
-      position: sticky;
-
-
-
-      top: 0;
-
-
-
-      z-index: 50;
-
-
-
-      /* Blur sobre el contenido al hacer scroll */
-
-
-
-      background: rgba(10, 17, 33, 0.85);
-
-
-
-      backdrop-filter: blur(10px);
-
-
-
-      -webkit-backdrop-filter: blur(10px);
-
-
-
-      border-bottom: 1px solid var(--border);
-
-
-
-      padding: 10px 16px;
-
-
-
-      display: flex;
-
-
-
-      align-items: center;
-
-
-
-      justify-content: space-between;
-
-
-
-      gap: 8px;
-
-
-
-    }
-
-
-
-
-
-
-
-    /* Lado izquierdo: logo + stack de texto */
-
-
-
-    .header-left {
-
-
-
-      display: flex;
-
-
-
-      align-items: center;
-
-
-
-      gap: 9px;
-
-
-
-      min-width: 0;
-
-
-
-    }
-
-
-
-
-
-
-
-    .header-logo {
-
-
-
-      width: 30px; height: 30px;
-
-
-
-      background: var(--accent);
-
-
-
-      border-radius: 8px;
-
-
-
-      display: flex;
-
-
-
-      align-items: center;
-
-
-
-      justify-content: center;
-
-
-
-      flex-shrink: 0;
-
-
-
-    }
-
-
-
-
-
-
-
-    .header-logo svg {
-
-
-
-      width: 16px; height: 16px;
-
-
-
-      fill: var(--accent-text);
-
-
-
-    }
-
-
-
-
-
-
-
-    /* Stack vertical: tÃ­tulo arriba, ubicaciÃ³n abajo */
-
-
-
-    .header-brand-stack {
-
-
-
-      display: flex;
-
-
-
-      flex-direction: column;
-
-
-
-      gap: 1px;
-
-
-
-      min-width: 0;
-
-
-
-    }
-
-
-
-
-
-
-
-    .header-title { font-size: 18px; /* Was bigger before */
-
-
-
-      font-family: var(--font);
-
-
-
-      font-size: 20px;
-
-
-
-      font-weight: 700;
-
-
-
-      letter-spacing: -0.2px;
-
-
-
-      color: var(--text-primary);
-
-
-
-      line-height: 1.1;
-
-
-
-    }
-
-
-
-
-
-
-
-    .header-title em {
-
-
-
-      font-style: normal;
-
-
-
-      color: var(--accent);
-
-
-
-    }
-
-
-
-
-
-
-
-    /* UbicaciÃ³n colapsable bajo el tÃ­tulo */
-
-
-
-    .header-location {
-
-
-
-      display: flex;
-
-
-
-      align-items: center;
-
-
-
-      gap: 3px;
-
-
-
-      background: none;
-
-
-
-      border: none;
-
-
-
-      padding: 0;
-
-
-
-      cursor: pointer;
-
-
-
-      -webkit-user-select: none;
-
-
-
-    }
-
-
-
-
-
-
-
-    .header-location svg {
-
-
-
-      flex-shrink: 0;
-
-
-
-    }
-
-
-
-
-
-
-
-    .header-location .loc-text {
-
-
-
-      font-size: 10px;
-
-
-
-      color: var(--text-secondary);
-
-
-
-      white-space: nowrap;
-
-
-
-      overflow: hidden;
-
-
-
-      text-overflow: ellipsis;
-
-
-
-      max-width: 130px;
-
-
-
-    }
-
-
-
-
-
-
-
-    .header-location .loc-text strong {
-
-
-
-      font-weight: 600;
-
-
-
-      color: var(--text-secondary);
-
-
-
-    }
-
-
-
-
-
-
-
-    .header-location .chevron {
-
-
-
-      opacity: 0.5;
-
-
-
-      transition: transform 0.2s ease;
-
-
-
-    }
-
-
-
-
-
-
-
-    /* Lado derecho: live-chip + iconos */
-
-
-
-    .header-right {
-
-
-
-      display: flex;
-
-
-
-      align-items: center;
-
-
-
-      gap: 4px;
-
-
-
-      flex-shrink: 0;
-
-
-
-    }
-
-
-
-
-
-
-
-    /* CLIMA EN VIVO â€” chip dinÃ¡mico */
-
-
-
-    .weather-chip { display: none !important;
-
-
-
-      display: flex;
-
-
-
-      align-items: center;
-
-
-
-      gap: 5px;
-
-
-
-      background: rgba(255,255,255,0.05);
-
-
-
-      border: 1px solid rgba(163, 251, 10, 0.28);
-
-
-
-      border-radius: var(--radius-pill);
-
-
-
-      padding: 5px 10px 5px 7px;
-
-
-
-      cursor: default;
-
-
-
-      transition: border-color 0.4s ease;
-
-
-
-    }
-
-
-
-
-
-
-
-    .weather-icon-wrap {
-
-
-
-      width: 16px; height: 16px;
-
-
-
-      display: flex; align-items: center; justify-content: center;
-
-
-
-      flex-shrink: 0;
-
-
-
-    }
-
-
-
-
-
-
-
-    .weather-icon-wrap svg {
-
-
-
-      width: 16px; height: 16px;
-
-
-
-    }
-
-
-
-
-
-
-
-    .weather-text {
-
-
-
-      display: flex;
-
-
-
-      flex-direction: column;
-
-
-
-      align-items: flex-start;
-
-
-
-      line-height: 1.1;
-
-
-
-    }
-
-
-
-
-
-
-
-    .weather-temp {
-
-
-
-      font-size: 11px;
-
-
-
-      font-weight: 700;
-
-
-
-      color: var(--text-primary);
-
-
-
-      letter-spacing: -0.3px;
-
-
-
-    }
-
-
-
-
-
-
-
-    .weather-cond {
-
-
-
-      font-size: 9px;
-
-
-
-      font-weight: 600;
-
-
-
-      letter-spacing: 0.3px;
-
-
-
-      color: var(--text-secondary);
-
-
-
-      white-space: nowrap;
-
-
-
-    }
-
-
-
-
-
-
-
-    /* â”€â”€ Animaciones de Ã­conos climÃ¡ticos â”€â”€ */
-
-
-
-
-
-
-
-    /* Sol: rayos girando lentamente */
-
-
-
-    .sun-rays {
-
-
-
-      transform-origin: 12px 12px;
-
-
-
-      animation: spin-rays 10s linear infinite;
-
-
-
-    }
-
-
-
-    @keyframes spin-rays {
-
-
-
-      to { transform: rotate(360deg); }
-
-
-
-    }
-
-
-
-
-
-
-
-    /* Nublado: flotaciÃ³n suave */
-
-
-
-    .cloud-body {
-
-
-
-      animation: cloud-float 3.5s ease-in-out infinite;
-
-
-
-    }
-
-
-
-    @keyframes cloud-float {
-
-
-
-      0%, 100% { transform: translateX(0); }
-
-
-
-      50%       { transform: translateX(1.5px); }
-
-
-
-    }
-
-
-
-
-
-
-
-    /* Lluvia: gotas cayendo */
-
-
-
-    .rain-drop {
-
-
-
-      animation: drop-fall 1.3s ease-in infinite;
-
-
-
-      opacity: 0;
-
-
-
-    }
-
-
-
-    .rain-drop:nth-child(2) { animation-delay: 0.25s; }
-
-
-
-    .rain-drop:nth-child(3) { animation-delay: 0.55s; }
-
-
-
-    .rain-drop:nth-child(4) { animation-delay: 0.80s; }
-
-
-
-    @keyframes drop-fall {
-
-
-
-      0%   { transform: translateY(-3px); opacity: 0; }
-
-
-
-      30%  { opacity: 1; }
-
-
-
-      100% { transform: translateY(4px); opacity: 0; }
-
-
-
-    }
-
-
-
-
-
-
-
-    /* Tormenta: relÃ¡mpago parpadeante */
-
-
-
-    .lightning-bolt {
-
-
-
-      animation: flash-bolt 2.8s ease-in-out infinite;
-
-
-
-    }
-
-
-
-    @keyframes flash-bolt {
-
-
-
-      0%, 80%, 100% { opacity: 1; filter: none; }
-
-
-
-      85%            { opacity: 0.1; }
-
-
-
-      90%            { opacity: 1; filter: drop-shadow(0 0 3px #FFE066); }
-
-
-
-    }
-
-
-
-
-
-
-
-    /* Niebla: pulso suave */
-
-
-
-    .fog-lines {
-
-
-
-      animation: fog-pulse 2.4s ease-in-out infinite;
-
-
-
-    }
-
-
-
-    @keyframes fog-pulse {
-
-
-
-      0%, 100% { opacity: 0.6; transform: translateX(0); }
-
-
-
-      50%       { opacity: 1;   transform: translateX(1px); }
-
-
-
-    }
-
-
-
-
-
-
-
-    /* Botones de Ã­cono (lupa y campana) */
-
-
-
-    .header-icon-btn {
-
-
-
-      width: 32px; height: 32px;
-
-
-
-      border-radius: 50%;
-
-
-
-      background: transparent;
-
-
-
-      border: none;
-
-
-
-      display: flex;
-
-
-
-      align-items: center;
-
-
-
-      justify-content: center;
-
-
-
-      cursor: pointer;
-
-
-
-      transition: background 0.15s ease;
-
-
-
-      position: relative;
-
-
-
-    }
-
-
-
-
-
-
-
-    .header-icon-btn svg {
-
-
-
-      width: 17px; height: 17px;
-
-
-
-      fill: var(--text-secondary);
-
-
-
-    }
-
-
-
-
-
-
-
-    .header-icon-btn:active {
-
-
-
-      background: rgba(255,255,255,0.08);
-
-
-
-    }
-
-
-
-
-
-
-
-
-
-
-
-    /* =============================================
-
-
-
-       PERFIL / BIOGRAFÃA
-
-
-
-    ============================================= */
-
-
-
-    .profile-section {
-
-
-
-      padding: 7px 18px;
-
-
-
-      display: flex;
-
-
-
-      flex-direction: column;
-
-
-
-      gap: 0;
-
-
-
-      border-bottom: 1px solid var(--border);
-
-
-
-    }
-
-
-
-    .profile-top-row {
-
-
-
-      display: flex;
-
-
-
-      align-items: center;
-
-
-
-      gap: 12px;
-
-
-
-    }
-
-
-
-    .profile-name-stack {
-
-
-
-      display: flex;
-
-
-
-      flex-direction: column;
-
-
-
-      gap: 2px;
-
-
-
-      flex: 1;
-
-
-
-      min-width: 0;
-
-
-
-    }
-
-
-
-    .profile-toggle-btn {
-
-
-
-      background: none;
-
-
-
-      border: none;
-
-
-
-      padding: 5px 0 5px 4px;
-
-
-
-      cursor: pointer;
-
-
-
-      color: var(--text-muted);
-
-
-
-      display: flex;
-
-
-
-      align-items: center;
-
-
-
-      gap: 4px;
-
-
-
-      font-size: 10px;
-
-
-
-      font-weight: 700;
-
-
-
-      letter-spacing: 0.08em;
-
-
-
-      text-transform: uppercase;
-
-
-
-      flex-shrink: 0;
-
-
-
-      transition: color 0.15s;
-
-
-
-      font-family: var(--font);
-
-
-
-    }
-
-
-
-    .profile-toggle-btn svg { width: 13px; height: 13px; fill: currentColor; transition: transform 0.25s; }
-
-
-
-    .profile-toggle-btn.open svg { transform: rotate(180deg); }
-
-
-
-    .profile-toggle-btn:hover { color: var(--text-secondary); }
-
-
-
-    .profile-collapse {
-
-
-
-      max-height: 0;
-
-
-
-      overflow: hidden;
-
-
-
-      transition: max-height 0.34s cubic-bezier(0.4,0,0.2,1);
-
-
-
-    }
-
-
-
-    .profile-collapse.open { max-height: 220px; }
-
-
-
-    .profile-collapse-inner {
-
-
-
-      padding: 14px 0 4px;
-
-
-
-      display: flex;
-
-
-
-      flex-direction: column;
-
-
-
-      align-items: center;
-
-
-
-      gap: 8px;
-
-
-
-      text-align: center;
-
-
-
-    }
-
-
-
-
-
-
-
-    /* Foto de perfil */
-
-
-
-    .profile-avatar {
-
-
-
-      width: 48px;
-
-
-
-      height: 48px;
-
-
-
-      border-radius: 50%;
-
-
-
-      background: var(--bg-card);
-
-
-
-      border: 2px solid var(--border-strong);
-
-
-
-      display: flex;
-
-
-
-      align-items: center;
-
-
-
-      justify-content: center;
-
-
-
-      overflow: hidden;
-
-
-
-      flex-shrink: 0;
-
-
-
-      position: relative;
-
-
-
-    }
-
-
-
-
-
-
-
-    .profile-avatar img {
-
-
-
-      width: 100%;
-
-
-
-      height: 100%;
-
-
-
-      object-fit: cover;
-
-
-
-      display: block;
-
-
-
-    }
-
-
-
-
-
-
-
-    /* Placeholder cuando no hay foto */
-
-
-
-    .profile-avatar svg {
-
-
-
-      width: 38px;
-
-
-
-      height: 38px;
-
-
-
-      fill: var(--text-muted);
-
-
-
-    }
-
-
-
-
-
-
-
-    /* Indicador de estado (disponible) */
-
-
-
-    .profile-avatar::after {
-
-
-
-      content: '';
-
-
-
-      position: absolute;
-
-
-
-      bottom: 3px;
-
-
-
-      right: 3px;
-
-
-
-      width: 12px;
-
-
-
-      height: 12px;
-
-
-
-      background: #A3FB0A;
-
-
-
-      border-radius: 50%;
-
-
-
-      border: 2px solid var(--bg-app);
-
-
-
-    }
-
-
-
-
-
-
-
-    /* Datos de la persona â€” stack vertical */
-
-
-
-    .profile-info {
-
-
-
-      display: flex;
-
-
-
-      flex-direction: column;
-
-
-
-      align-items: center;
-
-
-
-      gap: 4px;
-
-
-
-      width: 100%;
-
-
-
-      text-align: center;
-
-
-
-    }
-
-
-
-
-
-
-
-    .profile-name {
-
-
-
-      font-size: 16px;
-
-
-
-      font-weight: 700;
-
-
-
-      color: var(--text-primary);
-
-
-
-      letter-spacing: -0.3px;
-
-
-
-    }
-
-
-
-
-
-
-
-    .profile-role {
-
-
-
-      font-size: 11px;
-
-
-
-      font-weight: 600;
-
-
-
-      text-transform: uppercase;
-
-
-
-      letter-spacing: 0.8px;
-
-
-
-      color: var(--accent);
-
-
-
-    }
-
-
-
-
-
-
-
-    .profile-bio {
-
-
-
-      font-size: 12px;
-
-
-
-      color: var(--text-secondary);
-
-
-
-      line-height: 1.6;
-
-
-
-      max-width: 300px;
-
-
-
-      margin-top: 2px;
-
-
-
-    }
-
-
-
-
-
-
-
-    /* Separador de datos extra (telÃ©fono, zona, etc.) */
-
-
-
-    .profile-meta {
-
-
-
-      display: flex;
-
-
-
-      flex-direction: column;
-
-
-
-      gap: 6px;
-
-
-
-      width: 100%;
-
-
-
-      margin-top: 4px;
-
-
-
-    }
-
-
-
-
-
-
-
-    .profile-meta-row {
-
-
-
-      display: flex;
-
-
-
-      align-items: center;
-
-
-
-      justify-content: center;
-
-
-
-      gap: 6px;
-
-
-
-      font-size: 11px;
-
-
-
-      color: var(--text-secondary);
-
-
-
-    }
-
-
-
-
-
-
-
-    .profile-meta-row svg {
-
-
-
-      width: 12px;
-
-
-
-      height: 12px;
-
-
-
-      fill: var(--text-muted);
-
-
-
-      flex-shrink: 0;
-
-
-
-    }
-
-
-
-
-
-
-
-    /* =============================================
-
-
-
-       BARRA DE CATEGORÃAS â€” DiseÃ±o vertical icÃ³nico
-
-
-
-    ============================================= */
-
-
-
-
-
-
-
-    /* Contenedor con fade derecho que indica scroll */
-
-
-
-    /* â”€â”€ CARRUSEL DE DESTACADAS â”€â”€ */
-
-
-
-    .carousel-section {
-
-
-
-      padding: 8px 0 8px;
-
-
-
-      border-bottom: 1px solid var(--border);
-
-
-
-    }
-
-
-
-    .carousel-label {
-
-
-
-      font-size: 9px; font-weight: 700; letter-spacing: 0.14em;
-
-
-
-      text-transform: uppercase; color: var(--text-muted);
-
-
-
-      padding: 0 18px 6px; display: block;
-
-
-
-    }
-
-
-
-    .carousel-track {
-
-
-
-      /* Grid-stack: todas las cards ocupan la misma celda y la pista mide
-
-
-
-         lo que la card más alta â€” sin alturas fijas. Antes, con
-
-
-
-         position:absolute + min-height fija, una card más alta que la
-
-
-
-         pista se desbordaba y se pintaba encima del contenido de abajo
-
-
-
-         en cada rotaciÃ³n (~5 s): se veÃ­a cortada/encimada. */
-
-
-
-      display: grid;
-
-
-
-      margin: 0 18px;
-
-
-
-    }
-
-
-
-    .carousel-card {
-
-
-
-      grid-area: 1 / 1;
-
-
-
-      opacity: 0;
-
-
-
-      visibility: hidden;        /* oculta completamente â€” no hay bleeding de texto */
-
-
-
-      pointer-events: none;
-
-
-
-      transition: opacity 0.9s ease, visibility 0s linear 0.9s;
-
-
-
-    }
-
-
-
-    .carousel-card.active {
-
-
-
-      opacity: 1;
-
-
-
-      visibility: visible;
-
-
-
-      pointer-events: auto;
-
-
-
-      transition: opacity 0.9s ease, visibility 0s linear 0s;
-
-
-
-    }
-
-
-
-    /* â”€â”€ BANNER DEL CARRUSEL â”€â”€
-
-
-
-       Para agregar imagen de fondo al banner, aÃ±adir al div:
-
-
-
-       style="--banner-img: url('img/banner-01.jpg')"
-
-
-
-       La imagen aparece con 30% de opacidad para mantener legibilidad. */
-
-
-
-    .carousel-card-inner {
-
-
-
-      background: var(--bg-card);
-
-
-
-      padding: 12px 16px;
-
-
-
-      border-radius: 10px;
-
-
-
-      position: relative;
-
-
-
-      overflow: hidden;
-
-
-
-    }
-
-
-
-    .carousel-card-inner::before {
-
-
-
-      content: '';
-
-
-
-      position: absolute;
-
-
-
-      inset: 0;
-
-
-
-      background-image: var(--banner-img, none);
-
-
-
-      background-size: cover;
-
-
-
-      background-position: center;
-
-
-
-      opacity: 0.28;
-
-
-
-      border-radius: 10px;
-
-
-
-    }
-
-
-
-    /* Contenido sobre la imagen */
-
-
-
-    .carousel-card-cat,
-
-
-
-    .carousel-card-title,
-
-
-
-    .carousel-card-badge { position: relative; z-index: 1; }
-
-
-
-    .carousel-card:active .carousel-card-inner { opacity: 0.80; }
-
-
-
-    .carousel-card-cat {
-
-
-
-      font-size: 9px; font-weight: 700; letter-spacing: 0.10em;
-
-
-
-      text-transform: uppercase; color: var(--accent); margin-bottom: 5px;
-
-
-
-    }
-
-
-
-    .carousel-card-title {
-
-
-
-      font-family: var(--font);
-
-
-
-      font-size: 16px; font-weight: 700; color: var(--text-primary);
-
-
-
-      line-height: 1.2; margin-bottom: 8px;
-
-
-
-    }
-
-
-
-    .carousel-card-badge {
-
-
-
-      font-size: 10px; font-weight: 800; color: #000814;
-
-
-
-      background: var(--accent); padding: 2px 8px;
-
-
-
-      display: inline-block; letter-spacing: 0.04em;
-
-
-
-    }
-
-
-
-
-
-
-
-    /* â”€â”€ TOGGLE CATEGORÃAS â”€â”€ */
-
-
-
-    .cat-toggle-wrap {
-
-
-
-      padding: 4px 18px;
-
-
-
-      border-bottom: 1px solid var(--border);
-
-
-
-    }
-
-
-
-    .cat-toggle-btn {
-
-
-
-      background: none; border: none;
-
-
-
-      padding: 4px 0 4px 0;
-
-
-
-      cursor: pointer; display: flex; align-items: center; gap: 7px;
-
-
-
-      font-size: 10px; font-weight: 700; color: var(--text-muted);
-
-
-
-      letter-spacing: 0.08em; text-transform: uppercase;
-
-
-
-      transition: color 0.15s; font-family: var(--font);
-
-
-
-    }
-
-
-
-    .cat-toggle-btn:hover { color: var(--text-secondary); }
-
-
-
-    .cat-toggle-btn svg { width: 13px; height: 13px; fill: currentColor; }
-
-
-
-    .cat-toggle-btn .chevron { transition: transform 0.25s; }
-
-
-
-    .cat-toggle-btn.open .chevron { transform: rotate(180deg); }
-
-
-
-
-
-
-
-    .categories-wrap {
-
-
-
-      display: none;
-
-
-
-      position: relative;
-
-
-
-      border-bottom: 1px solid var(--border);
-
-
-
-    }
-
-
-
-    .categories-wrap.open { display: block; }
-
-
-
-
-
-
-
-    .categories-wrap::after {
-
-
-
-      content: '';
-
-
-
-      position: absolute;
-
-
-
-      right: 0; top: 0; bottom: 0;
-
-
-
-      width: 36px;
-
-
-
-      background: linear-gradient(to left, var(--bg-app) 20%, transparent);
-
-
-
-      pointer-events: none;
-
-
-
-      z-index: 1;
-
-
-
-    }
-
-
-
-
-
-
-
-    .categories {
-
-
-
-      padding: 12px 16px 14px;
-
-
-
-      display: flex;
-
-
-
-      gap: 8px;
-
-
-
-      overflow-x: auto;
-
-
-
-      scrollbar-width: none;
-
-
-
-      -webkit-overflow-scrolling: touch;
-
-
-
-    }
-
-
-
-    .categories::-webkit-scrollbar { display: none; }
-
-
-
-
-
-
-
-    /* Chip: Ã­cono arriba + etiqueta abajo */
-
-
-
-    .cat-pill {
-
-
-
-      flex-shrink: 0;
-
-
-
-      display: flex;
-
-
-
-      flex-direction: column;
-
-
-
-      align-items: center;
-
-
-
-      justify-content: center;
-
-
-
-      gap: 5px;
-
-
-
-      min-width: 56px;
-
-
-
-      padding: 10px 8px 8px;
-
-
-
-      border-radius: 14px;
-
-
-
-      border: 1px solid var(--border);
-
-
-
-      background: var(--bg-card);
-
-
-
-      color: var(--text-secondary);
-
-
-
-      cursor: pointer;
-
-
-
-      -webkit-user-select: none;
-
-
-
-      transition: background 0.18s ease, border-color 0.18s ease, transform 0.10s ease;
-
-
-
-    }
-
-
-
-
-
-
-
-    /* Zona del SVG */
-
-
-
-    .cat-icon {
-
-
-
-      width: 22px; height: 22px;
-
-
-
-      display: flex; align-items: center; justify-content: center;
-
-
-
-    }
-
-
-
-
-
-
-
-    .cat-icon svg {
-
-
-
-      width: 20px; height: 20px;
-
-
-
-      fill: var(--text-muted);
-
-
-
-      transition: fill 0.18s ease;
-
-
-
-    }
-
-
-
-
-
-
-
-    /* Etiqueta */
-
-
-
-    .cat-label {
-
-
-
-      font-size: 9.5px;
-
-
-
-      font-weight: 700;
-
-
-
-      letter-spacing: 0.2px;
-
-
-
-      white-space: nowrap;
-
-
-
-      color: var(--text-secondary);
-
-
-
-      transition: color 0.18s ease;
-
-
-
-    }
-
-
-
-
-
-
-
-    /* Estado activo */
-
-
-
-    .cat-pill.active {
-
-
-
-      background: var(--accent-soft);
-
-
-
-      border-color: var(--accent-border);
-
-
-
-    }
-
-
-
-
-
-
-
-    .cat-pill.active .cat-icon svg { fill: var(--accent); }
-
-
-
-    .cat-pill.active .cat-label    { color: var(--accent); }
-
-
-
-
-
-
-
-    .cat-pill:active { transform: scale(0.92); }
-
-
-
-
-
-
-
-    /* =============================================
-
-
-
-       CANALES / GLOBOS TEMÃTICOS
-
-
-
-    ============================================= */
-
-
-
-    .topics-section {
-
-
-
-      padding: 7px 16px 9px;
-
-
-
-      border-bottom: 1px solid var(--border);
-
-
-
-      display: flex;
-
-
-
-      flex-direction: column;
-
-
-
-      gap: 6px;
-
-
-
-    }
-
-
-
-
-
-
-
-    .topics-header {
-
-
-
-      font-size: 10px;
-
-
-
-      font-weight: 700;
-
-
-
-      text-transform: uppercase;
-
-
-
-      letter-spacing: 0.9px;
-
-
-
-      color: var(--text-muted);
-
-
-
-      padding-left: 2px;
-
-
-
-    }
-
-
-
-
-
-
-
-    .topics-row {
-
-
-
-      display: flex;
-
-
-
-      gap: 10px;
-
-
-
-      overflow-x: auto;
-
-
-
-      scrollbar-width: none;
-
-
-
-      -webkit-overflow-scrolling: touch;
-
-
-
-      padding-bottom: 2px;
-
-
-
-    }
-
-
-
-    .topics-row::-webkit-scrollbar { display: none; }
-
-
-
-
-
-
-
-    /* Globo / canal temÃ¡tico */
-
-
-
-    .topic-card {
-
-
-
-      flex-shrink: 0;
-
-
-
-      width: 66px;
-
-
-
-      height: 66px;
-
-
-
-      border-radius: 16px;
-
-
-
-      background: var(--tg, var(--bg-card));
-
-
-
-      border: 1px solid rgba(255,255,255,0.07);
-
-
-
-      display: flex;
-
-
-
-      flex-direction: column;
-
-
-
-      align-items: center;
-
-
-
-      justify-content: center;
-
-
-
-      gap: 6px;
-
-
-
-      cursor: pointer;
-
-
-
-      padding: 8px 6px 10px;
-
-
-
-      box-shadow: 0 6px 18px rgba(0,0,0,0.35), 0 1px 0 rgba(255,255,255,0.05) inset;
-
-
-
-      transition: transform 0.12s ease, box-shadow 0.12s ease;
-
-
-
-      -webkit-user-select: none;
-
-
-
-    }
-
-
-
-
-
-
-
-    .topic-card:active {
-
-
-
-      transform: scale(0.91);
-
-
-
-      box-shadow: 0 2px 8px rgba(0,0,0,0.35);
-
-
-
-    }
-
-
-
-
-
-
-
-    .topic-icon {
-
-
-
-      width: 24px; height: 24px;
-
-
-
-      display: flex; align-items: center; justify-content: center;
-
-
-
-    }
-
-
-
-
-
-
-
-    .topic-icon svg {
-
-
-
-      width: 22px; height: 22px;
-
-
-
-      fill: rgba(255,255,255,0.88);
-
-
-
-    }
-
-
-
-
-
-
-
-    .topic-name {
-
-
-
-      font-size: 9.5px;
-
-
-
-      font-weight: 700;
-
-
-
-      color: rgba(255,255,255,0.70);
-
-
-
-      text-align: center;
-
-
-
-      line-height: 1.3;
-
-
-
-      max-width: 68px;
-
-
-
-    }
-
-
-
-
-
-
-
-    /* =============================================
-
-
-
-       FEED DE TARJETAS
-
-
-
-    ============================================= */
-
-
-
-    .promo-feed {
-
-
-
-      padding: 8px 14px 120px;
-
-
-
-      display: flex;
-
-
-
-      flex-direction: column;
-
-
-
-      gap: 20px;
-
-
-
-      /* Solo el feed tiene scroll propio */
-
-
-
-      flex: 1 1 auto;
-
-
-
-      min-height: 0;
-
-
-
-      overflow-y: auto;
-
-
-
-      -webkit-overflow-scrolling: touch;
-
-
-
-      overscroll-behavior: contain;
-
-
-
-    }
-
-
-
-
-
-
-
-    /* =============================================
-
-
-
-       TARJETA â€” LAYOUT HORIZONTAL
-
-
-
-       [MASCOTA 38%] [CONTENIDO 62%]
-
-
-
-       .reversed invierte el orden
-
-
-
-    ============================================= */
-
-
-
-    .promo-card {
-
-
-
-      background: var(--bg-card);
-
-
-
-      border-radius: var(--radius-card);
-
-
-
-      border: 1px solid var(--border);
-
-
-
-      box-shadow: var(--shadow-card);
-
-
-
-      overflow: hidden;
-
-
-
-      margin: 0 16px 20px 16px;
-
-
-
-      display: flex;
-
-
-
-      flex-direction: column; /* CHANGED to column */
-
-
-
-      position: relative;
-
-
-
-    }
-
-
-
-
-
-
-
-    .promo-card:nth-child(2) { animation-delay: 0.06s; background: var(--bg-card-alt); }
-
-
-
-    .promo-card:nth-child(3) { animation-delay: 0.12s; }
-
-
-
-    .promo-card:nth-child(4) { animation-delay: 0.18s; background: var(--bg-card-alt); }
-
-
-
-
-
-
-
-    .promo-card:active { transform: scale(0.982); }
-
-
-
-
-
-
-
-    /* Tarjeta oculta por filtro de categorÃ­a */
-
-
-
-    .promo-card.filtered-out {
-
-
-
-      display: none;
-
-
-
-    }
-
-
-
-
-
-
-
-    /* Mensaje vacÃ­o cuando ninguna tarjeta coincide */
-
-
-
-    .feed-empty {
-
-
-
-      display: none;
-
-
-
-      flex-direction: column;
-
-
-
-      align-items: center;
-
-
-
-      justify-content: center;
-
-
-
-      gap: 10px;
-
-
-
-      padding: 52px 24px;
-
-
-
-      color: var(--text-muted);
-
-
-
-      font-size: 13px;
-
-
-
-      text-align: center;
-
-
-
-    }
-
-
-
-    .feed-empty.show { display: flex; }
-
-
-
-    .feed-empty svg { width: 36px; height: 36px; fill: var(--text-muted); opacity: 0.4; }
-
-
-
-
-
-
-
-    /* Tarjeta con mascota a la DERECHA */
-
-
-
-    .promo-card.reversed {
-
-
-
-      flex-direction: row-reverse;
-
-
-
-    }
-
-
-
-
-
-
-
-    /* â”€â”€ ZONA IMAGEN DEL NEGOCIO (38%) â”€â”€ */
-
-
-
-    
-
-
-
-
-
-
-
-    /* Fondo de la zona mascota â€” sutil, por categorÃ­a */
-
-
-
-    .card-mascot::before {
-
-
-
-      content: '';
-
-
-
-      position: absolute;
-
-
-
-      inset: 0;
-
-
-
-      background: var(--mascot-grad, var(--mascot-1));
-
-
-
-    }
-
-
-
-
-
-
-
-    /* Separador vertical entre mascota y contenido */
-
-
-
-    .promo-card:not(.reversed) .card-mascot::after {
-
-
-
-      content: '';
-
-
-
-      position: absolute;
-
-
-
-      right: 0; top: 15%; bottom: 15%;
-
-
-
-      width: 1px;
-
-
-
-      background: linear-gradient(to bottom, transparent, var(--border-strong), transparent);
-
-
-
-    }
-
-
-
-
-
-
-
-    .promo-card.reversed .card-mascot::after {
-
-
-
-      content: '';
-
-
-
-      position: absolute;
-
-
-
-      left: 0; top: 15%; bottom: 15%;
-
-
-
-      width: 1px;
-
-
-
-      background: linear-gradient(to bottom, transparent, var(--border-strong), transparent);
-
-
-
-    }
-
-
-
-
-
-
-
-    /* Badge de descuento dentro de la zona mascota */
-
-
-
-    .mascot-badge {
-
-
-
-      position: absolute;
-
-
-
-      top: 12px;
-
-
-
-      left: 50%;
-
-
-
-      transform: translateX(-50%);
-
-
-
-      z-index: 2;
-
-
-
-      background: var(--accent);
-
-
-
-      color: var(--accent-text);
-
-
-
-      font-size: 11px;
-
-
-
-      font-weight: 800;
-
-
-
-      padding: 4px 10px;
-
-
-
-      border-radius: 8px;
-
-
-
-      white-space: nowrap;
-
-
-
-    }
-
-
-
-
-
-
-
-    /* â”€â”€ FOTO REAL DEL NEGOCIO â”€â”€
-
-
-
-       Reemplaza src="img/biz-01.jpg" con la ruta de la foto real.
-
-
-
-       Si el archivo no existe, se oculta y muestra el placeholder. */
-
-
-
-    .biz-photo {
-
-
-
-      position: absolute;
-
-
-
-      inset: 0;
-
-
-
-      width: 100%; height: 100%;
-
-
-
-      object-fit: cover;
-
-
-
-      object-position: center top;
-
-
-
-      z-index: 1; /* sobre el gradiente, bajo el badge y separador */
-
-
-
-    }
-
-
-
-
-
-
-
-    /* Placeholder de foto del negocio â€” visible solo si no hay imagen */
-
-
-
-    .biz-photo-placeholder {
-
-
-
-      position: relative;
-
-
-
-      z-index: 1;
-
-
-
-      display: flex;
-
-
-
-      flex-direction: column;
-
-
-
-      align-items: center;
-
-
-
-      justify-content: center;
-
-
-
-      gap: 6px;
-
-
-
-      flex: 1;
-
-
-
-      width: 100%;
-
-
-
-    }
-
-
-
-    .biz-photo-placeholder svg {
-
-
-
-      width: 28px; height: 28px;
-
-
-
-      fill: rgba(255,255,255,0.18);
-
-
-
-    }
-
-
-
-    .biz-photo-placeholder span {
-
-
-
-      font-size: 8.5px;
-
-
-
-      font-weight: 600;
-
-
-
-      letter-spacing: 0.3px;
-
-
-
-      text-transform: uppercase;
-
-
-
-      color: rgba(255,255,255,0.20);
-
-
-
-      text-align: center;
-
-
-
-      line-height: 1.4;
-
-
-
-    }
-
-
-
-
-
-
-
-    /* â”€â”€ ZONA CONTENIDO (62%) â”€â”€ */
-
-
-
-    .card-content {
-
-
-
-      flex: 1;
-
-
-
-      padding: 20px 18px 18px;
-
-
-
-      display: flex;
-
-
-
-      flex-direction: column;
-
-
-
-      justify-content: space-between;
-
-
-
-      gap: 10px;
-
-
-
-    }
-
-
-
-
-
-
-
-    .content-top { display: flex; flex-direction: column; gap: 6px; }
-
-
-
-
-
-
-
-    .card-cat {
-
-
-
-      font-size: 9.5px;
-
-
-
-      font-weight: 700;
-
-
-
-      text-transform: uppercase;
-
-
-
-      letter-spacing: 1px;
-
-
-
-      color: var(--accent);
-
-
-
-    }
-
-
-
-
-
-
-
-    .card-biz {
-
-
-
-      font-family: var(--font);
-
-
-
-      font-size: 15px;
-
-
-
-      font-weight: 600;
-
-
-
-      color: var(--text-secondary);
-
-
-
-      letter-spacing: 0.2px;
-
-
-
-    }
-
-
-
-
-
-
-
-    .card-title {
-
-
-
-      font-family: var(--font);
-
-
-
-      font-size: 24px;
-
-
-
-      font-weight: 700;
-
-
-
-      color: var(--text-primary);
-
-
-
-      line-height: 1.15;
-
-
-
-      letter-spacing: -0.3px;
-
-
-
-    }
-
-
-
-
-
-
-
-    .card-desc {
-
-
-
-      font-size: 12px;
-
-
-
-      color: #A0AEBF;
-
-
-
-      line-height: 1.6;
-
-
-
-      margin-top: 4px;
-
-
-
-    }
-
-
-
-
-
-
-
-    .content-bottom { display: flex; flex-direction: column; gap: 8px; }
-
-
-
-
-
-
-
-    /* Chip de distancia */
-
-
-
-    .dist-chip {
-
-
-
-      display: inline-flex;
-
-
-
-      align-items: center;
-
-
-
-      gap: 4px;
-
-
-
-      font-size: 11px;
-
-
-
-      font-weight: 600;
-
-
-
-      color: #60A5FA;
-
-
-
-      background: transparent;
-
-
-
-      border: none;
-
-
-
-      padding: 3px 0;
-
-
-
-      width: fit-content;
-
-
-
-    }
-
-
-
-
-
-
-
-    .dist-chip svg {
-
-
-
-      width: 10px; height: 10px;
-
-
-
-      fill: var(--text-muted);
-
-
-
-    }
-
-
-
-
-
-
-
-    /* =============================================
-
-
-
-       BOTÃ“N CTA â€” TEAL CALMADO, MÃNIMO 50px
-
-
-
-    ============================================= */
-
-
-
-    .btn-cta {
-
-
-
-      display: flex;
-
-
-
-      align-items: center;
-
-
-
-      justify-content: center;
-
-
-
-      gap: 6px;
-
-
-
-      min-height: 50px;
-
-
-
-      padding: 0 12px;
-
-
-
-      background: var(--accent);
-
-
-
-      color: var(--accent-text);
-
-
-
-      font-family: var(--font);
-
-
-
-      font-size: 12px;
-
-
-
-      font-weight: 800;
-
-
-
-      letter-spacing: 0.1px;
-
-
-
-      border: none;
-
-
-
-      border-radius: var(--radius-btn);
-
-
-
-      cursor: pointer;
-
-
-
-      text-decoration: none;
-
-
-
-      box-shadow: 0 4px 18px var(--accent-glow);
-
-
-
-      position: relative;
-
-
-
-      overflow: hidden;
-
-
-
-      -webkit-tap-highlight-color: transparent;
-
-
-
-      -webkit-user-select: none;
-
-
-
-      white-space: nowrap;
-
-
-
-      /* Anima color, fondo y geometrÃ­a */
-
-
-
-      transition: filter 0.12s ease,
-
-
-
-                  transform 0.10s cubic-bezier(0.34, 1.56, 0.64, 1),
-
-
-
-                  background 0.28s ease,
-
-
-
-                  color 0.20s ease,
-
-
-
-                  box-shadow 0.20s ease;
-
-
-
-    }
-
-
-
-
-
-
-
-    .btn-cta svg {
-
-
-
-      width: 16px; height: 16px;
-
-
-
-      fill: currentColor;
-
-
-
-      flex-shrink: 0;
-
-
-
-      transition: opacity 0.15s ease;
-
-
-
-    }
-
-
-
-
-
-
-
-    /* â”€â”€ ESTADO: PRESIONADO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
-
-
-       Respuesta tÃ¡ctil instantÃ¡nea al toque      */
-
-
-
-    .btn-cta:active {
-
-
-
-      transform: scale(0.96);
-
-
-
-      filter: brightness(0.82);
-
-
-
-    }
-
-
-
-
-
-
-
-    /* â”€â”€ ESTADO: CARGANDO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
-
-
-       Spinner reemplaza el icono de WhatsApp     */
-
-
-
-    .btn-cta.is-loading {
-
-
-
-      pointer-events: none;
-
-
-
-      filter: brightness(0.88);
-
-
-
-      cursor: default;
-
-
-
-    }
-
-
-
-
-
-
-
-    .btn-spinner {
-
-
-
-      display: none;
-
-
-
-      width: 16px; height: 16px;
-
-
-
-      border: 2.5px solid rgba(26, 26, 26, 0.20);
-
-
-
-      border-top-color: var(--accent-text);
-
-
-
-      border-radius: 50%;
-
-
-
-      flex-shrink: 0;
-
-
-
-      animation: spin-cta 0.65s linear infinite;
-
-
-
-    }
-
-
-
-
-
-
-
-    .btn-cta.is-loading .btn-icon-wa { display: none; }
-
-
-
-    .btn-cta.is-loading .btn-spinner  { display: block; }
-
-
-
-
-
-
-
-    @keyframes spin-cta {
-
-
-
-      to { transform: rotate(360deg); }
-
-
-
-    }
-
-
-
-
-
-
-
-    /* â”€â”€ ESTADO: Ã‰XITO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
-
-
-       Verde confirmaciÃ³n + checkmark             */
-
-
-
-    .btn-cta.is-success {
-
-
-
-      background: #1A9C4E;
-
-
-
-      color: #ffffff;
-
-
-
-      box-shadow: 0 4px 20px rgba(26, 156, 78, 0.35);
-
-
-
-      pointer-events: none;
-
-
-
-    }
-
-
-
-
-
-
-
-    .btn-check {
-
-
-
-      display: none;
-
-
-
-      width: 17px; height: 17px;
-
-
-
-      flex-shrink: 0;
-
-
-
-    }
-
-
-
-    .btn-check path { fill: #ffffff; }
-
-
-
-
-
-
-
-    .btn-cta.is-success .btn-icon-wa { display: none; }
-
-
-
-    .btn-cta.is-success .btn-spinner  { display: none; }
-
-
-
-    .btn-cta.is-success .btn-check    { display: block; }
-
-
-
-
-
-
-
-    /* =============================================
-
-
-
-       BOTÃ“N FLOTANTE â€” MAPA
-
-
-
-    ============================================= */
-
-
-
-    .map-fab {
-
-
-
-      position: fixed;
-
-
-
-      bottom: 26px;
-
-
-
-      right: max(18px, calc(50% - 215px + 18px));
-
-
-
-      z-index: 100;
-
-
-
-      display: flex;
-
-
-
-      flex-direction: column;
-
-
-
-      align-items: flex-end;
-
-
-
-      gap: 8px;
-
-
-
-      pointer-events: none;
-
-
-
-    }
-
-
-
-
-
-
-
-    /* Badge de alerta â€” visible solo cuando hay promos cerca (JS lo muestra) */
-
-
-
-    .map-alert {
-
-
-
-      pointer-events: auto;
-
-
-
-      display: flex;
-
-
-
-      align-items: center;
-
-
-
-      gap: 6px;
-
-
-
-      background: rgba(0,8,20,0.92);
-
-
-
-      backdrop-filter: blur(14px);
-
-
-
-      border: 1px solid rgba(255,214,10,0.35);
-
-
-
-      border-radius: 8px;
-
-
-
-      padding: 7px 12px;
-
-
-
-      cursor: pointer;
-
-
-
-      text-decoration: none;
-
-
-
-      animation: float-up 3.2s ease-in-out infinite;
-
-
-
-      /* oculto por defecto hasta que JS lo activa */
-
-
-
-      opacity: 0;
-
-
-
-      pointer-events: none;
-
-
-
-      transition: opacity 0.4s ease;
-
-
-
-    }
-
-
-
-
-
-
-
-    .map-alert.visible {
-
-
-
-      opacity: 1;
-
-
-
-      pointer-events: auto;
-
-
-
-    }
-
-
-
-
-
-
-
-    .alert-dot { display: none; }
-
-
-
-
-
-
-
-    .alert-text {
-
-
-
-      font-size: 11px;
-
-
-
-      font-weight: 700;
-
-
-
-      color: var(--accent);
-
-
-
-      white-space: nowrap;
-
-
-
-    }
-
-
-
-
-
-
-
-    /* BotÃ³n circular dorado */
-
-
-
-    .map-btn {
-
-
-
-      pointer-events: auto;
-
-
-
-      width: 54px; height: 54px;
-
-
-
-      background: var(--accent);
-
-
-
-      border-radius: 50%;
-
-
-
-      display: flex;
-
-
-
-      align-items: center;
-
-
-
-      justify-content: center;
-
-
-
-      border: none;
-
-
-
-      cursor: pointer;
-
-
-
-      transition: transform 0.14s ease;
-
-
-
-    }
-
-
-
-
-
-
-
-    .map-btn::before { display: none; }
-
-
-
-    .map-btn::after  { display: none; }
-
-
-
-
-
-
-
-    .map-btn svg {
-
-
-
-      width: 24px; height: 24px;
-
-
-
-      fill: var(--accent-text);
-
-
-
-    }
-
-
-
-
-
-
-
-    .map-btn:active { transform: scale(0.88); }
-
-
-
-
-
-
-
-    /* =============================================
-
-
-
-       ANIMACIONES
-
-
-
-    ============================================= */
-
-
-
-    @keyframes dot-pulse {
-
-
-
-      0%, 100% { opacity: 1; transform: scale(1); }
-
-
-
-      50%       { opacity: 0.35; transform: scale(0.6); }
-
-
-
-    }
-
-
-
-
-
-
-
-    @keyframes float-up {
-
-
-
-      0%, 100% { transform: translateY(0); }
-
-
-
-      50%       { transform: translateY(-4px); }
-
-
-
-    }
-
-
-
-
-
-
-
-    @keyframes ring-out {
-
-
-
-      0%   { transform: scale(1); opacity: 0.8; }
-
-
-
-      100% { transform: scale(1.75); opacity: 0; }
-
-
-
-    }
-
-
-
-
-
-
-
-    @keyframes card-in {
-
-
-
-      from { opacity: 0; transform: translateY(32px) scale(0.97); }
-
-
-
-      to   { opacity: 1; transform: translateY(0)    scale(1);    }
-
-
-
-    }
-
-
-
-
-
-
-
-    /* â”€â”€ LAZY LOAD â€” cards ocultas hasta que llega el scroll â”€â”€ */
-
-
-
-    .card-lazy {
-
-
-
-      display: none;             /* no ocupa espacio hasta revelarse:
-
-
-
-                                    antes (opacity:0) dejaba huecos
-
-
-
-                                    invisibles en la zona de scroll */
-
-
-
-      opacity: 0;
-
-
-
-      transform: translateY(32px) scale(0.97);
-
-
-
-      pointer-events: none;
-
-
-
-    }
-
-
-
-    .card-lazy.card-visible {
-
-
-
-      display: flex;             /* recupera el layout de .promo-card */
-
-
-
-      animation: card-in 0.52s cubic-bezier(0.16, 1, 0.3, 1) both;
-
-
-
-      pointer-events: auto;
-
-
-
-    }
-
-
-
-    .card-lazy.card-visible:nth-of-type(2) { animation-delay: 0.07s; }
-
-
-
-    .card-lazy.card-visible:nth-of-type(3) { animation-delay: 0.14s; }
-
-
-
-    .card-lazy.card-visible:nth-of-type(4) { animation-delay: 0.21s; }
-
-
-
-
-
-
-
-    /* â”€â”€ FEED LOADER â€” tres puntos mientras carga el siguiente lote â”€â”€ */
-
-
-
-    .feed-loader {
-
-
-
-      display: flex;
-
-
-
-      align-items: center;
-
-
-
-      justify-content: center;
-
-
-
-      gap: 7px;
-
-
-
-      padding: 28px 0 12px;
-
-
-
-      opacity: 0;
-
-
-
-      transition: opacity 0.3s ease;
-
-
-
-      pointer-events: none;
-
-
-
-    }
-
-
-
-    .feed-loader.visible { opacity: 1; }
-
-
-
-    .feed-loader-dot {
-
-
-
-      width: 7px; height: 7px;
-
-
-
-      border-radius: 50%;
-
-
-
-      background: var(--accent);
-
-
-
-      animation: loader-pulse 1.1s ease-in-out infinite;
-
-
-
-    }
-
-
-
-    .feed-loader-dot:nth-child(2) { animation-delay: 0.18s; }
-
-
-
-    .feed-loader-dot:nth-child(3) { animation-delay: 0.36s; }
-
-
-
-    @keyframes loader-pulse {
-
-
-
-      0%, 80%, 100% { transform: scale(0.5); opacity: 0.25; }
-
-
-
-      40%           { transform: scale(1);   opacity: 1;    }
-
-
-
-    }
-
-
-
-
-
-
-
-    /* â”€â”€ RIPPLE en botÃ³n CTA â”€â”€ */
-
-
-
-    .ripple {
-
-
-
-      position: absolute;
-
-
-
-      border-radius: 50%;
-
-
-
-      background: rgba(255, 255, 255, 0.32);
-
-
-
-      transform: scale(0);
-
-
-
-      animation: ripple-out 0.55s ease-out forwards;
-
-
-
-      pointer-events: none;
-
-
-
-    }
-
-
-
-    @keyframes ripple-out {
-
-
-
-      to { transform: scale(5); opacity: 0; }
-
-
-
-    }
-
-
-
-
-
-
-
-    /* =============================================
-
-
-
-       RESPONSIVE â€” pantallas muy estrechas
-
-
-
-    ============================================= */
-
-
-
-    @media (max-width: 340px) {
-
-
-
-      .card-title  { font-size: 13px; }
-
-
-
-      .btn-cta     { font-size: 11px; }
-
-
-
-      
-
-
-
-    }
-
-
-
-
-
-
-
-    /* =============================================
-
-
-
-       FASE 1 â€” ESTADO EN TIEMPO REAL
-
-
-
-    ============================================= */
-
-
-
-    .status-chip {
-
-
-
-      display: inline-flex;
-
-
-
-      align-items: center;
-
-
-
-      font-size: 9.5px;
-
-
-
-      font-weight: 700;
-
-
-
-      letter-spacing: 0.3px;
-
-
-
-      padding: 3px 0 3px 8px;
-
-
-
-      border-radius: 0;
-
-
-
-      border: none;
-
-
-
-      background: transparent;
-
-
-
-      width: fit-content;
-
-
-
-      margin-bottom: 1px;
-
-
-
-    }
-
-
-
-    .status-chip::before { display: none; }
-
-
-
-    .status-chip.active  { color: #A3FB0A; }
-
-
-
-    .status-chip.soon    { color: #FFBA57; }
-
-
-
-    .status-chip.inactive{ color: #64748B; }
-
-
-
-
-
-
-
-    /* =============================================
-
-
-
-       FASE 1 â€” URGENCIA / COUNTDOWN
-
-
-
-    ============================================= */
-
-
-
-    .urgency-chip {
-
-
-
-      display: inline-flex;
-
-
-
-      align-items: center;
-
-
-
-      gap: 5px;
-
-
-
-      font-size: 10px;
-
-
-
-      font-weight: 700;
-
-
-
-      color: #EF7A77;
-
-
-
-      background: transparent;
-
-
-
-      border: none;
-
-
-
-      padding: 3px 0;
-
-
-
-      width: fit-content;
-
-
-
-    }
-
-
-
-    .urgency-chip svg {
-
-
-
-      width: 11px; height: 11px;
-
-
-
-      fill: #EF7A77;
-
-
-
-      flex-shrink: 0;
-
-
-
-    }
-
-
-
-    .urgency-chip.last-hours {
-
-
-
-      color: #FF6B35;
-
-
-
-      animation: none;
-
-
-
-    }
-
-
-
-    .urgency-chip.last-hours svg { fill: #FF6B35; }
-
-
-
-    @keyframes pulse-urgency {
-
-
-
-      0%, 100% { opacity: 1; }
-
-
-
-      50%       { opacity: 0.68; }
-
-
-
-    }
-
-
-
-
-
-
-
-    /* =============================================
-
-
-
-       FASE 1 â€” PRUEBA SOCIAL
-
-
-
-    ============================================= */
-
-
-
-    .social-proof {
-
-
-
-      display: flex;
-
-
-
-      align-items: center;
-
-
-
-      gap: 5px;
-
-
-
-      font-size: 10.5px;
-
-
-
-      font-weight: 600;
-
-
-
-      color: var(--text-muted);
-
-
-
-      margin-top: 2px;
-
-
-
-    }
-
-
-
-    .social-proof svg {
-
-
-
-      width: 12px; height: 12px;
-
-
-
-      fill: #FFBA57;
-
-
-
-      flex-shrink: 0;
-
-
-
-    }
-
-
-
-    .social-proof strong {
-
-
-
-      color: var(--text-secondary);
-
-
-
-      font-weight: 700;
-
-
-
-    }
-
-
-
-
-
-
-
-  
-    /* IMMERSIVE SWIPE FEED */
-    html, body {
-        height: 100%;
-        overflow: hidden; /* Prevent body scroll */
-        background: #000;
-    }
-    .app-container {
-        height: 100dvh;
-        width: 100%;
-        max-width: 450px;
-        margin: 0 auto;
-        position: relative;
-        background: #000;
-    }
-    .app-header {
-        position: absolute;
-        top: 0; left: 0; right: 0;
-        z-index: 50;
-        background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, transparent 100%);
-        border-bottom: none;
-        backdrop-filter: none;
-        -webkit-backdrop-filter: none;
-        padding: 16px;
-    }
-    .header-title { color: #FFF; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-    .loc-text, .weather-cond { color: rgba(255,255,255,0.8); text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
-    .weather-temp { color: #FFF; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
-    .weather-chip { display: none !important; background: rgba(0,0,0,0.3); border-color: rgba(255,255,255,0.1); backdrop-filter: blur(8px); }
-
-    .immersive-feed {
-        height: 100dvh;
-        width: 100%;
-        overflow-y: scroll;
-        scroll-snap-type: y mandatory;
-        scroll-behavior: smooth;
-        -webkit-overflow-scrolling: touch;
-    }
-    
-    /* Hide scrollbar for immersive feel */
-    .immersive-feed::-webkit-scrollbar { display: none; }
-    .immersive-feed { -ms-overflow-style: none; scrollbar-width: none; }
-
-    .immersive-card {
-        height: 100dvh;
-        width: 100%;
-        scroll-snap-align: start;
-        scroll-snap-stop: always;
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-end;
-    }
-    
-    .card-bg {
-        position: absolute;
-        top: 0; left: 0; width: 100%; height: 100%;
-        background-size: cover;
-        background-position: center;
-        z-index: 1;
-    }
-    
-    .card-overlay {
-        position: absolute;
-        top: 0; left: 0; width: 100%; height: 100%;
-        background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 40%, rgba(0,0,0,0.1) 100%);
-        z-index: 2;
-    }
-    
-    .card-ui { padding-bottom: 80px !important; 
-        position: relative;
-        z-index: 3;
-        padding: 24px;
-        padding-bottom: 40px; /* Safe area */
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-    }
-    
-    .card-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        background: rgba(255,255,255,0.15);
-        backdrop-filter: blur(10px);
-        padding: 6px 12px;
-        border-radius: 999px;
-        font-size: 11px;
-        font-weight: 800;
-        color: #FFF;
-        align-self: flex-start;
-        border: 1px solid rgba(255,255,255,0.2);
-    }
-    
-    .card-headline {
-        font-size: 32px;
-        font-weight: 900;
-        color: #FFF;
-        margin: 0;
-        line-height: 1.1;
-        letter-spacing: -0.5px;
-        text-shadow: 0 4px 12px rgba(0,0,0,0.5);
-    }
-    
-    .card-body {
-        font-size: 15px;
-        color: rgba(255,255,255,0.85);
-        margin: 0 0 8px 0;
-        line-height: 1.4;
-        text-shadow: 0 2px 8px rgba(0,0,0,0.5);
-    }
-
-    .card-pills {
-        display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px;
-    }
-    .card-pills span {
-        padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 800; color: #FFF;
-    }
-
-    .swipe-btn {
-        background: var(--btn-bg, #2563EB);
-        color: #FFF;
-        font-size: 16px;
-        font-weight: 800;
-        text-align: center;
-        padding: 16px;
-        border-radius: 16px;
-        text-decoration: none;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 8px;
-        box-shadow: 0 8px 24px var(--btn-glow, rgba(37,99,235,0.4));
-        transition: transform 0.2s;
-        border: 1px solid rgba(255,255,255,0.1);
-    }
-    .swipe-btn:active { transform: scale(0.96); }
-
-    .swipe-hint {
-        position: absolute;
-        right: 16px;
-        bottom: 120px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 4px;
-        color: rgba(255,255,255,0.6);
-        z-index: 10;
-        animation: bounce 2s infinite;
-    }
-    @keyframes bounce {
-        0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-        40% { transform: translateY(-10px); }
-        60% { transform: translateY(-5px); }
-    }
-    
-    /* Hide the old bottom nav / empty state since we are fullscreen */
-    .feed-empty, .map-alert, .map-btn, .dist-chip { display: none !important; }
-    
-    /* BOTTOM SHEET MODAL (TikTok Comments Style) */
-    .sheet-backdrop {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.6);
-        backdrop-filter: blur(4px);
-        z-index: 100;
-        opacity: 0; pointer-events: none;
-        transition: opacity 0.3s ease;
-    }
-    .sheet-backdrop.active { opacity: 1; pointer-events: auto; }
-    
-    .bottom-sheet {
-        position: fixed; bottom: 0; left: 0; width: 100%;
-        height: 75vh;
-        background: #152033;
-        border-top-left-radius: 24px; border-top-right-radius: 24px;
-        z-index: 101;
-        transform: translateY(100%);
-        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1);
-        display: flex; flex-direction: column;
-        box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
-    }
-    .bottom-sheet.active { transform: translateY(0); }
-    
-    .sheet-header {
-        padding: 16px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05);
-        position: relative;
-    }
-    .sheet-drag-handle {
-        width: 40px; height: 4px; background: rgba(255,255,255,0.2);
-        border-radius: 4px; margin: 0 auto 12px auto;
-    }
-    .sheet-title { font-size: 16px; font-weight: 800; color: #FFF; margin: 0; }
-    .sheet-close {
-        position: absolute; right: 16px; top: 16px;
-        background: rgba(255,255,255,0.1); width: 30px; height: 30px;
-        border-radius: 50%; display: flex; align-items: center; justify-content: center;
-        color: #FFF; font-weight: bold; font-size: 14px;
-    }
-    
-    .sheet-content {
-        flex: 1; overflow-y: auto; padding: 16px;
-        display: flex; flex-direction: column; gap: 16px;
-    }
-    
-    /* MINI CARD FOR NEARBY PROMOS */
-    .mini-card {
-        background: linear-gradient(145deg, #1E293B, #0F172A);
-        border-radius: 16px; border: 1px solid rgba(245,158,11,0.3);
-        display: flex; overflow: hidden; height: 100px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    }
-    .mini-card-img { width: 100px; background-size: cover; background-position: center; }
-    .mini-card-info { flex: 1; padding: 12px; display: flex; flex-direction: column; justify-content: center; }
-    .mini-title { font-size: 14px; font-weight: bold; color: #FFF; margin: 0 0 4px 0; }
-    .mini-desc { font-size: 11px; color: #94A3B8; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-    
-    /* RADAR NOTIFICATION (Dynamic Island Style) */
-    .radar-notif {
-        position: fixed; top: 80px; left: 50%; transform: translateX(-50%) translateY(-150%);
-        background: rgba(0,0,0,0.8); backdrop-filter: blur(12px);
-        border: 1px solid rgba(245,158,11,0.4);
-        padding: 10px 16px; border-radius: 999px;
-        display: flex; align-items: center; gap: 10px;
-        z-index: 90; box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2);
-    }
-    .radar-notif.show { transform: translateX(-50%) translateY(0); }
-    .radar-icon { font-size: 18px; animation: pulse 2s infinite; }
-    .radar-text { font-size: 13px; font-weight: 700; color: #FFF; }
-    
-    @keyframes pulse {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.2); }
-        100% { transform: scale(1); }
-    }
-    
-    /* SIDE ACTION BUTTONS (TikTok Style) */
-    .side-actions {
-        position: fixed;
-        right: 12px;
-        bottom: 140px; /* Float above the description */
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-        z-index: 50;
-    }
-    .action-btn {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 6px;
-        color: #FFF;
-        text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-        cursor: pointer;
-        transition: transform 0.2s;
-    }
-    .action-btn:active { transform: scale(0.9); }
-    
-    .action-icon {
-        width: 48px; height: 48px;
-        background: rgba(0, 0, 0, 0.4);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1.5px solid rgba(255,255,255,0.2);
-        border-radius: 50%;
-        display: flex; align-items: center; justify-content: center;
-        box-shadow: 0 8px 16px rgba(0,0,0,0.4);
-        position: relative;
-    }
-    
-    .action-icon svg { stroke: #FFF; }
-    
-    .action-badge {
-        position: absolute;
-        top: -4px; right: -4px;
-        background: #F97316; /* Orange brand color */
-        color: #FFF;
-        font-size: 11px;
-        font-weight: 900;
-        min-width: 20px;
-        height: 20px;
-        border-radius: 10px;
-        display: flex; align-items: center; justify-content: center;
-        border: 2px solid #000;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-    }
-    
-    .action-label {
-        font-size: 11px;
-        font-weight: 800;
-        letter-spacing: 0.5px;
-    }
-    
-    /* Overwrite old radar if any CSS was left */
-    .radar-notif { display: none !important; }
-    
-    /* BOTTOM NAVIGATION BAR */
-    .bottom-nav {
-        position: fixed; bottom: 0; left: 0; right: 0;
-        height: 65px;
-        background: rgba(10, 17, 33, 0.9);
-        backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-        border-top: 1px solid rgba(255,255,255,0.08);
-        display: flex; justify-content: space-around; align-items: center;
-        z-index: 90;
-        padding-bottom: env(safe-area-inset-bottom);
-    }
-    .nav-item {
-        flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-        gap: 4px; color: #64748B; font-size: 10px; font-weight: 800;
-        height: 100%; cursor: pointer; position: relative;
-        text-transform: uppercase; letter-spacing: 0.5px;
-        transition: color 0.2s;
-    }
-    .nav-item.active { color: #F97316; }
-    .nav-item svg { stroke: currentColor; transition: transform 0.2s; }
-    .nav-item.active svg { transform: scale(1.1); stroke-width: 2.5; }
-    
-    .nav-badge {
-        position: absolute; top: 10px; right: calc(50% - 20px);
-        background: #E50914; color: #FFF; font-size: 9px; font-weight: 900;
-        padding: 2px 5px; border-radius: 10px; border: 2px solid #0A1121;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.5);
-    }
-    
-    /* MOCKUP 2: PULL-UP DRAWER */
-    .pullup-drawer {
-        position: fixed; bottom: 0; left: 0; right: 0;
-        background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 50%, transparent 100%);
-        height: 100px;
-        display: flex; justify-content: center; align-items: flex-end;
-        padding-bottom: 24px;
-        z-index: 90;
-        pointer-events: none; /* Let background clicks pass through */
-    }
-    .pullup-pill {
-        background: rgba(255,255,255,0.15);
-        backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-        border: 1px solid rgba(255,255,255,0.25);
-        padding: 10px 24px;
-        border-radius: 30px;
-        color: #FFF; font-size: 13px; font-weight: 800;
-        display: flex; align-items: center; gap: 8px;
-        box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-        pointer-events: auto; /* Re-enable clicks */
-        cursor: pointer;
-        animation: float-up 3s ease-in-out infinite;
-    }
-    @keyframes float-up {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-8px); }
-    }
-    .pullup-badge {
-        background: #F97316; color: #FFF;
-        font-size: 11px; padding: 2px 6px; border-radius: 10px;
-    }
-    
-    
-    
-
-
-    /* 6-Card Mini Game Styles */
-    .scratch-banner { position: absolute; top: 60px; left: 20px; right: 20px; z-index: 100; background: linear-gradient(135deg, #F97316, #EAB308); color: white; padding: 15px; border-radius: 12px; text-align: center; font-weight: bold; font-size: 16px; box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4); cursor: pointer; animation: pulse 2s infinite; display: none; }
-    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
-    
-    .game-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 1000; display: none; align-items: center; justify-content: center; flex-direction: column; overflow: hidden; }
-    .game-title { color: white; font-weight: bold; margin-bottom: 30px; font-size: 22px; text-align: center; }
-    
-    .cards-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; width: 320px; position: relative; }
-    
-    .flip-card { background-color: transparent; width: 90px; height: 110px; perspective: 1000px; cursor: pointer; }
-    .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s; transform-style: preserve-3d; }
-    .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
-    
-    .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-    
-    .flip-card-front { background: linear-gradient(135deg, #CBD5E1, #94A3B8); color: #111827; font-size: 24px; font-weight: bold; border: 2px solid #E2E8F0; }
-    .flip-card-front::after { content: '?'; color: rgba(255,255,255,0.5); font-size: 40px; }
-    
-    .flip-card-back { background: white; transform: rotateY(180deg); font-size: 45px; border: 2px solid #F97316; }
-    
-    /* Animation classes for merging */
-    .fade-out { opacity: 0; transition: opacity 0.5s ease; pointer-events: none; }
-    .merge-animate { position: absolute !important; z-index: 50; transition: all 1s ease-in-out !important; transform: rotateY(180deg) scale(1.5) translate(0, 0) !important; left: 50% !important; top: 50% !important; margin-left: -45px; margin-top: -55px; }
-    
-    .game-result { display: none; text-align: center; margin-top: 150px; z-index: 100; animation: popIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-    @keyframes popIn { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-    
-    .btn-close-game { margin-top: 25px; background: linear-gradient(135deg, #F97316, #EA580C); color: white; border: none; padding: 12px 30px; border-radius: 25px; font-weight: bold; font-size: 16px; cursor: pointer; box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4); }
-
-
-    .locate-btn { position: absolute; bottom: 30px; right: 20px; z-index: 1000; background: white; border: none; width: 45px; height: 45px; border-radius: 50%; box-shadow: 0 2px 10px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; cursor: pointer; color: #3B82F6; }
-    .locate-btn svg { width: 24px; height: 24px; }
-
+:root{
+  --dark:#12100B;
+  --page:#FFFFFF;
+  --card:#F7F5F2;
+  --ink:#14141A;
+  --body:#4E4E5A;
+  --soft:#7B7B8A;
+  --line:rgba(0,0,0,.08);
+
+  --orange:#E07800;
+  --orange-bright:#FF8C00;
+  --teal:#0F7A66;
+
+  --on-dark:#FFFFFF;
+  --on-dark-mid:rgba(255,255,255,.66);
+  --on-dark-soft:rgba(255,255,255,.42);
+
+  --radius:16px;
+  --font:'Inter',system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background-color:#FFFCF8;
+  background-image:
+    radial-gradient(62% 38% at 86% 16%, rgba(255,140,0,.10) 0%, rgba(255,140,0,0) 62%),
+    radial-gradient(58% 34% at 6% 52%, rgba(15,122,102,.06) 0%, rgba(15,122,102,0) 64%),
+    radial-gradient(70% 40% at 70% 88%, rgba(255,140,0,.08) 0%, rgba(255,140,0,0) 66%);
+  background-repeat:no-repeat;
+  color:var(--body);
+  font-family:var(--font);font-size:16px;line-height:1.65;font-weight:400;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+img{max-width:100%}
+a{color:inherit}
+strong{font-weight:600;color:var(--ink)}
+
+.wrap{max-width:1000px;margin:0 auto;padding:0 22px}
+.col{max-width:640px}
+
+/* ══════ HERO (oscuro) ══════ */
+.hero{
+  background:
+    radial-gradient(110% 90% at 18% 0%, rgba(255,122,0,.20) 0%, rgba(255,122,0,0) 60%),
+    radial-gradient(80% 70% at 95% 15%, rgba(0,191,160,.10) 0%, rgba(0,191,160,0) 58%),
+    var(--dark);
+  color:var(--on-dark);
+  padding:44px 0 52px;
+  overflow:hidden;
+}
+.hero-inner{max-width:640px}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:32px}
+.brand .name{font-size:20px;font-weight:600;letter-spacing:-.4px}
+.brand .go{color:var(--orange-bright)}
+.brand .tag{
+  font-size:10.5px;font-weight:500;letter-spacing:.9px;text-transform:uppercase;
+  color:var(--orange-bright);border:1px solid rgba(255,140,0,.32);
+  padding:4px 10px;border-radius:50px;
+}
+h1{
+  font-size:clamp(30px,6.4vw,44px);line-height:1.13;
+  font-weight:600;letter-spacing:-1.3px;color:var(--on-dark);margin-bottom:18px;
+}
+h1 .hl{color:var(--orange-bright)}
+.sub{font-size:17px;color:var(--on-dark-mid);max-width:32em;margin-bottom:28px}
+.cta-row{display:flex;flex-wrap:wrap;gap:11px;align-items:center}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  padding:15px 26px;border-radius:50px;font-size:16px;font-weight:600;
+  text-decoration:none;border:none;cursor:pointer;
+  transition:transform .15s ease,box-shadow .15s ease;
+}
+.btn-primary{background:var(--orange-bright);color:#221400;box-shadow:0 6px 20px rgba(255,140,0,.26)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(255,140,0,.36)}
+.btn-ghost{background:rgba(255,255,255,.08);color:var(--on-dark);border:1px solid rgba(255,255,255,.18);font-weight:500}
+.btn-ghost:hover{background:rgba(255,255,255,.13)}
+.note{font-size:13.5px;color:var(--on-dark-soft);margin-top:16px}
+
+/* ── celular (sobre fondo claro) ── */
+.phone-slot{display:flex;justify-content:center}
+.phone{
+  width:252px;flex:0 0 auto;
+  background:#221E17;border-radius:34px;padding:9px;
+  box-shadow:0 18px 44px rgba(20,15,5,.26), 0 3px 10px rgba(20,15,5,.14);
+}
+.screen{background:#0F0B00;border-radius:26px;overflow:hidden;padding:12px 11px 13px}
+.s-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}
+.s-logo{font-size:12.5px;font-weight:600;color:#fff;letter-spacing:-.2px}
+.s-logo i{color:var(--orange-bright);font-style:normal}
+.s-zone{font-size:8.5px;color:rgba(255,255,255,.45)}
+.s-banner{
+  background:linear-gradient(135deg,#FF7A00,#FFB020);color:#241400;
+  font-size:9.5px;font-weight:700;letter-spacing:.5px;text-align:center;
+  padding:8px;border-radius:9px;margin-bottom:10px;
+}
+.s-card{border-radius:14px;overflow:hidden;background:#1A1508;border:1px solid rgba(255,255,255,.07)}
+.s-img{
+  height:118px;position:relative;
+  background:
+    radial-gradient(70% 90% at 30% 20%, rgba(255,190,90,.55) 0%, rgba(255,190,90,0) 60%),
+    linear-gradient(155deg,#B44A12 0%,#8A2F0C 45%,#4A1A08 100%);
+}
+.s-badge{
+  position:absolute;left:9px;bottom:9px;
+  background:#FFB020;color:#2B1600;font-size:9px;font-weight:700;
+  padding:3px 8px;border-radius:20px;
+}
+.s-body{padding:10px 11px 12px}
+.s-body h6{font-size:13.5px;font-weight:600;color:#fff;letter-spacing:-.2px;margin-bottom:2px}
+.s-body p{font-size:10px;color:rgba(255,255,255,.5);line-height:1.45;margin-bottom:9px}
+.s-btn{
+  background:var(--orange-bright);color:#241400;text-align:center;
+  font-size:11px;font-weight:600;padding:8px;border-radius:20px;
+}
+.s-foot{
+  margin-top:9px;text-align:center;font-size:9px;color:rgba(255,255,255,.45);
+  background:rgba(255,255,255,.06);padding:6px;border-radius:20px;
+}
+.phone-cap{
+  text-align:center;font-size:13px;color:var(--soft);margin-top:14px;max-width:22em;
+}
+
+/* celular dentro del hero */
+.hero-grid .brand{grid-column:1 / -1}
+.hero-phone{margin-top:34px}
+.hero .phone{box-shadow:0 20px 50px rgba(0,0,0,.45), 0 0 0 1px rgba(255,255,255,.06)}
+.hero .phone-cap{color:var(--on-dark-soft)}
+@media(min-width:900px){
+  .hero-grid{
+    display:grid;grid-template-columns:minmax(0,1fr) 252px;
+    column-gap:52px;align-items:center;
+  }
+  .hero-inner{grid-column:1}
+  .hero-phone{grid-column:2;margin-top:0}
+}
+.flow-grid{margin-top:26px}
+
+/* ══════ CUERPO (claro) ══════ */
+section{padding:54px 0}
+.eyebrow{
+  font-size:11.5px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;
+  color:var(--orange);margin-bottom:9px;
+}
+h2{
+  font-size:clamp(24px,4.6vw,32px);line-height:1.2;font-weight:600;
+  letter-spacing:-.9px;color:var(--ink);margin-bottom:13px;
+}
+.lead{font-size:16.5px;color:var(--body);max-width:34em}
+
+.sheet{
+  background:#FBF9F6;border:1px solid var(--line);
+  border-radius:var(--radius);
+}
+.sheet h3{color:var(--ink);font-weight:600}
+.sheet p{max-width:62ch}
+
+/* pitch */
+.pitch{padding:28px 26px;max-width:760px}
+.pitch .big{
+  font-size:clamp(20px,3.6vw,26px);line-height:1.3;font-weight:600;
+  letter-spacing:-.6px;color:var(--ink);margin-bottom:12px;max-width:20ch;
+}
+.pitch p{font-size:16px}
+
+/* pasos */
+.steps{display:grid;gap:12px;margin-top:26px;max-width:760px}
+@media(min-width:700px){.steps{grid-template-columns:1fr 1fr}}
+.step{display:block;padding:24px 22px;position:relative}
+.step .n{
+  position:absolute;top:20px;right:20px;
+  width:26px;height:26px;border-radius:50%;background:var(--orange);color:#fff;
+  font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;
+}
+.step h3{font-size:17px;margin-bottom:5px;padding-right:34px}
+.step p{font-size:14.8px}
+
+/* ilustraciones dibujadas en el codigo, sin archivos */
+.ill{width:84px;height:74px;display:block;margin-bottom:12px;overflow:visible}
+.ill .blob{fill:var(--orange);opacity:.22}
+.ill .ln{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linejoin:round;stroke-linecap:round}
+.ill .sld{fill:var(--page)}
+.ill .acc{fill:var(--orange)}
+.ill .acc-st{fill:none;stroke:var(--orange);stroke-width:2.4;stroke-linecap:round}
+.ill .ck{fill:none;stroke:var(--orange);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+
+/* valor */
+.cards{display:grid;gap:11px;margin-top:26px}
+@media(min-width:720px){.cards{grid-template-columns:repeat(3,1fr)}}
+.card{padding:22px 20px;position:relative}
+.card::before{content:'';position:absolute;top:22px;left:20px;width:22px;height:3px;border-radius:2px;background:var(--orange)}
+.card h3{font-size:16.5px;margin:15px 0 6px}
+.card p{font-size:14.5px}
+
+/* precio — destacada */
+.price-box{
+  background:var(--page);border:2px solid var(--orange);
+  border-radius:20px;padding:32px 28px;max-width:640px;
+  box-shadow:0 10px 34px rgba(224,120,0,.14);
+}
+.amount{display:flex;align-items:baseline;gap:9px;margin-bottom:6px}
+.amount .num{font-size:56px;font-weight:700;letter-spacing:-2.4px;color:var(--ink);line-height:1}
+.amount .per{font-size:16px;color:var(--soft)}
+.incl{font-size:16.5px;color:var(--body);margin-bottom:22px}
+.plist{list-style:none;display:grid;gap:12px;margin-bottom:22px}
+.plist li{display:flex;gap:11px;align-items:flex-start;font-size:15px;max-width:60ch}
+.plist .dot{flex:0 0 auto;margin-top:.62em;width:5px;height:5px;border-radius:50%;background:var(--orange)}
+.extra{border-top:1px solid var(--line);padding-top:18px;font-size:14.5px;color:var(--soft);max-width:60ch}
+.extra b{color:var(--orange);font-weight:600}
+
+/* fotos */
+.photo-box{padding:26px 24px;margin-top:14px;max-width:640px}
+.photo-box .kicker{
+  font-size:11px;font-weight:600;letter-spacing:1.1px;text-transform:uppercase;
+  color:var(--orange);margin-bottom:8px;
+}
+.photo-box h3{font-size:19px;letter-spacing:-.4px;margin-bottom:10px}
+.photo-box p{font-size:15px}
+.photo-box p + p{margin-top:10px}
+.photo-box .up{margin-top:15px;padding-top:15px;border-top:1px solid var(--line);font-size:14px;color:var(--soft)}
+
+/* costo */
+.math{padding:26px 24px;margin-top:14px;max-width:640px}
+.math .eyebrow{margin-bottom:14px}
+.math .row{display:flex;justify-content:space-between;gap:16px;padding:12px 0;border-bottom:1px solid var(--line)}
+.math .row > span:first-child{flex:1 1 auto;min-width:0;font-size:15.5px;color:var(--ink)}
+.math .row > span:last-child{flex:0 0 auto;white-space:nowrap;font-size:19px;font-weight:600;color:var(--ink)}
+.math .hint{display:block;font-size:12.5px;color:var(--soft);font-weight:400;line-height:1.45;margin-top:2px;white-space:normal}
+.math .yours{color:var(--teal)!important;font-size:14.5px!important;font-weight:500!important;font-style:italic}
+.math .after{font-size:15px;margin-top:18px;line-height:1.7;max-width:60ch}
+.math .after + .after{margin-top:12px}
+
+/* tabla de tarifas */
+.tarifas{width:100%;border-collapse:collapse;margin:4px 0 20px}
+.tarifas th{
+  text-align:left;font-size:11.5px;letter-spacing:.9px;text-transform:uppercase;
+  color:var(--soft);font-weight:600;padding:0 0 10px;border-bottom:1px solid var(--line);
+}
+.tarifas th:last-child,.tarifas td:last-child{text-align:right}
+.tarifas td{padding:14px 0;border-bottom:1px solid var(--line);vertical-align:top}
+.tarifas tr:last-child td{border-bottom:none}
+.tarifas .rango{font-size:15.5px;font-weight:600;color:var(--ink);white-space:nowrap}
+.tarifas .giro{display:block;font-size:12.5px;color:var(--soft);font-weight:400;margin-top:3px;line-height:1.45}
+.tarifas .tarifa{font-size:21px;font-weight:700;color:var(--orange);white-space:nowrap;line-height:1.1}
+.tarifas .pct{display:block;font-size:12.5px;color:var(--soft);font-weight:400;margin-top:3px;line-height:1.45}
+.nota-tarifa{font-size:14px;color:var(--soft);line-height:1.65;max-width:60ch;margin-bottom:20px}
+.nota-tarifa strong{color:var(--ink)}
+
+/* seccion de promociones */
+.ideas{padding:26px 24px;max-width:740px}
+.ideas-top{font-size:15.5px;line-height:1.7;color:var(--body);max-width:60ch;margin-bottom:16px}
+.ilist{list-style:none;counter-reset:i;margin:0;padding:0}
+.ilist li{
+  counter-increment:i;display:flex;gap:14px;align-items:baseline;
+  padding:13px 0;border-top:1px solid var(--line);
+}
+.ilist li::before{
+  content:counter(i);flex:0 0 22px;height:22px;border-radius:50%;
+  background:var(--orange);color:#fff;font-size:11.5px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;align-self:flex-start;
+}
+.iname{flex:0 0 230px;font-size:15px;font-weight:600;color:var(--ink);line-height:1.45}
+.iej{flex:1 1 auto;font-size:14.5px;color:var(--body);font-style:italic;line-height:1.5}
+@media(max-width:700px){
+  .ilist li{flex-wrap:wrap;gap:0 14px}
+  .iname{flex:1 1 auto}
+  .iej{flex:1 1 100%;margin-left:36px;margin-top:4px}
+}
+.ideas-bot{font-size:13.5px;color:var(--soft);line-height:1.6;margin-top:16px;padding-top:14px;border-top:1px solid var(--line);max-width:58ch}
+.extra-box{padding:20px 22px;margin-top:16px;max-width:740px;border-left:3px solid var(--teal)}
+.extra-box p{font-size:14.5px;line-height:1.7;max-width:62ch;margin:0}
+.extra-box b{color:var(--teal);font-weight:600}
+
+/* cuenta de ejemplo */
+.cuenta{margin:14px 0 4px;max-width:460px}
+.cuenta .crow{display:flex;justify-content:space-between;gap:14px;padding:10px 0;border-bottom:1px solid var(--line);font-size:14.5px;color:var(--body)}
+.cuenta .crow > span:last-child{font-weight:600;color:var(--ink);white-space:nowrap}
+.cuenta .crow > span:first-child{flex:1 1 auto;min-width:0}
+.cuenta .crow em{font-style:italic;color:var(--ink)}
+.chint{display:block;font-size:12px;color:var(--soft);line-height:1.45;margin-top:3px;font-weight:400}
+.cuenta .crow.total{border-bottom:none;border-top:2px solid var(--ink);margin-top:2px;font-weight:600;color:var(--ink)}
+.cuenta .crow.total > span:last-child{color:var(--orange);font-size:17px}
+.aviso-ej{font-size:12.5px;color:var(--soft);line-height:1.55;margin-top:12px;max-width:48ch;font-style:italic}
+
+/* ══════ APARICION AL BAJAR ══════
+   Solo se activa si el navegador lo soporta y si la persona no pidio
+   menos movimiento. Si algo de eso falla, todo se ve normal: nada
+   queda escondido, porque no hay javascript de por medio. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports ((animation-timeline: view()) and (animation-range: entry)) {
+
+    @keyframes aparecer {
+      from { opacity: 0; transform: translateY(38px); }
+    }
+
+    section .col,
+    section .sheet,
+    section .step,
+    section .price-box {
+      animation: aparecer auto ease-out backwards;
+      animation-timeline: view();
+      animation-range: entry 5% entry 98%;
+    }
+
+    /* las tarjetas en fila entran escalonadas, no todas de golpe */
+    .cards > *:nth-child(2),
+    .formatos > *:nth-child(2) { animation-range: entry 16% cover 14%; }
+    .cards > *:nth-child(3),
+    .formatos > *:nth-child(3) { animation-range: entry 26% cover 22%; }
+
+    /* el celular del hero se ve de inmediato, no tiene que aparecer */
+    .hero-phone, .hero-phone * { animation: none; }
+  }
+}
+
+/* precio a dos columnas en pantalla ancha */
+@media(min-width:1000px){
+  #precio .wrap{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+    column-gap:26px;
+    align-items:start;
+  }
+  #precio .col{grid-column:1 / -1}
+  #precio .price-box{
+    grid-column:1;grid-row:2 / span 2;margin:0;
+    align-self:start;position:sticky;top:24px;
+  }
+  #precio .photo-box{grid-column:2;grid-row:2;margin-top:0;max-width:none}
+  #precio .math{grid-column:2;grid-row:3;margin-top:14px;max-width:none}
+}
+
+/* preguntas */
+.faq{display:grid;gap:9px;margin-top:24px;max-width:760px}
+details{padding:16px 20px}
+summary{
+  cursor:pointer;font-size:15.5px;font-weight:500;color:var(--ink);list-style:none;
+  display:flex;justify-content:space-between;gap:14px;align-items:center;
+}
+summary::-webkit-details-marker{display:none}
+summary::after{content:'+';color:var(--orange);font-size:20px;font-weight:500;flex-shrink:0;line-height:1}
+details[open] summary::after{content:'–'}
+details p{font-size:15px;margin-top:11px}
+
+/* cierre oscuro */
+.final{
+  background:radial-gradient(100% 90% at 50% 100%, rgba(255,122,0,.20) 0%, rgba(255,122,0,0) 62%), var(--dark);
+  color:var(--on-dark);text-align:center;padding:58px 0 64px;
+}
+.final h2{color:var(--on-dark);margin-bottom:12px}
+.final .lead{color:var(--on-dark-mid);margin:0 auto 28px}
+.final .cta-row{justify-content:center}
+
+footer{background:var(--dark);border-top:1px solid rgba(255,255,255,.08);padding:24px 0 40px;font-size:13.5px;color:var(--on-dark-soft)}
+footer a{color:var(--on-dark-mid);text-decoration:none}
+footer a:hover{color:var(--orange-bright)}
+.foot-row{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;justify-content:space-between}
 </style>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<style>
-    #mapModal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #000; z-index: 2000; display: none; flex-direction: column; }
-    #map { flex: 1; width: 100%; }
-    .map-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #FFFFFF; color: #111827; border-bottom: 1px solid #E5E7EB; box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 1000; position: relative; }
-    .map-close { background: transparent; border: none; color: #111827; font-size: 24px; cursor: pointer; }
-    .leaflet-popup-content-wrapper { background: #FFFFFF; color: #111827; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-    .leaflet-popup-tip { background: #FFFFFF; }
-    .map-popup-title { font-weight: bold; font-size: 16px; margin-bottom: 8px; color: #F97316; }
-    .map-popup-btn { display: inline-block; background: #F97316; color: white; text-decoration: none; padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 12px; }
-
-    .locate-btn { position: absolute; bottom: 30px; right: 20px; z-index: 1000; background: white; border: none; width: 45px; height: 45px; border-radius: 50%; box-shadow: 0 2px 10px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; cursor: pointer; color: #3B82F6; }
-    .locate-btn svg { width: 24px; height: 24px; }
-
-</style>
-<script src="https://unpkg.com/html5-qrcode"></script>
 </head>
 <body>
 
-<!-- SPLASH SCREEN DE BIENVENIDA -->
-<div id="splashScreen" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #09090B; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; transition: opacity 0.4s ease, visibility 0.4s ease;">
-    <!-- LOGO TIPOGRAFICO GIGANTE -->
-    <div style="font-size: 60px; font-weight: 900; letter-spacing: 1px; margin-bottom: 20px; text-shadow: 0 4px 15px rgba(249,115,22,0.3);">
-        <span style="color: white;">Encavi</span><span style="color: #F97316;">GO</span>
+<!-- ══ HERO ══ -->
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div class="brand">
+      <span class="name">Encavi<span class="go">GO</span></span>
+      <span class="tag">Negocios</span>
     </div>
-    
-    <h1 style="color: white; font-size: 24px; margin-bottom: 15px;">¡Bienvenido!</h1>
-    
-    <p style="color: #94A3B8; font-size: 16px; line-height: 1.5; max-width: 300px; margin-bottom: 40px;">
-        Descubre cupones y promociones dinámicas cerca de ti. Las mejores ofertas cambian todos los días.<br><br><strong>¡Además, encuentra el cupón especial escondido y gana tu viaje GRATIS!</strong>
-    </p>
-    
-    <button onclick="cerrarSplash()" style="background: #F97316; color: white; border: none; padding: 15px 30px; border-radius: 30px; font-size: 18px; font-weight: bold; box-shadow: 0 4px 15px rgba(249,115,22,0.4); cursor: pointer;">
-        Comenzar a explorar ➔
-    </button>
-</div>
 
-<script>
-function cerrarSplash() {
-    const splash = document.getElementById('splashScreen');
-    splash.style.opacity = '0';
-    setTimeout(() => { splash.style.visibility = 'hidden'; }, 400);
-}
-</script>
-
-
-
-
-<div class="app-container">
-
-<div id="scratchBanner" class="scratch-banner" onclick="openGame()" style="font-weight: 900; letter-spacing: 1px; text-transform: uppercase;">
-    ENCUENTRA EL VIAJE GRATIS
-</div>
-
-<div id="gameModal" class="game-modal">
-    <div class="game-title" id="gameTitle">Elige 3 tarjetas <br><span style="font-size: 14px; font-weight: normal; color: #9CA3AF;">Tienes 3 intentos</span></div>
-    
-    <div class="cards-grid" id="cardsGrid">
-        <div class="flip-card" id="card-0" onclick="flipCard(0)"><div class="flip-card-inner" id="inner-0"><div class="flip-card-front"></div><div class="flip-card-back" id="back-0"></div></div></div>
-        <div class="flip-card" id="card-1" onclick="flipCard(1)"><div class="flip-card-inner" id="inner-1"><div class="flip-card-front"></div><div class="flip-card-back" id="back-1"></div></div></div>
-        <div class="flip-card" id="card-2" onclick="flipCard(2)"><div class="flip-card-inner" id="inner-2"><div class="flip-card-front"></div><div class="flip-card-back" id="back-2"></div></div></div>
-        <div class="flip-card" id="card-3" onclick="flipCard(3)"><div class="flip-card-inner" id="inner-3"><div class="flip-card-front"></div><div class="flip-card-back" id="back-3"></div></div></div>
-        <div class="flip-card" id="card-4" onclick="flipCard(4)"><div class="flip-card-inner" id="inner-4"><div class="flip-card-front"></div><div class="flip-card-back" id="back-4"></div></div></div>
-        <div class="flip-card" id="card-5" onclick="flipCard(5)"><div class="flip-card-inner" id="inner-5"><div class="flip-card-front"></div><div class="flip-card-back" id="back-5"></div></div></div>
+    <div class="hero-inner">
+      <h1>Tu promoción, en <span class="hl">cada viaje</span> por Vallarta.</h1>
+      <p class="sub">
+        Dentro de las unidades de transporte dejamos un código. El pasajero lo
+        escanea y ve las promociones de los negocios de la zona por la que va
+        pasando. Tú pagas cuando esa persona llega a tu puerta.
+      </p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="/registro.html">Quiero mi lugar</a>
+        <a class="btn btn-ghost" href="/?chofer=DEMO">Ver la app</a>
+      </div>
+      <p class="note">Sin contratos largos · Sin costo de instalación · Cancelas cuando quieras</p>
     </div>
-    
-    <div class="game-result" id="gameResult">
-        <h2 id="resultTitle" style="margin: 0 0 10px 0; font-size: 26px;"></h2>
-        <p id="resultMsg" style="margin: 0; font-size: 15px; color: #D1D5DB; padding: 0 20px;"></p>
-        <button class="btn-close-game" onclick="closeGame()">¡Canjear Cupón!</button>
-    </div>
-</div>
 
-
-
-
-
-<!-- HEADER ===================================== -->
-<header class="app-header">
-<!-- IZQUIERDA: logo + tÃ­tulo + ubicaciÃ³n -->
-<div class="header-left">
-<div class="header-brand-stack" style="margin-left: 5px;">
-    <span class="header-title" style="font-size: 20px; font-weight: 900; letter-spacing: 0.5px;">Encavi<span style="color: #F97316;">GO</span></span>
-<!-- UbicaciÃ³n colapsable â€” chevron indica que es interactiva -->
-<button aria-label="Cambiar zona" class="header-location">
-<!-- Pin -->
-<svg fill="none" height="9" viewbox="0 0 24 24" width="9">
-<path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="#94A3B8"></path>
-</svg>
-<span class="loc-text">Zona Romántica · <strong>Pto. Vallarta</strong></span>
-<!-- Chevron abajo -->
-<svg class="chevron" fill="none" height="9" viewbox="0 0 24 24" width="9">
-<path d="M7 10l5 5 5-5z" fill="#94A3B8"></path>
-</svg>
-</button>
-</div>
-</div>
-<!-- DERECHA: EN VIVO + bÃºsqueda + notificaciones -->
-<div class="header-right">
-<!-- CLIMA EN VIVO â€” actualizado por JS con Open-Meteo API -->
-<div class="weather-chip" id="weatherChip" title="Clima en Puerto Vallarta">
-<div class="weather-icon-wrap" id="weatherIcon">
-<!-- Ãcono cargando: puntos parpadeantes -->
-<svg fill="none" viewbox="0 0 16 16">
-<circle cx="4" cy="8" fill="#94A3B8" opacity="0.4" r="1.5">
-<animate attributename="opacity" begin="0s" dur="1.2s" repeatcount="indefinite" values="0.4;1;0.4"></animate>
-</circle>
-<circle cx="8" cy="8" fill="#94A3B8" opacity="0.4" r="1.5">
-<animate attributename="opacity" begin="0.3s" dur="1.2s" repeatcount="indefinite" values="0.4;1;0.4"></animate>
-</circle>
-<circle cx="12" cy="8" fill="#94A3B8" opacity="0.4" r="1.5">
-<animate attributename="opacity" begin="0.6s" dur="1.2s" repeatcount="indefinite" values="0.4;1;0.4"></animate>
-</circle>
-</svg>
-</div>
-<div class="weather-text">
-<span class="weather-temp" id="weatherTemp">--°</span>
-<span class="weather-cond" id="weatherCond">Cargando</span>
-</div>
-</div>
-<!-- Notificaciones -->
-<button aria-label="Activar alertas de proximidad" class="header-icon-btn notif-btn" id="notifBtn" title="Recibe alertas cuando hay promos cerca">
-<svg viewbox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"></path></svg>
-</button>
-<!-- BÃºsqueda -->
-<button aria-label="Buscar promociones" class="header-icon-btn">
-<svg viewbox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg>
-</button>
-</div>
-</header>
-<!-- PERFIL ===================================== -->
-<!--
-
-
-
-    â˜… SECCIÃ“N DE PERFIL â€” reemplaza los datos placeholder
-
-
-
-    con la informaciÃ³n real del promotor / agente EncaviGO
-
-
-
-  -->
-<!-- CARRUSEL DE DESTACADAS ======================== -->
-<!-- TOGGLE CATEGORÃAS ============================= -->
-<!-- CATEGORÃAS ==================================== -->
-<!-- CANALES TEMÃTICOS ========================== -->
-<!-- FEED ======================================= -->
-<main class="immersive-feed">
-<!-- 
-    ========================================================================
-    🛑 ÁREA DE BASE DE DATOS (ZONA PARA AÑADIR/QUITAR PROMOCIONES) 🛑
-    ========================================================================
-    INSTRUCCIONES PARA AGREGAR UN NEGOCIO NUEVO:
-    1. Copia desde <article class="immersive-card"> hasta </article>.
-    2. Pégalo debajo de otro artículo.
-    3. Cambia el enlace de la imagen en: background-image: url('AQUÍ').
-    4. Cambia los textos y el número de WhatsApp.
-    ========================================================================
-    -->
-
-
-
-</main>
-</div><!-- /app-container -->
-<!-- BOTÃ“N FLOTANTE MAPA ========================= -->
-<div class="map-fab">
-<button aria-label="Promos cercanas" class="map-alert" id="mapAlert" type="button">
-<span class="alert-dot" id="alertDot"></span>
-<span class="alert-text" id="alertText">Buscando promosâ€¦</span>
-</button>
-<button aria-label="Abrir mapa de promociones" class="map-btn" id="mapBtn" type="button">
-<svg viewbox="0 0 24 24"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"></path></svg>
-</button>
-</div>
-<!-- NOTIFICACIÓN TIPO DYNAMIC ISLAND -->
-<!-- BOTTOM SHEET (LA "VENTANA NUEVA") -->
-<!-- TIKTOK STYLE SIDE BUTTON -->
-<div class="sheet-backdrop" id="sheetBackdrop" onclick="document.getElementById('nearbySheet').classList.remove('active'); this.classList.remove('active');"></div>
-<div class="bottom-sheet" id="nearbySheet">
-<div class="sheet-header">
-<div class="sheet-drag-handle"></div>
-<h3 class="sheet-title">Promociones en tu zona</h3>
-<div class="sheet-close" onclick="document.getElementById('nearbySheet').classList.remove('active'); document.getElementById('sheetBackdrop').classList.remove('active');">✕</div>
-</div>
-<div class="sheet-content">
-<p style="font-size: 12px; color: #34D399; text-align: center; margin-top:0;">El conductor se acerca a estos lugares:</p>
-<div class="mini-card">
-<div class="mini-card-img" style="background-image: url('https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&amp;fit=crop&amp;w=300&amp;q=80');"></div>
-<div class="mini-card-info">
-<h4 class="mini-title">Asador El Pariente</h4>
-<p class="mini-desc">Cena al carbón con 2x1 en hamburguesas. A 5 mins.</p>
-</div>
-</div>
-<div class="mini-card" style="border-color: rgba(37,99,235,0.3);">
-<div class="mini-card-img" style="background-image: url('https://images.unsplash.com/photo-1544148103-0773bf10d330?auto=format&amp;fit=crop&amp;w=300&amp;q=80');"></div>
-<div class="mini-card-info">
-<h4 class="mini-title">Spa Pacífico</h4>
-<p class="mini-desc">Masaje relajante 50% descuento. A 8 mins.</p>
-</div>
-</div>
-</div>
-</div>
-
-<div id="mapModal">
-    <div class="map-header">
-        <div style="font-weight:bold; font-size:18px;">Mapa de Promociones</div>
-        <button class="map-close" onclick="closeMap()">&times;</button>
-    </div>
-    
-    <div id="map"></div>
-    <button class="locate-btn" onclick="centerMapOnUser()">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg>
-    </button>
-
-</div>
-
-<!-- Opción 2: PULL-UP DRAWER -->
-<div class="pullup-drawer">
-<div class="pullup-pill" onclick="openMap()">
-<svg fill="none" height="18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewbox="0 0 24 24" width="18"><path d="M12 19V5M5 12l7-7 7 7"></path></svg>
-<span class="pullup-badge">3</span> Promos cerca de ti
-        </div>
-</div>
-<!-- FIREBASE SDK -->
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyBS87d1Dv9nx6Yg_dqq-E3x9GI4gpSA7ps",
-    authDomain: "encavi-go.firebaseapp.com",
-    projectId: "encavi-go",
-    storageBucket: "encavi-go.firebasestorage.app",
-    messagingSenderId: "1073579842188",
-    appId: "1:1073579842188:web:0b415778424a7bce5639a9"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-</script>
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    const SESSION_HOURS = 24;
-    const SESSION_KEY = 'encavigo_session';
-    const urlParams = new URLSearchParams(window.location.search);
-    const paramChofer = urlParams.get('chofer');
-    let session = null;
-    try { session = JSON.parse(localStorage.getItem(SESSION_KEY)); } catch(e) {}
-    
-    const now = Date.now();
-    if (paramChofer) session = null; 
-    
-    if (!session) {
-        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-        let uniqueCode = 'ENC-';
-        for(let i=0; i<4; i++) uniqueCode += chars.charAt(Math.floor(Math.random() * chars.length));
-        
-        session = { timestamp: now, code: uniqueCode, chofer: paramChofer || 'orgánico' };
-        localStorage.setItem(SESSION_KEY, JSON.stringify(session));
-        if(paramChofer) window.history.replaceState({}, document.title, window.location.pathname);
-    } else {
-        const diffHours = (now - session.timestamp) / (1000 * 60 * 60);
-        if (diffHours > SESSION_HOURS) {
-            document.body.innerHTML = `
-                <div style="height: 100dvh; width: 100vw; background: #000; color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; font-family: sans-serif;">
-                    <div style="font-size: 50px; margin-bottom: 20px;">🔒</div>
-                    <h1 style="font-size: 24px; font-weight: 900; margin-bottom: 10px;">Sesión Expirada</h1>
-                    <p style="color: #94A3B8; line-height: 1.5;">Tu código promocional ha caducado. Sube a un vehículo afiliado a EncaviGO y escanea un código QR nuevo para desbloquear las ofertas de hoy.</p>
+    <div class="hero-phone">
+      <div class="phone-slot">
+        <div>
+          <div class="phone">
+            <div class="screen">
+              <div class="s-top">
+                <span class="s-logo">Encavi<i>GO</i></span>
+                <span class="s-zone">Zona Romántica</span>
+              </div>
+              <div class="s-banner">ENCUENTRA EL VIAJE GRATIS</div>
+              <div class="s-card">
+                <div class="s-img"><span class="s-badge">2x1 hamburguesas</span></div>
+                <div class="s-body">
+                  <h6>Asador El Pariente</h6>
+                  <p>Zona Romántica · válido hoy</p>
+                  <div class="s-btn">Reclamar</div>
                 </div>
-            `;
-            localStorage.removeItem(SESSION_KEY);
-            return;
-        }
-    }
-    
-    function haversine(lat1, lon1, lat2, lon2) {
-        const R = 6371; 
-        const dLat = (lat2 - lat1) * Math.PI / 180;
-        const dLon = (lon2 - lon1) * Math.PI / 180;
-        const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
-        return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))); 
-    }
-
-    const drawerBadge = document.querySelector('.pullup-badge');
-    const sheetContent = document.querySelector('.sheet-content');
-    window.loadedCampaigns = []; // Store them for radar
-    
-    function actualizarRadar(userLat, userLng) {
-        let cercanas = [];
-        window.loadedCampaigns.forEach(camp => {
-            if (camp.lat && camp.lng) {
-                const dist = haversine(userLat, userLng, parseFloat(camp.lat), parseFloat(camp.lng));
-                if (dist <= 2.0) { 
-                    cercanas.push({
-                        title: camp.title,
-                        desc: camp.desc,
-                        img: camp.img,
-                        distKm: dist
-                    });
-                }
-            }
-        });
-        
-        if (drawerBadge) drawerBadge.innerText = cercanas.length;
-        
-        if (sheetContent && cercanas.length > 0) {
-            let html = '<p style="font-size: 12px; color: #34D399; text-align: center; margin-top:0;">El conductor se acerca a estos lugares:</p>';
-            cercanas.forEach(local => {
-                const mins = Math.max(1, Math.round(local.distKm * 5));
-                html += `<div class="mini-card"><div class="mini-card-img" style="background-image: url('${local.img}');"></div><div class="mini-card-info"><h4 class="mini-title">${local.title}</h4><p class="mini-desc">${local.desc} A ${mins} mins.</p></div></div>`;
-            });
-            sheetContent.innerHTML = html;
-        } else if (sheetContent) {
-            sheetContent.innerHTML = '<p style="text-align:center; color:#94A3B8; margin-top:20px;">No hay promociones extremadamente cerca de ti en este momento.</p>';
-        }
-    }
-
-    // CARGAR CAMPAÑAS DINÁMICAS DESDE FIREBASE
-    const mainFeed = document.querySelector('.immersive-feed');
-    
-    
-    // ALGORITMO DE BARAJA INTELIGENTE (Max 15 Tarjetas)
-    function renderDeck(deck) {
-        if(!mainFeed) return;
-        let html = '';
-        deck.forEach(camp => {
-            html += `
-            <article class="immersive-card">
-                <div class="card-bg" style="background-image: url('${camp.img || ''}'); background-size: cover; background-position: center;"></div>
-                <div class="card-overlay" style="background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.1) 100%);"></div>
-                <div class="card-ui">
-                    <div class="card-badge" style="background: rgba(245, 158, 11, 0.2); border-color: rgba(245, 158, 11, 0.5); color: #FBBF24;">
-                        ★ ${camp.badge || 'PROMO ACTIVA'}
-                    </div>
-                    <h2 class="card-headline">${camp.title || ''}</h2>
-                    <p class="card-body">${camp.desc || ''}</p>
-                    <button class="swipe-btn track-click" data-campid="${camp.id}" data-cajaid="${camp.caja_id || ''}" data-stock="${camp.stock || 0}" data-title="${camp.title}" style="border:none; width:100%;">
-                        Reclamar
-                    </button>
-                </div>
-            </article>
-            `;
-        });
-        mainFeed.innerHTML = html;
-
-        // Re-attach click listeners para el Escáner O2O
-        document.querySelectorAll('.track-click').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const cid = e.target.getAttribute('data-campid');
-                const cajaId = e.target.getAttribute('data-cajaid');
-                const title = e.target.getAttribute('data-title');
-                let stock = parseInt(e.target.getAttribute('data-stock'));
-                
-                // ─────────────────────────────────────────────────────────
-                // CLICK UNICO: 1 celular = 1 click por promo por dia.
-                // Se guarda un registro con nombre fijo (promo + celular + fecha).
-                // Si ese registro YA existe, Firestore lo rechaza y no se
-                // vuelve a contar. Asi nadie infla el contador picandole
-                // muchas veces al mismo boton.
-                // ─────────────────────────────────────────────────────────
-                try {
-                    if (!window.encaviDevId) {
-                        var d = null;
-                        try { d = localStorage.getItem('encavi_dev_id'); } catch(e) {}
-                        if (!d) {
-                            d = 'd' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
-                            try { localStorage.setItem('encavi_dev_id', d); } catch(e) {}
-                        }
-                        window.encaviDevId = d;
-                    }
-                    var hoy = new Date().toISOString().slice(0, 10);
-                    var huella = (cid || 'sin-promo') + '_' + window.encaviDevId + '_' + hoy;
-
-                    db.collection('click_log').doc(huella).set({
-                        camp_id: cid || null,
-                        chofer: (session && session.chofer) ? session.chofer : 'orgánico',
-                        fecha: firebase.firestore.FieldValue.serverTimestamp()
-                    }).then(function () {
-                        // Primer click de este celular a esta promo hoy: SI cuenta.
-                        db.collection('stats').doc('global').update({ clicks: firebase.firestore.FieldValue.increment(1) });
-                        if (session && session.chofer !== 'orgánico') {
-                            db.collection('choferes').doc(session.chofer).update({ clicks: firebase.firestore.FieldValue.increment(1) });
-                        }
-                        if (cid) {
-                            db.collection('campaigns').doc(cid).update({ clicks: firebase.firestore.FieldValue.increment(1) });
-                        }
-                    }).catch(function () {
-                        // Click repetido del mismo celular: se ignora a proposito.
-                    });
-                } catch(err) { console.error(err); }
-
-                if (stock <= 0) {
-                    alert('Lo sentimos, los cupones para esta promoción se han agotado por hoy.');
-                    return;
-                }
-                
-                if (!cajaId || cajaId === 'undefined') {
-                    alert('Este negocio aún no tiene activado el escáner QR en caja.');
-                    return;
-                }
-                
-                mostrarCodigo(cid, cajaId, title);
-            });
-        });
-    }
-
-    function shuffleArray(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-        return array;
-    }
-
-    function buildSmartDeck(userLat, userLng) {
-        let allCamps = [...window.loadedCampaigns];
-        
-        if (allCamps.length <= 15) {
-            // Si hay menos de 15 en total, solo revuélvelas todas y muéstralas
-            renderDeck(shuffleArray(allCamps));
-            return;
-        }
-
-        let finalDeck = [];
-        
-        if (userLat && userLng) {
-            // 1. Filtrar por cercanía (Los 10 más cercanos)
-            allCamps.forEach(c => {
-                if(c.lat && c.lng) {
-                    c._dist = haversine(userLat, userLng, parseFloat(c.lat), parseFloat(c.lng));
-                } else {
-                    c._dist = 9999;
-                }
-            });
-            allCamps.sort((a, b) => a._dist - b._dist);
-            
-            const closest = allCamps.slice(0, 10);
-            const remaining = allCamps.slice(10);
-            const randomFill = shuffleArray(remaining).slice(0, 5);
-            
-            finalDeck = shuffleArray([...closest, ...randomFill]);
-        } else {
-            // Si no hay GPS, solo muestra 15 al azar
-            finalDeck = shuffleArray(allCamps).slice(0, 15);
-        }
-        
-        renderDeck(finalDeck);
-    }
-
-    db.collection('campaigns').where('active', '==', true).get().then(snapshot => {
-        snapshot.forEach(doc => {
-            const camp = doc.data();
-            camp.id = doc.id;
-            window.loadedCampaigns.push(camp);
-        });
-        
-        // Renderizar inicial (Al azar, 15 max)
-        buildSmartDeck(null, null);
-        
-        // Intentar obtener GPS de inmediato sin esperar clic
-        if ('geolocation' in navigator) {
-            navigator.geolocation.getCurrentPosition((pos) => {
-                // Si da permiso, reconstruimos la baraja usando el GPS!
-                buildSmartDeck(pos.coords.latitude, pos.coords.longitude);
-                actualizarRadar(pos.coords.latitude, pos.coords.longitude); // Actualizar burbuja inferior
-            }, (err) => console.log("GPS no autorizado de inicio"), { enableHighAccuracy: true });
-        }
-
-    }).catch(e => console.error("Error loading campaigns:", e));
-
-
-    let gpsRequested = false;
-    document.body.addEventListener('click', () => {
-        if(!gpsRequested && 'geolocation' in navigator) {
-            gpsRequested = true;
-            navigator.geolocation.watchPosition((position) => {
-                window.currentLat = position.coords.latitude;
-                window.currentLng = position.coords.longitude;
-                actualizarRadar(position.coords.latitude, position.coords.longitude);
-                if (typeof updateMapLive === 'function') { updateMapLive(window.currentLat, window.currentLng); }
-            }, (err) => console.log(err), { enableHighAccuracy: true });
-        }
-    }, {once: true});
-
-    try {
-        const docRef = db.collection('stats').doc('global');
-        docRef.get().then((doc) => {
-            if (doc.exists) {
-                docRef.update({ scans: firebase.firestore.FieldValue.increment(1) });
-            } else {
-                docRef.set({ scans: 1, clicks: 0 });
-            }
-        });
-        
-        if (session && session.chofer !== 'orgánico') {
-            const chofRef = db.collection('choferes').doc(session.chofer);
-            chofRef.get().then(doc => {
-                if (doc.exists) {
-                    chofRef.update({ scans: firebase.firestore.FieldValue.increment(1) });
-                } else {
-                    chofRef.set({ scans: 1, clicks: 0, lastActive: new Date() });
-                }
-            });
-        }
-    } catch(e) { console.error("Error Firebase:", e); }
-});
-
-    
-
-
-    // 6-Card Mini Game Logic
-    let taps = 0;
-    let sequence = [];
-    let winData = {};
-    let isJackpot = false;
-    let selectedCards = [];
-
-    const logoImg = '<img src="logo_jackpot.jpg" style="width:50px; height:50px; border-radius:50%; vertical-align:middle; object-fit:cover; box-shadow:0 2px 8px rgba(0,0,0,0.15); margin: 0 5px;">';
-
-    function initGame() {
-        const today = new Date().toDateString();
-        const lastPlayed = localStorage.getItem('encavigo_played');
-        if (lastPlayed !== today) {
-            document.getElementById('scratchBanner').style.display = 'block';
-        }
-    }
-
-    function openGame() {
-        document.getElementById('gameModal').style.display = 'flex';
-        document.getElementById('scratchBanner').style.display = 'none';
-        
-        const chance = Math.random();
-        isJackpot = (chance <= 0.01);
-
-        if (isJackpot) {
-            sequence = [logoImg, logoImg, logoImg];
-            winData = { title: '<span style="color: #10B981;">🎉 VIAJE GRATIS 🎉</span>', msg: 'Muéstrale esta pantalla a tu chofer ahora.' };
-        } else {
-            // CONECTADO A BASE DE DATOS DE FIREBASE
-            const activeCampaigns = window.loadedCampaigns || [];
-            if (activeCampaigns.length === 0) {
-                // Fallback de seguridad si el internet falló
-                activeCampaigns.push({ title: 'Comida Local', imgUrl: null, fallbackIcon: '🍔' });
-                activeCampaigns.push({ title: 'Servicios', imgUrl: null, fallbackIcon: '✂️' });
-            }
-            
-            const winIndex = Math.floor(Math.random() * activeCampaigns.length);
-            const winCamp = activeCampaigns[winIndex];
-            
-            let loseIndex = Math.floor(Math.random() * activeCampaigns.length);
-            while(loseIndex === winIndex && activeCampaigns.length > 1) { loseIndex = Math.floor(Math.random() * activeCampaigns.length); }
-            const loseCamp = activeCampaigns[loseIndex];
-            
-            // Build the HTML for the card faces (Use their actual image from Firebase!)
-            const getIconHTML = (camp) => {
-                if (camp.imgUrl) return `<img src="${camp.imgUrl}" style="width:100%; height:100%; object-fit:cover; border-radius:10px;">`;
-                return `<div style="font-size:45px;">${camp.fallbackIcon || '🎁'}</div>`;
-            };
-
-            const winIconHTML = getIconHTML(winCamp);
-            let loseIconHTML = getIconHTML(loseCamp);
-            
-            if(Math.random() > 0.5) { loseIconHTML = logoImg; } // EncaviGO tease
-            
-            sequence = [winIconHTML, loseIconHTML, winIconHTML];
-            winData = { title: `<span style="color: #F97316;">¡Cupón en <br>${winCamp.title}!</span>`, msg: 'Cierra esta pantalla y baja a reclamarlo.' };
-        }
-    }
-
-    function flipCard(index) {
-        const card = document.getElementById('card-' + index);
-        // Prevent double clicking or clicking more than 3
-        if (taps >= 3 || card.classList.contains('flipped')) return;
-        
-        // Reveal the pre-determined icon
-        document.getElementById('back-' + index).innerHTML = sequence[taps];
-        card.classList.add('flipped');
-        selectedCards.push(index);
-        taps++;
-        
-        document.getElementById('gameTitle').innerHTML = `Llevas ${taps} de 3 intentos`;
-
-        if (taps === 3) {
-            setTimeout(triggerAnimation, 800);
-        }
-    }
-
-    function triggerAnimation() {
-        document.getElementById('gameTitle').style.display = 'none';
-        
-        // Fade out all unselected cards, and the 2nd selected card (the loser icon)
-        for (let i = 0; i < 6; i++) {
-            const card = document.getElementById('card-' + i);
-            if (!selectedCards.includes(i) || (i === selectedCards[1] && !isJackpot)) {
-                card.classList.add('fade-out');
-            }
-        }
-
-        // Animate the winning cards to the center
-        setTimeout(() => {
-            const match1 = document.getElementById('inner-' + selectedCards[0]);
-            let match2 = document.getElementById('inner-' + selectedCards[2]);
-            if(isJackpot) { match2 = document.getElementById('inner-' + selectedCards[1]); const match3 = document.getElementById('inner-' + selectedCards[2]); match3.classList.add('merge-animate'); }
-            
-            // Remove them from normal flow and throw them to center
-            match1.classList.add('merge-animate');
-            match2.classList.add('merge-animate');
-            
-            // Show result text
-            setTimeout(() => {
-                document.getElementById('resultTitle').innerHTML = winData.title;
-                document.getElementById('resultMsg').innerHTML = winData.msg;
-                document.getElementById('gameResult').style.display = 'block';
-                localStorage.setItem('encavigo_played', new Date().toDateString());
-            }, 800);
-            
-        }, 500);
-    }
-
-    function closeGame() {
-        document.getElementById('gameModal').style.display = 'none';
-    }
-
-    window.addEventListener('DOMContentLoaded', initGame);
-
-</script>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script>
-    let mapInstance = null;
-    let mapMarkers = [];
-    let uMarker = null;
-
-    const getMarkerIcon = (camp, isClose) => {
-        const size = isClose ? 40 : 28;
-        const bg = isClose ? '#F97316' : '#111827'; 
-        const inner = isClose ? '#FFFFFF' : '#F97316';
-        
-        const shadow = isClose ? '-3px 3px 15px rgba(249,115,22,0.9)' : '-2px 2px 6px rgba(0,0,0,0.4)';
-        const anim = isClose ? 'animation: pulse 1.5s infinite;' : '';
-        const zindex = isClose ? 'z-index: 1000;' : 'z-index: 500;';
-
-        const html = `
-            <div style="
-                width: ${size}px; 
-                height: ${size}px; 
-                background: ${bg}; 
-                border-radius: 50% 50% 50% 0; 
-                transform: rotate(-45deg); 
-                border: 2px solid white; 
-                box-shadow: ${shadow}; 
-                position: relative;
-                ${anim}
-                ${zindex}
-            ">
-                <div style="
-                    width: ${size/2.5}px; 
-                    height: ${size/2.5}px; 
-                    background: ${inner}; 
-                    border-radius: 50%; 
-                    position: absolute; 
-                    top: 50%; 
-                    left: 50%; 
-                    transform: translate(-50%, -50%);
-                "></div>
+              </div>
+              <div class="s-foot">3 promos cerca de ti</div>
             </div>
-        `;
-        return L.divIcon({ 
-            className: 'custom-div-icon', 
-            html: html, 
-            iconSize: [size, size],
-            iconAnchor: [size/2, size]
-        });
-    };
-
-    const userIcon = L.divIcon({ className: 'custom-div-icon', html: "<div style='background:#3B82F6; width:15px; height:15px; border-radius:50%; border:2px solid white; box-shadow: 0 0 10px #3B82F6;'></div>", iconSize: [15, 15] });
-
-    function openMap() {
-        
-
-        document.getElementById('mapModal').style.display = 'flex';
-        
-        if (!mapInstance) {
-            mapInstance = L.map('map').setView([20.6534, -105.2253], 13);
-            L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
-                attribution: '&copy; Google Maps'
-            }).addTo(mapInstance);
-            
-            uMarker = L.marker([0, 0], {icon: userIcon}).bindPopup("Tu ubicación");
-            plotCampaignsInicial();
-        }
-
-        if (window.currentLat && window.currentLng) {
-            mapInstance.setView([window.currentLat, window.currentLng], 14);
-            updateMapLive(window.currentLat, window.currentLng);
-        }
-    }
-
-    
-    let html5QrcodeScanner = null;
-
-    function mostrarCodigo(campId, cajaId, title) {
-        document.getElementById('codigoModal').style.display = 'flex';
-        document.getElementById('codigoNegocio').innerText = title;
-        let _s = null;
-        try { _s = JSON.parse(localStorage.getItem('encavigo_session')); } catch(e) {}
-        let codigoMostrar = (_s && _s.code) ? _s.code : null;
-        if (!codigoMostrar) {
-            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-            let k = 'ENC-';
-            for (let i = 0; i < 4; i++) k += chars[Math.floor(Math.random() * chars.length)];
-            codigoMostrar = k;
-            if (_s) { _s.code = k; localStorage.setItem('encavigo_session', JSON.stringify(_s)); }
-        }
-        document.getElementById('codigoTexto').innerText = codigoMostrar;
-        document.getElementById('btnEscanearCaja').onclick = function() {
-            document.getElementById('codigoModal').style.display = 'none';
-            abrirScanner(campId, cajaId, title);
-        };
-    }
-
-    function abrirScanner(campId, expectedCajaId, title) {
-        document.getElementById('scannerModal').style.display = 'flex';
-        
-        if (!html5QrcodeScanner) {
-            html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: {width: 250, height: 250} }, false);
-        }
-        
-        html5QrcodeScanner.render((decodedText, decodedResult) => {
-            console.log("QR Leido: ", decodedText);
-            if (decodedText.includes(expectedCajaId) || decodedText === expectedCajaId) {
-                html5QrcodeScanner.clear();
-                document.getElementById('scannerModal').style.display = 'none';
-                quemarCupon(campId, title);
-            } else {
-                alert('Código incorrecto. Asegúrate de escanear el QR de la caja de este negocio.');
-            }
-        }, (error) => {});
-    }
-
-    function cerrarScanner() {
-        document.getElementById('scannerModal').style.display = 'none';
-        if (html5QrcodeScanner) { html5QrcodeScanner.clear(); }
-    }
-
-    async function quemarCupon(campId, title) {
-        try {
-            await db.collection('campaigns').doc(campId).update({ stock: firebase.firestore.FieldValue.increment(-1) });
-            await db.collection('tickets').add({
-                camp_id: campId,
-                chofer: session ? session.chofer : 'DESCONOCIDO',
-                status: 'quemado',
-                fecha: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            if (session && session.chofer) {
-                await db.collection('drivers').doc(session.chofer).set({
-                    earnings: firebase.firestore.FieldValue.increment(5),
-                    redemptions: firebase.firestore.FieldValue.increment(1)
-                }, {merge: true});
-            }
-            mostrarSuccess(title);
-        } catch (error) {
-            console.error(error);
-            alert('Hubo un error de conexión.');
-        }
-    }
-
-    function mostrarSuccess(title) {
-        document.getElementById('successRestaurante').innerText = title;
-        const timeStr = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) + ' hrs';
-        document.getElementById('successTime').innerText = timeStr;
-        document.getElementById('successModal').style.display = 'flex';
-    }
-
-    function cerrarSuccess() {
-        document.getElementById('successModal').style.display = 'none';
-    }
-
-
-    function plotCampaignsInicial() {
-        const allCamps = window.loadedCampaigns || [];
-        allCamps.forEach(camp => {
-            if (camp.lat && camp.lng) {
-                const marker = L.marker([camp.lat, camp.lng], {icon: getMarkerIcon(camp, false)}).addTo(mapInstance);
-                marker.camp = camp;
-                mapMarkers.push(marker);
-            }
-        });
-    }
-
-    function updateMapLive(uLat, uLng) {
-        if (!mapInstance) return;
-        if (!mapInstance.hasLayer(uMarker)) { uMarker.addTo(mapInstance); }
-        uMarker.setLatLng([uLat, uLng]);
-
-        mapMarkers.forEach(marker => {
-            const camp = marker.camp;
-            const dist = haversine(uLat, uLng, parseFloat(camp.lat), parseFloat(camp.lng));
-            const isClose = dist <= 0.5;
-            
-            marker.setIcon(getMarkerIcon(camp, isClose));
-            
-            const waMsg = camp.waMsg || 'Hola';
-            const waUrl = `https://wa.me/523221592596?text=${encodeURIComponent(waMsg)}`;
-            const popupContent = `
-                <div class="map-popup-title">${camp.title}</div>
-                <div style="font-size:12px; margin-bottom:8px;">${isClose ? '🔥 A menos de 500m de ti' : '📍 A ' + dist.toFixed(1) + ' km'}</div>
-                <a href="${waUrl}" target="_blank" class="map-popup-btn">Activar Promo</a>
-            `;
-            marker.setPopupContent(popupContent);
-        });
-    }
-
-    function centerMapOnUser() {
-        if (mapInstance && window.currentLat && window.currentLng) {
-            mapInstance.setView([window.currentLat, window.currentLng], 15);
-        }
-    }
-
-    function closeMap() {
-        document.getElementById('mapModal').style.display = 'none';
-    }
-</script>
-
-
-<!-- CODIGO MODAL -->
-<div id="codigoModal" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.92);z-index:10000;display:none;flex-direction:column;align-items:center;justify-content:center;padding:30px;text-align:center;">
-    <p style="color:#94A3B8;font-size:14px;margin-bottom:5px;">Tu cup&oacute;n para</p>
-    <h2 id="codigoNegocio" style="color:white;font-size:22px;margin:0 0 25px 0;"></h2>
-    <div style="background:#1F2937;border:2px solid #F97316;border-radius:16px;padding:25px 40px;margin-bottom:10px;">
-        <p style="color:#94A3B8;font-size:12px;margin:0 0 8px 0;letter-spacing:2px;">TU C&Oacute;DIGO</p>
-        <div id="codigoTexto" style="color:#F97316;font-size:36px;font-weight:900;font-family:monospace;letter-spacing:4px;"></div>
+          </div>
+          <p class="phone-cap">Así aparece tu negocio en el celular del pasajero</p>
+        </div>
+      </div>
     </div>
-    <p style="color:#64748B;font-size:12px;margin-bottom:30px;">V&aacute;lido por 24 hrs &middot; Uso &uacute;nico</p>
-    <button id="btnEscanearCaja" style="background:#F97316;color:white;border:none;padding:16px 40px;border-radius:30px;font-size:18px;font-weight:bold;width:100%;max-width:320px;margin-bottom:12px;">Escanear en Caja</button>
-    <button onclick="document.getElementById('codigoModal').style.display='none'" style="background:transparent;color:#64748B;border:1px solid #374151;padding:12px 30px;border-radius:30px;font-size:15px;">Cerrar</button>
-</div>
+  </div>
+</header>
 
-<!-- SCANNER MODAL -->
-<div id="scannerModal" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.95); z-index: 10000; display: none; flex-direction: column; align-items: center; justify-content: center;">
-    <h2 style="color: white; margin-bottom: 20px; text-align: center;">Escanea el código de la caja</h2>
-    <div id="reader" style="width: 300px; border-radius: 12px; overflow: hidden; background: #000; margin-bottom: 30px;"></div>
-    <button onclick="cerrarScanner()" style="background: #4B5563; color: white; border: none; padding: 12px 30px; border-radius: 30px; font-size: 16px;">Cancelar</button>
-</div>
-
-<!-- SUCCESS MODAL -->
-<div id="successModal" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #10B981; z-index: 11000; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px;">
-    <div style="font-size: 80px; margin-bottom: 10px;">✅</div>
-    <h1 style="color: white; font-size: 32px; margin-bottom: 10px;">CUPÓN APROBADO</h1>
-    <h2 id="successRestaurante" style="color: rgba(255,255,255,0.9); font-size: 24px; margin-bottom: 30px;">Restaurante</h2>
-    <div style="background: rgba(0,0,0,0.2); padding: 15px 30px; border-radius: 12px; color: white; font-size: 20px; font-weight: bold; font-family: monospace;" id="successTime">
-        14:35 hrs
+<!-- ══ PITCH ══ -->
+<section>
+  <div class="wrap">
+    <div class="sheet pitch">
+      <p class="big">Un espectacular no te dice quién entró. Nosotros sí.</p>
+      <p>
+        Cuando pagas una lona, un volante o una publicación, nadie te puede decir
+        cuánta gente entró por eso. Aquí cada cliente llega con un código, y ese
+        código se quema en tu negocio. Al final del mes sabes
+        <strong>exactamente cuántas personas te mandamos</strong>.
+      </p>
     </div>
-    <button onclick="cerrarSuccess()" style="background: white; color: #10B981; border: none; padding: 15px 40px; border-radius: 30px; font-size: 18px; font-weight: bold; margin-top: 50px;">Aceptar</button>
-</div>
+  </div>
+</section>
+
+<!-- ══ CÓMO FUNCIONA ══ -->
+<section>
+  <div class="wrap">
+    <div class="col">
+      <p class="eyebrow">Cómo funciona</p>
+      <h2>Cuatro pasos, y ninguno es tuyo</h2>
+      <p class="lead">Nosotros ponemos las unidades, la app y los códigos. Tú nada más atiendes al cliente cuando llegue.</p>
+    </div>
+
+    <div class="flow-grid">
+    <div class="steps">
+      <div class="sheet step">
+        <span class="n">1</span>
+        <svg class="ill" viewBox="0 0 72 64" aria-hidden="true">
+            <path d="M6 28 l10-3 42-2 8 6 v18 a3 3 0 0 1-3 3 h-54 a3 3 0 0 1-3-3 z" class="blob"/>
+            <path d="M9 40 l5-13 a4 4 0 0 1 3.6-2.5 h30 a4 4 0 0 1 3.2 1.6 l8 13.9" class="ln sld"/>
+            <path d="M5 40 h54 a3 3 0 0 1 3 3 v6 a2 2 0 0 1-2 2 h-56 a2 2 0 0 1-2-2 v-6 a3 3 0 0 1 3-3 z" class="ln sld"/>
+            <path d="M17 27 h12 v11 h-16 z" class="ln"/>
+            <path d="M35 27 h13 l6 11 h-19 z" class="ln"/>
+            <circle cx="17" cy="51" r="5.5" class="ln sld"/>
+            <circle cx="47" cy="51" r="5.5" class="ln sld"/>
+            <rect x="44" y="6" width="24" height="24" rx="4" class="ln sld"/>
+            <rect x="48" y="10" width="6.5" height="6.5" class="acc"/>
+            <rect x="57.5" y="10" width="6.5" height="6.5" class="acc"/>
+            <rect x="48" y="19.5" width="6.5" height="6.5" class="acc"/>
+            <rect x="57.5" y="19.5" width="6.5" height="6.5" class="acc" opacity=".4"/>
+          </svg>
+        <div>
+          <h3>El pasajero escanea</h3>
+          <p>Dentro de la unidad hay un código QR. El pasajero lo escanea desde su celular, sin descargar nada.</p>
+        </div>
+      </div>
+      <div class="sheet step">
+        <span class="n">2</span>
+        <svg class="ill" viewBox="0 0 72 64" aria-hidden="true">
+            <rect x="10" y="8" width="46" height="48" rx="10" class="blob"/>
+            <rect x="22" y="4" width="28" height="56" rx="7" class="ln sld"/>
+            <rect x="27" y="13" width="18" height="16" rx="3" class="ln"/>
+            <rect x="30" y="17" width="10" height="3.4" class="acc"/>
+            <rect x="27" y="34" width="18" height="16" rx="3" class="ln"/>
+            <rect x="30" y="38" width="7" height="3.4" class="acc" opacity=".42"/>
+          </svg>
+        <div>
+          <h3>Ve tu promoción</h3>
+          <p>Le aparecen las promociones de los negocios de la zona por la que va pasando. La tuya entre ellas.</p>
+        </div>
+      </div>
+      <div class="sheet step">
+        <span class="n">3</span>
+        <svg class="ill" viewBox="0 0 72 64" aria-hidden="true">
+            <rect x="8" y="16" width="52" height="34" rx="8" class="blob"/>
+            <path d="M10 18 h52 v7 a5 5 0 0 0 0 12 v7 h-52 v-7 a5 5 0 0 0 0-12 z" class="ln sld"/>
+            <path d="M17 28 h12" class="acc-st"/>
+            <path d="M17 35 h8" class="acc-st" opacity=".42"/>
+            <path d="M40 32 l4 4 l9-10" class="ck"/>
+          </svg>
+        <div>
+          <h3>Reclama su código</h3>
+          <p>Si le interesa, reclama el cupón. Tiene 24 horas para usarlo, así que va con prisa a tu negocio.</p>
+        </div>
+      </div>
+      <div class="sheet step">
+        <span class="n">4</span>
+        <svg class="ill" viewBox="0 0 72 64" aria-hidden="true">
+            <rect x="12" y="14" width="50" height="42" rx="9" class="blob"/>
+            <path d="M8 24 l6-12 h38 l6 12 z" class="ln sld"/>
+            <path d="M13 24 v30 h40 v-30" class="ln"/>
+            <rect x="24" y="31" width="19" height="19" rx="3" class="ln sld"/>
+            <rect x="27" y="34" width="5.5" height="5.5" class="acc"/>
+            <rect x="34.5" y="34" width="5.5" height="5.5" class="acc"/>
+            <rect x="27" y="41.5" width="5.5" height="5.5" class="acc"/>
+            <rect x="34.5" y="41.5" width="5.5" height="5.5" class="acc" opacity=".4"/>
+          </svg>
+        <div>
+          <h3>Llega contigo y escanea tu QR</h3>
+          <p>En tu caja dejamos un código impreso. Al pagar, el cliente lo escanea con su celular y le aparece la confirmación, que le muestra a tu cajero para aplicar el descuento. <strong>Tú no necesitas ningún aparato.</strong></p>
+        </div>
+      </div>
+    </div><!-- /steps -->
+
+    </div><!-- /flow-grid -->
+  </div>
+</section>
+
+<!-- ══ QUÉ TE LLEVAS ══ -->
+<section>
+  <div class="wrap">
+    <div class="col">
+      <p class="eyebrow">Qué te llevas</p>
+      <h2>Clientes contados, no promesas</h2>
+    </div>
+    <div class="cards">
+      <div class="sheet card">
+        <h3>Clientes nuevos</h3>
+        <p>Gente que iba pasando y que no te conocía. No le estás dando descuento a quien ya iba a entrar.</p>
+      </div>
+      <div class="sheet card">
+        <h3>Números reales</h3>
+        <p>Cuántos vieron tu promoción, cuántos la reclamaron y cuántos llegaron. Sin adivinar.</p>
+      </div>
+      <div class="sheet card">
+        <h3>Pagas por resultado</h3>
+        <p>Fuera de tu mensualidad, solo pagas por cada persona que de verdad llegó y quemó su código.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ PROMOCIONES ══ -->
+<section>
+  <div class="wrap">
+    <div class="col">
+      <p class="eyebrow">Lo que nadie más te da</p>
+      <h2>Tú no tienes que inventar la promoción</h2>
+      <p class="lead">
+        Tres por semana son más de ciento cincuenta al año. Nadie que además está
+        atendiendo su negocio las saca solo. Alguien se encarga de las tuyas, y cada
+        una deja su número para saber cuál vuelve a salir.
+      </p>
+    </div>
+
+    <div class="sheet ideas">
+      <p class="ideas-top">
+        Un desconocido no se desvía por un 10%. Lo que lo detiene <strong>no es el
+        precio: es quitarle el miedo a probar un lugar que no conoce.</strong>
+        Éstas jalan más que un descuento:
+      </p>
+      <ol class="ilist">
+        <li><span class="iname">Regala algo, sin condiciones</span><span class="iej">"Tu primer taco va por nuestra cuenta."</span></li>
+        <li><span class="iname">Da acceso, no descuento</span><span class="iej">"Mesa en la terraza sin esperar."</span></li>
+        <li><span class="iname">Deja que pruebe</span><span class="iej">"Agenda tu masaje y los primeros quince minutos van gratis."</span></li>
+        <li><span class="iname">Piensa en dos</span><span class="iej">"Vienen dos, paga uno."</span></li>
+        <li><span class="iname">Paga el regreso</span><span class="iej">"El viaje de vuelta corre por nuestra cuenta."</span></li>
+      </ol>
+      <p class="ideas-bot">La tuya no sale de esta lista, sale de tus números. Éstas
+        son para que veas de qué estamos hablando.</p>
+    </div>
+
+    <div class="cards">
+      <div class="sheet card">
+        <h3>Tú pones lo que puedes dar</h3>
+        <p>Revisamos contigo tu carta y tus costos. Nadie te dice qué regalar sin
+           conocer tus números.</p>
+      </div>
+      <div class="sheet card">
+        <h3>Tres por semana</h3>
+        <p>Dos entre semana, en tus días flojos, y una el fin de semana. Cuáles
+           son tus días flojos lo sabes tú, y de ahí salen las fechas.</p>
+      </div>
+      <div class="sheet card">
+        <h3>La que funciona se repite</h3>
+        <p>Cada promoción deja cuántos la pidieron y cuántos llegaron. No es
+           corazonada, es el registro.</p>
+      </div>
+    </div>
+
+    <div class="sheet extra-box">
+      <p><b>Incluido sin costo:</b> un reporte con lo que opinaron los clientes que
+      llegaron contigo, para que el siguiente regrese por su cuenta.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ PRECIO ══ -->
+<section id="precio">
+  <div class="wrap">
+    <div class="col">
+      <p class="eyebrow">Precio</p>
+      <h2>Claro y sin letras chiquitas</h2>
+    </div>
+
+    <div class="price-box">
+      <div class="amount">
+        <span class="num">$500</span>
+        <span class="per">al mes</span>
+      </div>
+      <p class="incl">Tu lugar en la plataforma. Aparte, pagas por cada cliente que llega.</p>
+
+      <table class="tarifas">
+        <thead>
+          <tr><th>Tu ticket promedio</th><th>Por cliente que llega</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="rango">Hasta $250</span>
+                <span class="giro">Taquerías, cafés, fondas, barberías</span></td>
+            <td><span class="tarifa">$25</span>
+                <span class="pct">10% de un ticket de $250</span></td>
+          </tr>
+          <tr>
+            <td><span class="rango">$250 a $500</span>
+                <span class="giro">Restaurantes, bares, estéticas</span></td>
+            <td><span class="tarifa">$45</span>
+                <span class="pct">9% de un ticket de $500</span></td>
+          </tr>
+          <tr>
+            <td><span class="rango">$500 a $1,000</span>
+                <span class="giro">Spas, tours, talleres, clínicas</span></td>
+            <td><span class="tarifa">$80</span>
+                <span class="pct">8% de un ticket de $1,000</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="nota-tarifa">
+        Tu rango se fija <strong>una sola vez, al firmar</strong>, según el ticket promedio
+        de tu negocio. No cambia de un cliente a otro ni te cobramos según lo que cada
+        quien consuma.
+      </p>
+
+      <ul class="plist">
+        <li><span class="dot"></span><span>Se cobra <strong>solo cuando el cliente llega a tu negocio</strong> y quema su código. Si no llegó, no se cobra.</span></li>
+        <li><span class="dot"></span><span>Cambias tu promoción las veces que quieras, sin costo.</span></li>
+        <li><span class="dot"></span><span>Sin cuota de alta ni de instalación.</span></li>
+        <li><span class="dot"></span><span>Se paga por adelantado, así que <strong>no hay cobranza ni deudas</strong>. Si un mes no quieres, tu promoción se pausa.</span></li>
+      </ul>
+      <div class="extra">
+        <b>No te vamos a saturar:</b> cuidamos cuántos negocios del mismo giro entran
+        en una misma zona, y tu promoción nunca sale el mismo día que la de un competidor
+        directo. El pasajero ve una opción de tu giro, no una lista para comparar.
+      </div>
+    </div>
+
+    <div class="sheet photo-box">
+      <p class="kicker">Servicio adicional · opcional</p>
+      <h3>Fotografía profesional, si la necesitas</h3>
+      <p>La foto es lo que hace que el pasajero se detenga en tu tarjeta en vez de pasarle de largo. Si no tienes fotos que te convenzan, CreaFilms —nuestro equipo de producción— va a tu negocio y las hace.</p>
+      <p>Es un servicio aparte, con su propio costo, y <strong>no es obligatorio</strong>: si ya tienes buenas fotos, con esas armamos tu tarjeta y listo.</p>
+      <p class="up">También producimos video y contenido para tus redes. Pregúntanos por el paquete.</p>
+    </div>
+
+    <div class="sheet math">
+      <p class="eyebrow">¿Cuánto te cuesta traer un cliente?</p>
+      <div class="row">
+        <span>Por cada cliente que llega<span class="hint">va completo al chofer que te lo trajo</span></span>
+        <span>$25 a $80</span>
+      </div>
+      <div class="row">
+        <span>El descuento de tu promoción<span class="hint">lo decides tú, del tamaño que quieras</span></span>
+        <span class="yours">lo pones tú</span>
+      </div>
+      <p class="after">
+        <strong>Ese dinero no se queda con nosotros: es del chofer que te llevó al cliente.</strong>
+        Por eso te recomienda de verdad. No es un anuncio pegado en un vidrio —
+        es alguien que gana cuando tú ganas.
+      </p>
+      <p class="after">
+        <strong>Pongámoslo en números.</strong> Tomemos la promoción del primer taco gratis:
+      </p>
+      <div class="cuenta">
+        <div class="crow"><span>Lo que te cuesta <em>producir</em> el taco que regalas<span class="chint">tu costo, no el precio de tu carta &mdash; eso nunca lo ibas a cobrar</span></span><span>&minus;$8</span></div>
+        <div class="crow"><span>Comisión del chofer que lo trajo</span><span>&minus;$25</span></div>
+        <div class="crow total"><span>Traer a ese cliente te costó</span><span>$33</span></div>
+      </div>
+      <p class="aviso-ej">Cifras de ejemplo. Cada negocio tiene sus propios costos,
+      y los tuyos los pones tú cuando armemos tu promoción.</p>
+      <p class="after">
+        Ese cliente se sentó y pidió lo demás pagando precio normal. Y es solo la primera
+        visita: <strong>si regresa, entra completo. Ya no hay regalo ni comisión.</strong>
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ PREGUNTAS ══ -->
+<section>
+  <div class="wrap">
+    <div class="col">
+      <p class="eyebrow">Lo que todos preguntan</p>
+      <h2>Preguntas directas</h2>
+    </div>
+    <div class="faq">
+      <details class="sheet">
+        <summary>¿Y si no me llega nadie?</summary>
+        <p>Pierdes los $500 del mes y nada más. No hay plazo forzoso ni cargos adicionales, y si un mes no te sirvió, no lo vuelves a pagar. La mensualidad es baja justamente para que probarlo no represente un riesgo.</p>
+      </details>
+      <details class="sheet">
+        <summary>¿Hay plazo forzoso?</summary>
+        <p>No. El servicio es mes con mes, se paga por adelantado y puedes darlo de baja cuando lo decidas, sin penalización.</p>
+      </details>
+      <details class="sheet">
+        <summary>¿Tengo que instalar algo o comprar equipo?</summary>
+        <p>Nada. Te dejamos un código impreso en la caja y el cliente lo escanea con <em>su</em> celular. Tu cajero solo ve la confirmación en la pantalla del cliente y aplica el descuento como cualquier otro. No hay aparatos, ni cables, ni sistema que aprender.</p>
+      </details>
+      <details class="sheet">
+        <summary>¿Quién escoge la promoción?</summary>
+        <p>Tú. Revisamos juntos tu carta y tus costos, y tú defines qué puedes ofrecer. Nosotros le damos la forma que hace que funcione y la programamos tres veces por semana. Ninguna promoción sale sin tu aprobación.</p>
+      </details>
+      <details class="sheet">
+        <summary>¿Y si no tengo fotos buenas de mi negocio?</summary>
+        <p>Podemos tomarlas. CreaFilms, nuestro equipo de producción, va a tu negocio y hace la sesión. Es un servicio aparte con su propio costo, y es opcional: si ya tienes fotos que te gusten, con esas armamos tu tarjeta.</p>
+      </details>
+      <details class="sheet">
+        <summary>¿Cómo sé que los clientes son de ustedes?</summary>
+        <p>Porque cada uno llega con un código que solo sirve una vez y que se quema con el código de tu caja. Si ese cliente no lo escaneó ahí, no cuenta y no se te cobra.</p>
+      </details>
+      <details class="sheet">
+        <summary>¿Va a estar mi competencia ahí también?</summary>
+        <p>Puede que sí, pero no te vamos a rodear de gente de tu mismo giro. Cuidamos cuántos entran en una misma zona y los repartimos en días distintos, así que <strong>tu promoción nunca sale el mismo día que la de un competidor directo</strong>. El pasajero no ve tres taquerías para comparar: ve una, y ese día es la tuya.</p>
+      </details>
+      <details class="sheet">
+        <summary>¿En qué tipo de transporte están?</summary>
+        <p>En unidades de transporte de pasajeros que circulan por la ciudad. Hoy estamos en taxis de sitio y vehículos de plataforma, y vamos sumando rutas conforme crecemos. Para ti no cambia nada: tu promoción aparece igual en cualquier unidad afiliada, porque lo que importa es que el pasajero vaya sentado con su celular en la mano y pasando cerca de tu negocio.</p>
+      </details>
+      <details class="sheet">
+        <summary>¿En qué zonas están?</summary>
+        <p>Puerto Vallarta y Bahía de Banderas. Vamos sumando unidades por zona, así que pregúntanos cómo va la tuya.</p>
+      </details>
+      <details class="sheet">
+        <summary>¿Cuándo empiezo a aparecer?</summary>
+        <p>En cuanto tengamos tu promoción y tus fotos. Normalmente en pocos días ya estás en la app.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CIERRE ══ -->
+<section class="final">
+  <div class="wrap">
+    <h2>Las unidades ya están rodando.</h2>
+    <p class="lead">Falta que la gente que va adentro vea tu negocio. Déjanos tus datos y te contactamos hoy mismo.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="/registro.html">Quiero mi lugar</a>
+      <a class="btn btn-ghost" href="https://wa.me/523221592596?text=Hola%20EncaviGO%2C%20quiero%20informaci%C3%B3n%20para%20mi%20negocio" target="_blank" rel="noopener">Escríbenos por WhatsApp</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-row">
+    <span>EncaviGO · Puerto Vallarta y Bahía de Banderas</span>
+    <span><a href="/?chofer=DEMO">App</a> · <a href="/privacidad.html">Aviso de privacidad</a></span>
+  </div>
+</footer>
 
 </body>
 </html>
-<!-- 1788643621.4204273 --><!-- 1788644024.345812 --><!-- v3 1788644297.9113197 --><!-- v5 1788644868.7509923 --><!-- v30 1788754865.844323 --><!-- v31 1788755154.999888 --><!-- v32 1788755428.695934 --><!-- v33 1788755894.6145873 --><!-- v34 1788756310.8182855 --><!-- v35 1788756729.692731 --><!-- v36 1788757522.1940298 --><!-- v37 1788757840.1574607 --><!-- v38 1788758750.122479 --><!-- v39 1788759085.4792051 --><!-- v40 1788759246.2474997 --><!-- v41 1788759387.4171386 --><!-- v42 1788759604.4510093 --><!-- v43 1788759871.4546046 --><!-- v44 1788760120.8591197 --><!-- v45 1788760584.5052683 --><!-- v46 1788760862.3821852 --><!-- v47 1788761039.3862772 --><!-- v48 1788761186.6315851 --><!-- v49 1788761273.7822204 --><!-- v50 1788761362.1666484 --><!-- v51 1788762352.3276358 --><!-- v52 1788762686.2584164 --><!-- force deployment 1788808941.4759107 --><!-- v53 1788809833.6565394 --><!-- v54 1788810003.285689 --><!-- v55 1788810586.1448035 --><!-- v56 1788810866.2603304 --><!-- v57 1788811008.826087 --><!-- v58 1788812730.3076658 --><!-- v59 1788813187.6823196 --><!-- v60 1788833695.5048902 --><!-- v61 1788837302.9569738 -->
-
