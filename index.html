@@ -6093,7 +6093,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 /* Primera vez de este celular con este chofer hoy: si cuenta. */
                 chofRef.get().then(doc => {
                     if (doc.exists) {
-                        chofRef.update({ scans: firebase.firestore.FieldValue.increment(1) });
+                        /* lastActive tambien se refresca: antes solo se
+                           escribia al dar de alta al chofer, asi que
+                           marcaba su primer dia, no el ultimo. */
+                        chofRef.update({
+                            scans: firebase.firestore.FieldValue.increment(1),
+                            lastActive: new Date()
+                        });
                     } else {
                         chofRef.set({ scans: 1, clicks: 0, lastActive: new Date() });
                     }

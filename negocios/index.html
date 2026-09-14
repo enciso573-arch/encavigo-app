@@ -382,6 +382,26 @@ footer a:hover{color:var(--orange-bright)}
 
 
 
+
+/* ══════ VEHICULOS ACTIVOS ══════
+   El numero sale de la base, no se escribe a mano. Si la consulta
+   falla, no se inventa nada: se queda el texto sin cifra. */
+.flota{ border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+.flota .wrap{ padding-block:34px; }
+.flota-caja{ display:flex; flex-wrap:wrap; align-items:center; gap:22px 30px; }
+.flota-num{
+  font-size:56px; font-weight:700; line-height:1; color:var(--orange);
+  letter-spacing:-2px; min-width:1.4em;
+}
+.flota-txt{ max-width:46ch; }
+.flota-et{
+  font-size:11px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase;
+  color:var(--soft); display:block; margin-bottom:6px;
+}
+.flota-txt p{ font-size:14.5px; line-height:1.6; margin:0; }
+.flota-txt p + p{ margin-top:8px; color:var(--soft); font-size:13.5px; }
+@media(max-width:620px){ .flota-num{ font-size:46px; } }
+
 </style>
 </head>
 <body>
@@ -439,6 +459,21 @@ footer a:hover{color:var(--orange-bright)}
 </header>
 
 <!-- ══ PITCH ══ -->
+
+<!-- ══ VEHICULOS ACTIVOS ══ -->
+<section class="flota">
+  <div class="wrap">
+    <div class="flota-caja">
+      <div class="flota-num" id="flotaNum">—</div>
+      <div class="flota-txt">
+        <span class="flota-et">Vehículos activos hoy</span>
+        <p id="flotaFrase">Este número sale directo del sistema, no es un estimado.</p>
+        <p>Vamos sumando unidades cada semana, y cada mes te mandamos el reporte de cuántas están activas. Si baja, también lo vas a ver.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section>
   <div class="wrap">
     <div class="sheet pitch">
@@ -791,5 +826,43 @@ footer a:hover{color:var(--orange-bright)}
 
 
 
+
+<script>
+/* Cuenta los vehiculos con actividad en los ultimos 30 dias. Una sola
+   peticion, sin librerias. Si algo falla no se inventa un numero:
+   se quita la cifra y se deja el texto. */
+(function () {
+  var NUM = document.getElementById('flotaNum');
+  var FRASE = document.getElementById('flotaFrase');
+  if (!NUM) return;
+
+  var url = 'https://firestore.googleapis.com/v1/projects/encavi-go/databases/(default)/documents/choferes'
+          + '?key=AIzaSyBS87d1Dv9nx6Yg_dqq-E3x9GI4gpSA7ps&pageSize=300';
+
+  fetch(url).then(function (r) { return r.json(); }).then(function (j) {
+    if (!j || !j.documents) { throw new Error('sin datos'); }
+    var corte = Date.now() - 30 * 24 * 60 * 60 * 1000;
+    var activos = 0;
+    j.documents.forEach(function (d) {
+      var f = d.fields || {};
+      var la = f.lastActive && f.lastActive.timestampValue;
+      if (la && new Date(la).getTime() >= corte) activos++;
+    });
+    NUM.textContent = activos;
+    if (activos === 0) {
+      FRASE.textContent = 'Todavía ninguna. Estás viendo esto antes de que arranque.';
+    } else if (activos === 1) {
+      FRASE.textContent = 'Una unidad rodando. Apenas vamos empezando, y este número sale directo del sistema.';
+    } else {
+      FRASE.textContent = 'Este número sale directo del sistema, no es un estimado.';
+    }
+  }).catch(function () {
+    /* Sin dato no se inventa nada: se quita la cifra y la frase que
+       la acompana. Queda solo el compromiso del reporte mensual. */
+    NUM.style.display = 'none';
+    FRASE.style.display = 'none';
+  });
+})();
+</script>
 </body>
 </html>
