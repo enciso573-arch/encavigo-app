@@ -3,7 +3,7 @@
    PWA offline cache + Push notifications
 ============================================= */
 
-const CACHE_NAME = 'encavigo-v20'; /* bump → invalida caches con el JS viejo */
+const CACHE_NAME = 'encavigo-v21'; /* bump → invalida caches con el JS viejo */
 const PRECACHE = [
   './',
   './index.html',
@@ -35,7 +35,12 @@ self.addEventListener('activate', e => {
    tiles del mapa, CDNs) van directo a la red, sin intermediario. */
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
-  if (new URL(e.request.url).origin !== self.location.origin) return;
+  const url = new URL(e.request.url);
+  if (url.origin !== self.location.origin) return;
+  /* Las paginas de venta NO se guardan: son las que se le ensenan a un
+     negocio, y ahi una copia vieja en cache se ve como "no carga".
+     Van siempre a la red. */
+  if (/^\/(negocios|registro|privacidad)/.test(url.pathname)) return;
   e.respondWith(
     fetch(e.request)
       .then(res => {
