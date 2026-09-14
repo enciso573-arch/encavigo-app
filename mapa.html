@@ -349,7 +349,7 @@
       <div class="sheet-countdown" id="sCountdown"></div>
       <a class="btn-wa" id="sWA" href="#" target="_blank" rel="noopener">
         <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 0C5.373 0 0 5.373 0 12c0 2.127.555 4.127 1.524 5.87L.057 23.882l6.01-1.467A11.95 11.95 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22a9.95 9.95 0 01-5.18-1.38l-.37-.213-3.567.868.887-3.566-.23-.382A9.953 9.953 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
-        Solicitar Promoción vía WhatsApp
+        Abrir la app y sacar mi código
       </a>
       <button class="btn-sheet-close" onclick="closeSheet()">Cerrar</button>
     </div>
@@ -358,58 +358,57 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <script>
 'use strict';
 
 /* ───────────────────────────────────────────
-   DATOS DE PROMOS
+   BASE DE DATOS — la misma del panel
 ─────────────────────────────────────────── */
-const PROMOS = [
-  {
-    id: 1,
-    biz:   'Mariscos La Marina',
-    cat:   '🍤 Mariscos · Zona Romántica',
-    promo: 'Camarones + 2 cervezas por $180',
-    badge: '30%\nOFF',
-    start: '11:00', end: '22:00',
-    lat: 20.6046, lng: -105.2366,
-    coupon: '#ENCAVI-101',
-    wa: 'Hola, vengo de la app EncaviGO. Me interesa el 30% de descuento en Mariscos La Marina. Mi código de cupón es #ENCAVI-101. ¿Me pueden confirmar la promoción?'
-  },
-  {
-    id: 2,
-    biz:   'Tacos El Güero',
-    cat:   '🌮 Tacos · Col. 5 de Diciembre',
-    promo: '2×1 en tacos de canasta toda la tarde',
-    badge: '2×1',
-    start: '14:00', end: '18:00',
-    lat: 20.6074, lng: -105.2361,
-    coupon: '#ENCAVI-102',
-    wa: 'Hola, vengo de la app EncaviGO. Me interesa el 2x1 en tacos de canasta en Tacos El Güero. Mi código de cupón es #ENCAVI-102. ¿Me pueden confirmar la promoción?'
-  },
-  {
-    id: 3,
-    biz:   'Spa Pacífico',
-    cat:   '💆 Spa · Marina Vallarta',
-    promo: 'Masaje de 60 min por $199 MXN',
-    badge: '$199\nMXN',
-    start: '09:00', end: '20:00',
-    lat: 20.6618, lng: -105.2469,
-    coupon: '#ENCAVI-103',
-    wa: 'Hola, vengo de la app EncaviGO. Me interesa el masaje de 60 minutos por $199 MXN en Spa Pacífico. Mi código de cupón es #ENCAVI-103. ¿Me pueden confirmar disponibilidad?'
-  },
-  {
-    id: 4,
-    biz:   'Cervecería del Muelle',
-    cat:   '🍺 Cervecería · Malecón Norte',
-    promo: '4 cervezas artesanales por $120 con vista al mar',
-    badge: 'HH',
-    start: '16:00', end: '20:00',
-    lat: 20.6196, lng: -105.2381,
-    coupon: '#ENCAVI-104',
-    wa: 'Hola, vengo de la app EncaviGO. Me interesa el Happy Hour de 4 cervezas artesanales por $120 en Cervecería del Muelle. Mi código de cupón es #ENCAVI-104. ¿Me pueden confirmar?'
-  }
-];
+firebase.initializeApp({
+  apiKey: "AIzaSyBS87d1Dv9nx6Yg_dqq-E3x9GI4gpSA7ps",
+  authDomain: "encavi-go.firebaseapp.com",
+  projectId: "encavi-go",
+  storageBucket: "encavi-go.firebasestorage.app",
+  messagingSenderId: "1073579842188",
+  appId: "1:1073579842188:web:0b415778424a7bce5639a9"
+});
+const db = firebase.firestore();
+
+/* ───────────────────────────────────────────
+   DATOS DE PROMOS
+   Se llenan solos desde la base. Todo lo que
+   subas en el panel aparece aqui; nada esta
+   escrito a mano.
+─────────────────────────────────────────── */
+let PROMOS = [];
+
+function cargarPromos() {
+  return db.collection('campaigns').get().then(snap => {
+    const hoy = new Date().toISOString().slice(0, 10);
+    PROMOS = [];
+    snap.forEach(doc => {
+      const c = doc.data() || {};
+      if (c.active === false) return;
+      const lat = parseFloat(c.lat), lng = parseFloat(c.lng);
+      if (!isFinite(lat) || !isFinite(lng)) return;   // sin ubicacion no se puede pintar
+      PROMOS.push({
+        id:    doc.id,
+        biz:   c.title || 'Negocio afiliado',
+        cat:   c.badge ? ('Promocion ' + c.badge) : '',
+        promo: c.desc  || '',
+        badge: c.badge || '%',
+        lat: lat, lng: lng,
+        stock: (c.stock === undefined || c.stock === null) ? null : parseInt(c.stock, 10),
+        startDate: c.startDate || null,
+        endDate:   c.endDate   || null,
+        hoy: hoy
+      });
+    });
+    return PROMOS;
+  });
+}
 
 /* ───────────────────────────────────────────
    HELPERS DE TIEMPO Y DISTANCIA
@@ -423,16 +422,18 @@ function toMin(t) {
   return h * 60 + m;
 }
 function getStatus(p) {
-  const now = nowMin(), s = toMin(p.start), e = toMin(p.end);
-  if (now >= s && now < e) return 'active';
-  if (now < s) return 'soon';
-  return 'inactive';
+  const hoy = new Date().toISOString().slice(0, 10);
+  if (p.startDate && hoy < p.startDate) return 'soon';
+  if (p.endDate   && hoy > p.endDate)   return 'inactive';
+  if (p.stock !== null && p.stock <= 0) return 'inactive';
+  return 'active';
 }
 function fmtTimeLeft(p) {
-  const left = toMin(p.end) - nowMin();
-  if (left <= 0) return null;
-  const h = Math.floor(left / 60), m = left % 60;
-  return h > 0 ? `${h} h ${m} min` : `${m} min`;
+  if (!p.endDate) return null;
+  const fin = new Date(p.endDate + 'T23:59:59');
+  const dias = Math.ceil((fin - new Date()) / 86400000);
+  if (dias <= 0) return null;
+  return dias === 1 ? 'hoy' : (dias + ' dias');
 }
 function haversine(lat1, lng1, lat2, lng2) {
   const R = 6371000, r = Math.PI / 180;
@@ -519,11 +520,12 @@ function openSheet(promo) {
   const status = getStatus(promo);
   const left   = fmtTimeLeft(promo);
 
-  document.getElementById('sCat').textContent   = promo.cat;
+  const catEl = document.getElementById('sCat');
+  catEl.textContent   = promo.cat || '';
+  catEl.style.display = promo.cat ? 'block' : 'none';
   document.getElementById('sBiz').textContent   = promo.biz;
   document.getElementById('sPromo').textContent = promo.promo;
-  document.getElementById('sWA').href =
-    `https://wa.me/523221592596?text=${encodeURIComponent(promo.wa)}`;
+  document.getElementById('sWA').href = 'index.html';
 
   /* chips */
   const statusLabel = { active:'Activo ahora', soon:'Abre pronto', inactive:'Fuera de horario' }[status];
@@ -541,7 +543,6 @@ function openSheet(promo) {
       ${statusLabel}
     </span>
     ${distHTML}
-    <span class="chip chip-coupon">${promo.coupon}</span>
   `;
 
   /* countdown */
@@ -550,7 +551,7 @@ function openSheet(promo) {
     cd.innerHTML = `Termina en <strong>${left}</strong>`;
     cd.style.display = 'block';
   } else if (status === 'soon') {
-    cd.innerHTML = `Comienza a las <strong>${promo.start}</strong>`;
+    cd.innerHTML = `Comienza el <strong>${promo.startDate}</strong>`;
     cd.style.display = 'block';
   } else {
     cd.style.display = 'none';
@@ -714,14 +715,22 @@ document.querySelectorAll('.radius-btn').forEach(btn => {
   });
 });
 
-/* Primer render (aún sin GPS) */
-refrescarMarcadores();
+/* Primer render: traer los negocios de la base y pintarlos */
+document.getElementById('activeCount').textContent = 'Cargando…';
+cargarPromos()
+  .then(() => { refrescarMarcadores(); ajustarVista(); })
+  .catch(() => {
+    const notice = document.getElementById('mapNotice');
+    notice.innerHTML = 'No se pudo cargar la lista de negocios. Revisa tu conexión.';
+    notice.classList.add('visible');
+    document.getElementById('activeCount').textContent = 'Sin datos';
+  });
 
 /* ───────────────────────────────────────────
    ACTUALIZACIÓN PERIÓDICA (cada 60s)
 ─────────────────────────────────────────── */
 setInterval(() => {
-  refrescarMarcadores();
+  cargarPromos().then(refrescarMarcadores).catch(() => refrescarMarcadores());
   /* Actualizar countdown si el sheet está abierto */
   if (activePromo) openSheet(activePromo);
 }, 60000);

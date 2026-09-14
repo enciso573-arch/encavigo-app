@@ -6344,8 +6344,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function plotCampaignsInicial() {
         const allCamps = window.loadedCampaigns || [];
         allCamps.forEach(camp => {
-            if (camp.lat && camp.lng) {
-                const marker = L.marker([camp.lat, camp.lng], {icon: getMarkerIcon(camp, false)}).addTo(mapInstance);
+            const cLat = parseFloat(camp.lat), cLng = parseFloat(camp.lng);
+            if (isFinite(cLat) && isFinite(cLng)) {
+                const marker = L.marker([cLat, cLng], {icon: getMarkerIcon(camp, false)}).addTo(mapInstance);
                 marker.camp = camp;
                 mapMarkers.push(marker);
             }
