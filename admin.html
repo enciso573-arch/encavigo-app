@@ -681,13 +681,84 @@
         
         editModeId = id;
         document.getElementById('addModal').style.display = 'flex';
+        cajaLlenarLista(caja_id || '');
         sincronizarMapaUbi();
     }
 
     function openAddModal() {
         limpiarFormulario();
         document.getElementById('addModal').style.display = 'flex';
+        cajaLlenarLista('');
         sincronizarMapaUbi();
+    }
+
+    /* ── El codigo del acrilico de caja ya no se teclea ──
+       Antes era un campo libre y ahi acabaron codigos de relleno como
+       "Netflix1", que cualquiera adivina desde su casa. Ese codigo es
+       la prueba de que el cliente estuvo en el mostrador, asi que
+       ahora solo puede salir del generador. */
+    async function cajaLlenarLista(seleccionado) {
+        const sel = document.getElementById('cCaja');
+        const avi = document.getElementById('cCajaAviso');
+        if (!sel) return;
+
+        let lista = [];
+        try {
+            const snap = await db.collection('codigos').get();
+            lista = snap.docs.map(d => Object.assign({ id: d.id }, d.data()))
+                             .filter(c => c.tipo === 'caja' && c.estado !== 'baja')
+                             .sort((a, b) => a.id.localeCompare(b.id));
+        } catch (e) { /* sin lista, queda solo la opcion vacia */ }
+
+        sel.innerHTML = '<option value="">— Sin código asignado —</option>' +
+            lista.map(c => '<option value="' + codEsc(c.id) + '">' +
+                            codEsc(c.id) + ' — ' + codEsc(c.titular || 'sin nombre') +
+                           '</option>').join('');
+
+        const existe = lista.some(c => c.id === seleccionado);
+        sel.value = existe ? seleccionado : '';
+
+        if (seleccionado && !existe) {
+            avi.textContent = 'El código anterior (' + seleccionado + ') no está registrado. Al guardar se elimina.';
+            avi.style.color = '#B45309';
+        } else if (!seleccionado) {
+            avi.textContent = 'Sin código, el cliente no puede quemar el cupón en este negocio.';
+            avi.style.color = '#B45309';
+        } else {
+            avi.textContent = 'Varias promociones del mismo negocio deben usar este mismo código.';
+            avi.style.color = '#6B7280';
+        }
+    }
+
+    /* Genera el codigo de caja sin salir del formulario de la promo. */
+    async function cajaGenerarDesdeCampana() {
+        const nombre = (document.getElementById('cTitle').value || '').trim();
+        if (!nombre) { alert('Escribe primero el nombre del negocio arriba: el código se registra a su nombre.'); return; }
+
+        const sugerido = codLimpiar(nombre).slice(0, 6) || 'NEG';
+        const prefijo = codLimpiar(prompt('Abreviatura para el código (3 a 6 letras):', sugerido) || '');
+        if (!prefijo) return;
+
+        let codigo = null;
+        for (let i = 0; i < 6 && !codigo; i++) {
+            const t = prefijo + '-' + codCola(4);
+            const ya = await db.collection('codigos').doc(t).get();
+            if (!ya.exists) codigo = t;
+        }
+        if (!codigo) { alert('No se pudo generar un código libre. Inténtalo otra vez.'); return; }
+
+        try {
+            await db.collection('codigos').doc(codigo).set({
+                tipo: 'caja', estado: 'activo', titular: nombre,
+                tel: null, nota: null, escaneos: 0,
+                creado: firebase.firestore.FieldValue.serverTimestamp()
+            });
+        } catch (e) { alert('No se pudo guardar el código: ' + e.message); return; }
+
+        await cajaLlenarLista(codigo);
+        document.getElementById('cCajaAviso').textContent =
+            'Listo: ' + codigo + '. Imprímelo desde la pestaña Códigos QR.';
+        document.getElementById('cCajaAviso').style.color = '#059669';
     }
 
 function closeModal() {
@@ -704,7 +775,7 @@ function closeModal() {
         const startDate = document.getElementById('cStart').value;
         const endDate = document.getElementById('cEnd').value;
         const stock = parseInt(document.getElementById('cStock').value) || 0;
-        const caja_id = document.getElementById('cCaja').value.trim();
+        const caja_id = document.getElementById('cCaja').value;
         const tarifa  = parseInt(document.getElementById('cTarifa').value);
 
         if(!title || !img) { alert('Título e Imagen son obligatorios'); return; }
@@ -1025,21 +1096,52 @@ function closeModal() {
             const ch = await db.collection('choferes').get();
             ch.forEach(d => { if (!registrados.has(d.id)) faltan.push({ id: d.id, tipo: 'vehiculo', que: 'Vehículo en uso' }); });
             const ca = await db.collection('campaigns').get();
+            const porCaja = {};
             ca.forEach(d => {
                 const k = (d.data().caja_id || '').trim();
-                if (k && !registrados.has(k)) faltan.push({ id: k, tipo: 'caja', que: 'Caja de ' + (d.data().title || 'un negocio') });
+                if (!k || registrados.has(k)) return;
+                if (!porCaja[k]) porCaja[k] = { titulos: [], ids: [] };
+                porCaja[k].titulos.push(d.data().title || 'un negocio');
+                porCaja[k].ids.push(d.id);
             });
+            Object.keys(porCaja).forEach(k => faltan.push({
+                id: k, tipo: 'caja', ids: porCaja[k].ids,
+                que: 'Caja de ' + porCaja[k].titulos.join(', ')
+            }));
         } catch (e) { /* si falla, simplemente no se muestra el aviso */ }
 
         if (faltan.length === 0) { caja.style.display = 'none'; return; }
         caja.style.display = 'block';
-        lista.innerHTML = faltan.map(f =>
+        window.codFaltan = faltan;
+        lista.innerHTML = faltan.map((f, i) =>
             '<div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; padding:9px 0; border-top:1px solid #FDE68A;">' +
               '<code style="font-weight:700; color:#92400E;">' + codEsc(f.id) + '</code>' +
               '<span style="font-size:13px; color:#92400E;">' + codEsc(f.que) + '</span>' +
-              '<button class="btn-primary" style="margin-left:auto; padding:7px 12px; font-size:12px;" ' +
-                'onclick="codAdoptar(\'' + codEsc(f.id) + '\',\'' + f.tipo + '\')">Registrar</button>' +
+              '<span style="margin-left:auto; display:flex; gap:8px;">' +
+                (f.tipo === 'caja'
+                  ? '<button class="btn-cancel" style="padding:7px 10px; font-size:12px; color:#B91C1C;" ' +
+                      'onclick="codDescartarCaja(' + i + ')">Descartar</button>' : '') +
+                '<button class="btn-primary" style="padding:7px 12px; font-size:12px;" ' +
+                  'onclick="codAdoptar(\'' + codEsc(f.id) + '\',\'' + f.tipo + '\')">Registrar</button>' +
+              '</span>' +
             '</div>').join('');
+    }
+
+    /* Tira un codigo de caja que nunca debio existir: lo quita de las
+       promociones que lo traen. Despues el negocio necesita uno
+       generado de verdad para que se puedan quemar sus cupones. */
+    async function codDescartarCaja(i) {
+        const f = (window.codFaltan || [])[i];
+        if (!f) return;
+        if (!confirm('Quitar el código "' + f.id + '" de ' + f.ids.length +
+                     (f.ids.length === 1 ? ' promoción.' : ' promociones.') +
+                     '\n\nMientras no les asignes un código generado, sus cupones no se van a poder quemar.\n\n¿Seguro?')) return;
+        try {
+            for (const id of f.ids) {
+                await db.collection('campaigns').doc(id).update({ caja_id: '' });
+            }
+            codCargar();
+        } catch (e) { alert('No se pudo quitar: ' + e.message); }
     }
 
     function codEsc(t) {
@@ -1342,8 +1444,14 @@ function closeModal() {
             <input id="cStock" placeholder="Ej. 50" type="number" value="50"/>
         </div>
         <div style="flex:1;">
-            <label>Código Secreto del Acrílico (Caja ID)</label>
-            <input id="cCaja" placeholder="Ej. pizzerialosarcos" type="text"/>
+            <label>Código del acrílico de caja</label>
+            <select id="cCaja" style="width:100%; padding:10px; background:#F9FAFB; border:1px solid #D1D5DB; border-radius:6px; color:#111827; font-family:'Inter',sans-serif; font-size:13px;">
+                <option value="">— Sin código asignado —</option>
+            </select>
+            <div style="display:flex; align-items:center; gap:10px; margin-top:7px; flex-wrap:wrap;">
+                <button type="button" onclick="cajaGenerarDesdeCampana()" style="border:none; cursor:pointer; background:#F3F4F6; color:#111827; font-size:12px; font-weight:600; padding:7px 11px; border-radius:6px;">Generar uno nuevo</button>
+                <span id="cCajaAviso" style="font-size:11.5px; color:#6B7280;"></span>
+            </div>
         </div>
     </div>
 
