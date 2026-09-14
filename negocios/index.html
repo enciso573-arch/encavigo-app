@@ -275,6 +275,21 @@ h2{
 .chint{display:block;font-size:12px;color:var(--soft);line-height:1.45;margin-top:3px;font-weight:400}
 .cuenta .crow.total{border-bottom:none;border-top:2px solid var(--ink);margin-top:2px;font-weight:600;color:var(--ink)}
 .cuenta .crow.total > span:last-child{color:var(--orange);font-size:17px}
+.aviso-ej{font-size:12.5px;color:var(--soft);line-height:1.55;margin-top:12px;max-width:48ch;font-style:italic}
+
+/* precio a dos columnas en pantalla ancha */
+@media(min-width:1000px){
+  #precio .wrap{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+    column-gap:26px;
+    align-items:start;
+  }
+  #precio .col{grid-column:1 / -1}
+  #precio .price-box{grid-column:1;grid-row:2 / span 2;margin:0}
+  #precio .photo-box{grid-column:2;grid-row:2;margin-top:0;max-width:none}
+  #precio .math{grid-column:2;grid-row:3;margin-top:14px;max-width:none}
+}
 
 /* preguntas */
 .faq{display:grid;gap:9px;margin-top:24px;max-width:760px}
@@ -477,8 +492,8 @@ footer a:hover{color:var(--orange-bright)}
       </div>
       <div class="sheet card">
         <h3>Tres por semana</h3>
-        <p>Lunes y miércoles las más fuertes, para los días flojos. El fin de semana
-           una más suave, que es cuando más gente se está moviendo por la ciudad.</p>
+        <p>Dos entre semana, en tus días flojos, y una el fin de semana. Cuáles
+           son tus días flojos lo sabes tú, y de ahí salen las fechas.</p>
       </div>
       <div class="sheet card">
         <h3>La que funciona se repite</h3>
