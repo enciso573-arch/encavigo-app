@@ -133,14 +133,20 @@ h1 .hl{color:var(--orange-bright)}
   text-align:center;font-size:13px;color:var(--soft);margin-top:14px;max-width:22em;
 }
 
-/* dos columnas: pasos + celular */
-.flow-grid{display:grid;gap:34px;margin-top:26px}
+/* celular dentro del hero */
+.hero-grid .brand{grid-column:1 / -1}
+.hero-phone{margin-top:34px}
+.hero .phone{box-shadow:0 20px 50px rgba(0,0,0,.45), 0 0 0 1px rgba(255,255,255,.06)}
+.hero .phone-cap{color:var(--on-dark-soft)}
 @media(min-width:900px){
-  .flow-grid{grid-template-columns:1fr 280px;gap:44px;align-items:start}
-  .flow-phone{position:sticky;top:32px}
+  .hero-grid{
+    display:grid;grid-template-columns:minmax(0,1fr) 252px;
+    column-gap:52px;align-items:center;
+  }
+  .hero-inner{grid-column:1}
+  .hero-phone{grid-column:2;margin-top:0}
 }
-.flow-phone{order:-1}
-@media(min-width:900px){.flow-phone{order:0}}
+.flow-grid{margin-top:26px}
 
 /* ══════ CUERPO (claro) ══════ */
 section{padding:54px 0}
@@ -285,7 +291,7 @@ h2{
   @supports ((animation-timeline: view()) and (animation-range: entry)) {
 
     @keyframes aparecer {
-      from { opacity: 0; transform: translateY(26px); }
+      from { opacity: 0; transform: translateY(38px); }
     }
 
     section .col,
@@ -294,17 +300,17 @@ h2{
     section .price-box {
       animation: aparecer auto ease-out backwards;
       animation-timeline: view();
-      animation-range: entry 8% entry 62%;
+      animation-range: entry 5% entry 98%;
     }
 
     /* las tarjetas en fila entran escalonadas, no todas de golpe */
     .cards > *:nth-child(2),
-    .formatos > *:nth-child(2) { animation-range: entry 16% entry 70%; }
+    .formatos > *:nth-child(2) { animation-range: entry 16% cover 14%; }
     .cards > *:nth-child(3),
-    .formatos > *:nth-child(3) { animation-range: entry 24% entry 78%; }
+    .formatos > *:nth-child(3) { animation-range: entry 26% cover 22%; }
 
-    /* el celular va pegado al hacer scroll: transformarlo lo rompe */
-    .flow-phone, .flow-phone * { animation: none; }
+    /* el celular del hero se ve de inmediato, no tiene que aparecer */
+    .hero-phone, .hero-phone * { animation: none; }
   }
 }
 
@@ -317,7 +323,10 @@ h2{
     align-items:start;
   }
   #precio .col{grid-column:1 / -1}
-  #precio .price-box{grid-column:1;grid-row:2 / span 2;margin:0}
+  #precio .price-box{
+    grid-column:1;grid-row:2 / span 2;margin:0;
+    align-self:start;position:sticky;top:24px;
+  }
   #precio .photo-box{grid-column:2;grid-row:2;margin-top:0;max-width:none}
   #precio .math{grid-column:2;grid-row:3;margin-top:14px;max-width:none}
 }
@@ -353,7 +362,7 @@ footer a:hover{color:var(--orange-bright)}
 
 <!-- ══ HERO ══ -->
 <header class="hero">
-  <div class="wrap">
+  <div class="wrap hero-grid">
     <div class="brand">
       <span class="name">Encavi<span class="go">GO</span></span>
       <span class="tag">Negocios</span>
@@ -371,6 +380,32 @@ footer a:hover{color:var(--orange-bright)}
         <a class="btn btn-ghost" href="index.html">Ver la app</a>
       </div>
       <p class="note">Sin contratos largos · Sin costo de instalación · Cancelas cuando quieras</p>
+    </div>
+
+    <div class="hero-phone">
+      <div class="phone-slot">
+        <div>
+          <div class="phone">
+            <div class="screen">
+              <div class="s-top">
+                <span class="s-logo">Encavi<i>GO</i></span>
+                <span class="s-zone">Zona Romántica</span>
+              </div>
+              <div class="s-banner">ENCUENTRA EL VIAJE GRATIS</div>
+              <div class="s-card">
+                <div class="s-img"><span class="s-badge">2x1 hamburguesas</span></div>
+                <div class="s-body">
+                  <h6>Asador El Pariente</h6>
+                  <p>Zona Romántica · válido hoy</p>
+                  <div class="s-btn">Reclamar</div>
+                </div>
+              </div>
+              <div class="s-foot">3 promos cerca de ti</div>
+            </div>
+          </div>
+          <p class="phone-cap">Así aparece tu negocio en el celular del pasajero</p>
+        </div>
+      </div>
     </div>
   </div>
 </header>
@@ -430,32 +465,6 @@ footer a:hover{color:var(--orange-bright)}
         </div>
       </div>
     </div><!-- /steps -->
-
-    <div class="flow-phone">
-      <div class="phone-slot">
-        <div>
-          <div class="phone">
-            <div class="screen">
-              <div class="s-top">
-                <span class="s-logo">Encavi<i>GO</i></span>
-                <span class="s-zone">Zona Romántica</span>
-              </div>
-              <div class="s-banner">ENCUENTRA EL VIAJE GRATIS</div>
-              <div class="s-card">
-                <div class="s-img"><span class="s-badge">2x1 hamburguesas</span></div>
-                <div class="s-body">
-                  <h6>Asador El Pariente</h6>
-                  <p>Zona Romántica · válido hoy</p>
-                  <div class="s-btn">Reclamar</div>
-                </div>
-              </div>
-              <div class="s-foot">3 promos cerca de ti</div>
-            </div>
-          </div>
-          <p class="phone-cap">Así ve tu negocio el pasajero, desde su asiento</p>
-        </div>
-      </div>
-    </div>
 
     </div><!-- /flow-grid -->
   </div>
