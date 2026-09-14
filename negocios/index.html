@@ -366,11 +366,20 @@ footer a:hover{color:var(--orange-bright)}
    el navegador lo dibuja una vez y al desplazar ya no cuesta nada. */
 .con-mapa::before{
   content:''; position:absolute; inset:0; z-index:1; pointer-events:none;
-  /* Imagen ya dibujada, no un SVG de 600 nodos: el navegador solo la
-     pega. El SVG quedaba en el repositorio como fuente para editarlo. */
+  /* Imagen ya dibujada, no un SVG de 600 nodos: el navegador solo la pega.
+     El .svg se queda en el repositorio como fuente para editarlo. */
   background:url("mapa-fondo.webp") center center / cover no-repeat;
 }
-@media (max-width:700px){ .con-mapa::before{ opacity:.72; } }
+/* En celular la pantalla es angosta y al recortar quedaba justo la parte
+   vacia del mapa. Se usa una version ligera y se encuadra a la derecha,
+   que es donde estan los pines. */
+@media (max-width:700px){
+  .con-mapa::before{
+    background-image:url("mapa-fondo-cel.webp");
+    opacity:.85;
+  }
+}
+
 
 
 </style>
