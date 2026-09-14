@@ -5881,6 +5881,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         sheetContent.innerHTML = html;
     }
+    /* Expuesta igual que openMap/updateMapLive, para poder revisarla
+       desde fuera sin depender de que el GPS dispare. */
+    window.actualizarRadar = actualizarRadar;
 
     // CARGAR CAMPAÑAS DINÁMICAS DESDE FIREBASE
     const mainFeed = document.querySelector('.immersive-feed');
