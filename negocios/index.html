@@ -366,7 +366,9 @@ footer a:hover{color:var(--orange-bright)}
    el navegador lo dibuja una vez y al desplazar ya no cuesta nada. */
 .con-mapa::before{
   content:''; position:absolute; inset:0; z-index:1; pointer-events:none;
-  background:url("mapa-fondo.svg") center center / cover no-repeat;
+  /* Imagen ya dibujada, no un SVG de 600 nodos: el navegador solo la
+     pega. El SVG quedaba en el repositorio como fuente para editarlo. */
+  background:url("mapa-fondo.webp") center center / cover no-repeat;
 }
 @media (max-width:700px){ .con-mapa::before{ opacity:.72; } }
 
