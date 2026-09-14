@@ -5537,6 +5537,46 @@
 }
 
 
+/* ── Ficha que sale al tocar un pin del mapa ────────────────────
+   Antes el pin no decia nada: se veia bonito pero el pasajero no
+   sabia de que negocio era. Esta ficha resuelve eso sin sacarlo
+   del mapa. */
+.leaflet-popup-content-wrapper{
+  border-radius:14px; padding:0; overflow:hidden;
+  box-shadow:0 10px 30px rgba(0,0,0,.28);
+}
+.leaflet-popup-content{ margin:0; width:230px !important; }
+.leaflet-popup-tip{ background:#FFFFFF; }
+.eg-pop-img{
+  height:104px; background:#29374E center center / cover no-repeat;
+  display:block;
+}
+.eg-pop-body{ padding:12px 14px 14px; font-family:inherit; }
+.eg-pop-badge{
+  display:inline-block; font-size:10px; font-weight:800; letter-spacing:.4px;
+  text-transform:uppercase; color:#B45309; background:#FEF3C7;
+  border-radius:999px; padding:3px 9px; margin-bottom:7px;
+}
+.eg-pop-title{
+  margin:0 0 4px; font-size:15px; font-weight:800; color:#0F172A; line-height:1.25;
+}
+.eg-pop-desc{
+  margin:0 0 11px; font-size:12px; color:#475569; line-height:1.45;
+  display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;
+}
+.eg-pop-dist{ font-size:11px; font-weight:700; color:#F97316; margin:0 0 9px; }
+.eg-pop-btn{
+  display:block; width:100%; border:none; cursor:pointer;
+  background:#29374E; color:#FBF2E1; font-weight:800; font-size:13px;
+  padding:10px 0; border-radius:9px; font-family:inherit;
+}
+.eg-pop-btn:active{ transform:translateY(1px); }
+.eg-pop-agotado{
+  display:block; text-align:center; font-size:12px; font-weight:700;
+  color:#94A3B8; padding:9px 0;
+}
+
+
 /* ── Tarjeta de la lista cuando el negocio esta a menos de 500 m ── */
 .mini-dist{ font-size:11px; color:#64748B; margin:4px 0 0 0; font-weight:600; }
 .mini-dist-cerca{ color:#F97316; }
@@ -6303,6 +6343,14 @@ document.addEventListener('DOMContentLoaded', () => {
         return String(t || '').toUpperCase().replace(/\s+/g, '').trim();
     }
 
+    /* El nombre del negocio que sirve de candado del cupon.
+       Sale del codigo del acrilico, siempre escrito igual, para que
+       un mismo cliente no pueda quemar dos promociones del mismo
+       negocio con el mismo codigo. */
+    function idNegocio(t) {
+        return normalizarCaja(t).replace(/[^A-Z0-9_-]/g, '');
+    }
+
     function coincideCaja(leido) {
         const a = normalizarCaja(leido), b = normalizarCaja(cajaEsperada);
         return !!b && (a === b || a.indexOf(b) !== -1);
@@ -6436,6 +6484,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const camp = (window.loadedCampaigns || []).find(function (c) { return c.id === campId; }) || {};
         const nLat = parseFloat(camp.lat), nLng = parseFloat(camp.lng);
 
+        /* Si el negocio ya no tiene cupones, se corta aqui: no se le
+           cobra de mas y no se hace esperar al cliente por el GPS. */
+        const quedan = parseInt(camp.stock, 10);
+        if (isFinite(quedan) && quedan <= 0) {
+            avisoQuema('Esta promocion ya se agoto.\n\nEl negocio repone los cupones mas adelante.');
+            return;
+        }
+
+        /* El candado es por NEGOCIO, no por promocion: si el negocio
+           tiene dos promos, el mismo codigo solo sirve una vez ahi. */
+        const negocio = idNegocio(camp.caja_id) || campId;
+
         /* ── Ubicacion ── */
         const ubi = await leerUbicacion();
         let dist = null, revisar = null;
@@ -6456,9 +6516,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         /* ── El registro, con nombre fijo ── */
-        const idTicket = campId + '_' + ses.code;
+        const idTicket = negocio + '_' + ses.code;
         const datos = {
             camp_id: campId,
+            negocio: negocio,
             code:    ses.code,
             chofer:  ses.chofer || 'orgánico',
             dev:     dev,
@@ -6477,14 +6538,23 @@ document.addEventListener('DOMContentLoaded', () => {
                negocio por un intento repetido. */
             await db.collection('tickets').doc(idTicket).set(datos);
         } catch (error) {
-            const repetido = error && (error.code === 'already-exists' ||
-                                       error.code === 'permission-denied');
-            if (repetido) {
-                avisoQuema('Ya usaste tu cupón aquí.\n\nCada código se puede usar una sola vez por negocio.');
+            let aviso = 'No se pudo registrar tu cupón. Revisa tu conexión e inténtalo otra vez.';
+            if (error && (error.code === 'already-exists' || error.code === 'permission-denied')) {
+                aviso = 'Ya usaste tu cupón aquí.\n\nCada código se puede usar una sola vez por negocio.';
+                /* Puede ser que se hayan acabado los cupones mientras
+                   el cliente decidia. Se vuelve a leer para no darle
+                   un motivo equivocado. */
+                try {
+                    const fresco = await db.collection('campaigns').doc(campId).get();
+                    const s = fresco.exists ? parseInt(fresco.data().stock, 10) : null;
+                    if (isFinite(s) && s <= 0) {
+                        aviso = 'Esta promoción ya se agotó.\n\nEl negocio repone los cupones más adelante.';
+                    }
+                } catch (e) {}
             } else {
                 console.error(error);
-                avisoQuema('No se pudo registrar tu cupón. Revisa tu conexión e inténtalo otra vez.');
             }
+            avisoQuema(aviso);
             return;
         }
 
@@ -6588,6 +6658,60 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
+    /* Texto que viene de la base, limpiado antes de meterlo al mapa. */
+    function egEsc(t) {
+        return String(t == null ? '' : t)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
+    /* La ficha del pin. Se arma cada vez que se abre, para que la
+       distancia y las existencias salgan al dia. */
+    function fichaDelPin(camp) {
+        const quedan = parseInt(camp.stock, 10);
+        const agotado = isFinite(quedan) && quedan <= 0;
+
+        let dist = '';
+        if (window.egUserLat != null && window.egUserLng != null) {
+            const km = haversine(window.egUserLat, window.egUserLng,
+                                 parseFloat(camp.lat), parseFloat(camp.lng));
+            dist = '<p class="eg-pop-dist">' +
+                   (km < 1 ? Math.round(km * 1000) + ' m de aquí'
+                           : km.toFixed(1) + ' km de aquí') + '</p>';
+        }
+
+        const img = camp.img
+            ? '<span class="eg-pop-img" style="background-image:url(\'' + egEsc(camp.img) + '\')"></span>'
+            : '';
+
+        const accion = agotado
+            ? '<span class="eg-pop-agotado">Cupones agotados por hoy</span>'
+            : '<button class="eg-pop-btn" onclick="egReclamarDesdeMapa(\'' + egEsc(camp.id) + '\')">Reclamar</button>';
+
+        return img
+             + '<div class="eg-pop-body">'
+             +   (camp.badge ? '<span class="eg-pop-badge">' + egEsc(camp.badge) + '</span>' : '')
+             +   '<h3 class="eg-pop-title">' + egEsc(camp.title || 'Negocio afiliado') + '</h3>'
+             +   (camp.desc ? '<p class="eg-pop-desc">' + egEsc(camp.desc) + '</p>' : '')
+             +   dist
+             +   accion
+             + '</div>';
+    }
+
+    /* Botón de la ficha: cierra el mapa y entra al mismo camino que
+       el botón de la tarjeta, para que el click se cuente igual y no
+       existan dos formas distintas de reclamar. */
+    window.egReclamarDesdeMapa = function (campId) {
+        const mm = document.getElementById('mapModal');
+        if (mm) mm.style.display = 'none';
+
+        const btn = document.querySelector('.track-click[data-campid="' + campId + '"]');
+        if (btn) { btn.click(); return; }
+
+        const camp = (window.loadedCampaigns || []).find(c => c.id === campId);
+        if (camp) mostrarCodigo(camp.id, camp.caja_id || '', camp.title || '');
+    };
+
     function plotCampaignsInicial() {
         const allCamps = window.loadedCampaigns || [];
         allCamps.forEach(camp => {
@@ -6595,6 +6719,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isFinite(cLat) && isFinite(cLng)) {
                 const marker = L.marker([cLat, cLng], {icon: getMarkerIcon(camp, false)}).addTo(mapInstance);
                 marker.camp = camp;
+                marker.bindPopup(() => fichaDelPin(camp), {
+                    closeButton: true, autoPan: true, autoPanPadding: [18, 18],
+                    maxWidth: 230, minWidth: 230
+                });
                 mapMarkers.push(marker);
             }
         });
@@ -6612,25 +6740,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateMapLive(uLat, uLng) {
+        /* Se guarda aparte para que la ficha del pin pueda decir a
+           cuantos metros esta el negocio. */
+        window.egUserLat = uLat; window.egUserLng = uLng;
+
         if (!mapInstance) return;
         if (!mapInstance.hasLayer(uMarker)) { uMarker.addTo(mapInstance); }
         uMarker.setLatLng([uLat, uLng]);
 
+        /* Solo se actualiza el pin (cerca / lejos). El contenido de la
+           ficha se arma solo al abrirla, asi siempre sale al dia.
+           Antes aqui se metia un boton de WhatsApp: eso era del modelo
+           viejo, cuando la promo se pedia por mensaje. */
         mapMarkers.forEach(marker => {
             const camp = marker.camp;
             const dist = haversine(uLat, uLng, parseFloat(camp.lat), parseFloat(camp.lng));
-            const isClose = dist <= 0.5;
-            
-            marker.setIcon(getMarkerIcon(camp, isClose));
-            
-            const waMsg = camp.waMsg || 'Hola';
-            const waUrl = `https://wa.me/523221592596?text=${encodeURIComponent(waMsg)}`;
-            const popupContent = `
-                <div class="map-popup-title">${camp.title}</div>
-                <div style="font-size:12px; margin-bottom:8px;">${isClose ? '🔥 A menos de 500m de ti' : '📍 A ' + dist.toFixed(1) + ' km'}</div>
-                <a href="${waUrl}" target="_blank" class="map-popup-btn">Activar Promo</a>
-            `;
-            marker.setPopupContent(popupContent);
+            marker.setIcon(getMarkerIcon(camp, dist <= 0.5));
         });
     }
 

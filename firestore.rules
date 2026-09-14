@@ -79,13 +79,28 @@ service cloud.firestore {
     // ─────────────────────────────────────────────────────────────
     match /tickets/{id} {
       allow create: if request.resource.data.keys().hasOnly(
-                         ['camp_id','code','chofer','dev','status',
+                         ['camp_id','negocio','code','chofer','dev','status',
                           'lat','lng','acc','dist_m','revisar','fecha'])
                     && request.resource.data.camp_id is string
+                    && request.resource.data.negocio is string
                     && request.resource.data.code    is string
                     && request.resource.data.dev     is string
                     && request.resource.data.status == 'quemado'
-                    && id == request.resource.data.camp_id + '_' + request.resource.data.code;
+
+                    /* El nombre del registro se arma con el NEGOCIO, no
+                       con la promocion. Asi, si un negocio tiene dos
+                       promos, el mismo codigo solo se puede quemar una
+                       vez en ese negocio y no se le cobra doble. */
+                    && id == request.resource.data.negocio + '_' + request.resource.data.code
+
+                    /* Techo de inventario: no se pueden registrar mas
+                       cupones de los que el negocio autorizo. La promo
+                       tiene que existir, estar activa y quedarle stock.
+                       Sin esto, el numero de cupones no tenia limite. */
+                    && exists(/databases/$(database)/documents/campaigns/$(request.resource.data.camp_id))
+                    && get(/databases/$(database)/documents/campaigns/$(request.resource.data.camp_id)).data.active == true
+                    && get(/databases/$(database)/documents/campaigns/$(request.resource.data.camp_id)).data.stock is int
+                    && get(/databases/$(database)/documents/campaigns/$(request.resource.data.camp_id)).data.stock > 0;
 
       allow read, update, delete: if request.auth != null;
     }
