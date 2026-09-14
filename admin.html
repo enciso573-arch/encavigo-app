@@ -69,6 +69,21 @@
   .form-group { margin-bottom: 15px; }
   .form-group label { display: block; margin-bottom: 5px; font-size: 12px; color: #6B7280; font-weight: 500; }
   .form-group input, .form-group textarea { width: 100%; padding: 10px; background: #F9FAFB; border: 1px solid #D1D5DB; border-radius: 6px; color: #111827; font-family: 'Inter', sans-serif; font-size: 13px; }
+  /* BUSCADOR DE UBICACION */
+  .ubi-box { background:#F9FAFB; border:1px solid #E5E7EB; border-radius:8px; padding:12px; }
+  .ubi-fila { display:flex; gap:8px; }
+  .ubi-fila input { flex:1; }
+  .ubi-btn { background:#111827; color:#fff; border:none; border-radius:6px; padding:0 14px;
+             font-size:12px; font-weight:600; cursor:pointer; white-space:nowrap; }
+  .ubi-btn:hover { background:#374151; }
+  .ubi-btn.sec { background:#fff; color:#374151; border:1px solid #D1D5DB; }
+  .ubi-btn.sec:hover { background:#F3F4F6; }
+  .ubi-res { list-style:none; margin:8px 0 0 0; padding:0; max-height:130px; overflow-y:auto; }
+  .ubi-res li { padding:8px 10px; font-size:12px; color:#374151; border-radius:6px; cursor:pointer; line-height:1.35; }
+  .ubi-res li:hover { background:#EEF2FF; }
+  #ubiMapa { height:190px; border-radius:8px; margin-top:10px; display:none; }
+  .ubi-aviso { font-size:11px; color:#6B7280; margin-top:8px; line-height:1.45; }
+  .ubi-ok { color:#047857; font-weight:600; }
   .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 25px; }
   .btn-cancel { background: transparent; color: #6B7280; border: none; cursor: pointer; padding: 10px 20px; font-weight: 500; }
   .btn-cancel:hover { color: #111827; }
@@ -123,7 +138,7 @@
   <svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="16" style="margin-right: 6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
   Exportar PDF
 </button>
-<button class="btn-primary" onclick="document.getElementById('addModal').style.display='flex';">
+<button class="btn-primary" onclick="openAddModal();">
 <svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="16"><line x1="12" x2="12" y1="5" y2="19"></line><line x1="5" x2="19" y1="12" y2="12"></line></svg>
       Nuevo Negocio
     </button>
@@ -246,6 +261,8 @@
 </div>
 </div>
 <!-- FIREBASE SDK -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -388,6 +405,118 @@
     });
 
     
+
+    /* ───────────────────────────────────────────
+       UBICACION DEL NEGOCIO
+       Busca la direccion y llena lat/lng solo.
+       Tambien se puede picar el punto en el mapa.
+    ─────────────────────────────────────────── */
+    let ubiMapa = null, ubiPin = null;
+    const VALLARTA = [20.6534, -105.2253];
+
+    function ubiEstado(txt, ok) {
+        const el = document.getElementById('ubiAviso');
+        el.innerHTML = txt;
+        el.className = 'ubi-aviso' + (ok ? ' ubi-ok' : '');
+    }
+
+    function abrirMapaUbi() {
+        const cont = document.getElementById('ubiMapa');
+        cont.style.display = 'block';
+        if (!ubiMapa) {
+            ubiMapa = L.map(cont).setView(VALLARTA, 13);
+            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; OpenStreetMap'
+            }).addTo(ubiMapa);
+            ubiMapa.on('click', e => ponerPunto(e.latlng.lat, e.latlng.lng, true));
+        }
+        setTimeout(() => ubiMapa.invalidateSize(), 60);
+    }
+
+    function ponerPunto(lat, lng, acercar) {
+        lat = Number(lat); lng = Number(lng);
+        document.getElementById('cLat').value = lat.toFixed(6);
+        document.getElementById('cLng').value = lng.toFixed(6);
+        abrirMapaUbi();
+        if (!ubiPin) {
+            ubiPin = L.marker([lat, lng], { draggable: true }).addTo(ubiMapa);
+            ubiPin.on('dragend', () => {
+                const p = ubiPin.getLatLng();
+                document.getElementById('cLat').value = p.lat.toFixed(6);
+                document.getElementById('cLng').value = p.lng.toFixed(6);
+                ubiEstado('Punto ajustado a mano. Ya quedó guardado en los campos de abajo.', true);
+            });
+        } else {
+            ubiPin.setLatLng([lat, lng]);
+        }
+        if (acercar) ubiMapa.setView([lat, lng], Math.max(ubiMapa.getZoom(), 17));
+        ubiEstado('Ubicación lista. Si el pin no cayó justo en la puerta del negocio, arrástralo.', true);
+    }
+
+    function buscarUbicacion() {
+        const q = document.getElementById('ubiTexto').value.trim();
+        const lista = document.getElementById('ubiRes');
+        lista.innerHTML = '';
+        if (q.length < 4) { ubiEstado('Escribe al menos la calle y la colonia.', false); return; }
+
+        ubiEstado('Buscando…', false);
+        /* Acotado a la bahía para que no traiga direcciones de otro estado */
+        const url = 'https://nominatim.openstreetmap.org/search?format=json&limit=6'
+                  + '&countrycodes=mx&viewbox=-105.45,20.45,-105.10,20.85&bounded=1'
+                  + '&q=' + encodeURIComponent(q);
+
+        fetch(url, { headers: { 'Accept': 'application/json' } })
+            .then(r => r.json())
+            .then(res => {
+                if (!res || res.length === 0) {
+                    ubiEstado('No encontré esa dirección. Prueba con calle y colonia, o pica el punto en el mapa.', false);
+                    abrirMapaUbi();
+                    return;
+                }
+                ubiEstado('Elige cuál es:', false);
+                res.forEach(r => {
+                    const li = document.createElement('li');
+                    li.textContent = r.display_name;
+                    li.onclick = () => {
+                        document.getElementById('ubiTexto').value = r.display_name.split(',').slice(0,2).join(',');
+                        lista.innerHTML = '';
+                        ponerPunto(r.lat, r.lon, true);
+                    };
+                    lista.appendChild(li);
+                });
+            })
+            .catch(() => {
+                ubiEstado('No se pudo buscar ahora mismo. Pica el punto en el mapa.', false);
+                abrirMapaUbi();
+            });
+    }
+
+    function usarMiUbicacion() {
+        if (!navigator.geolocation) { ubiEstado('Este navegador no da ubicación.', false); return; }
+        ubiEstado('Leyendo tu ubicación…', false);
+        navigator.geolocation.getCurrentPosition(
+            pos => ponerPunto(pos.coords.latitude, pos.coords.longitude, true),
+            ()  => ubiEstado('No me diste permiso de ubicación. Búscala o pícala en el mapa.', false),
+            { enableHighAccuracy: true, timeout: 10000 }
+        );
+    }
+
+    /* Al abrir el modal: si la promo ya traía coordenadas, mostrarlas. */
+    function sincronizarMapaUbi() {
+        const lat = parseFloat(document.getElementById('cLat').value);
+        const lng = parseFloat(document.getElementById('cLng').value);
+        document.getElementById('ubiRes').innerHTML = '';
+        document.getElementById('ubiTexto').value = '';
+        if (isFinite(lat) && isFinite(lng)) {
+            ponerPunto(lat, lng, true);
+        } else {
+            if (ubiPin && ubiMapa) { ubiMapa.removeLayer(ubiPin); ubiPin = null; }
+            document.getElementById('ubiMapa').style.display = 'none';
+            ubiEstado('Busca la dirección, o pica el punto exacto en el mapa. Puedes arrastrar el pin para ajustarlo.', false);
+        }
+    }
+
     let editModeId = null;
 
     function openEditModal(id, title, desc, img, badge, lat, lng, stock, caja_id, start, end) {
@@ -404,11 +533,13 @@
         
         editModeId = id;
         document.getElementById('addModal').style.display = 'flex';
+        sincronizarMapaUbi();
     }
 
     function openAddModal() {
         limpiarFormulario();
         document.getElementById('addModal').style.display = 'flex';
+        sincronizarMapaUbi();
     }
 
 function closeModal() {
@@ -580,6 +711,20 @@ function closeModal() {
 </div>
 
 </div>
+<div class="form-group">
+  <label>Ubicación del negocio</label>
+  <div class="ubi-box">
+    <div class="ubi-fila">
+      <input id="ubiTexto" type="text" placeholder="Calle y número, o el nombre del lugar" onkeydown="if(event.key==='Enter'){event.preventDefault();buscarUbicacion();}"/>
+      <button type="button" class="ubi-btn" onclick="buscarUbicacion()">Buscar</button>
+      <button type="button" class="ubi-btn sec" onclick="usarMiUbicacion()">Aquí estoy</button>
+    </div>
+    <ul class="ubi-res" id="ubiRes"></ul>
+    <div id="ubiMapa"></div>
+    <div class="ubi-aviso" id="ubiAviso">Busca la dirección, o pica el punto exacto en el mapa. Puedes arrastrar el pin para ajustarlo.</div>
+  </div>
+</div>
+
 <div class="form-group" style="display:flex; gap:10px;">
         <div style="flex:1;">
             <label>Latitud GPS (Para Radar)</label>
