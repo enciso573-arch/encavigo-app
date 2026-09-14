@@ -812,12 +812,27 @@ footer a:hover{color:var(--orange-bright)}
   document.addEventListener('DOMContentLoaded', function () {
     var elementos = document.querySelectorAll(
       'section .col, section .sheet, section .step, section .price-box');
+    var alguienAparecio = false;
     var obs = new IntersectionObserver(function (entradas) {
       entradas.forEach(function (e) {
-        if (e.isIntersecting) { e.target.classList.add('visto'); obs.unobserve(e.target); }
+        if (e.isIntersecting) {
+          alguienAparecio = true;
+          e.target.classList.add('visto');
+          obs.unobserve(e.target);
+        }
       });
     }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
     elementos.forEach(function (el) { obs.observe(el); });
+
+    /* RED DE SEGURIDAD: el contenido arranca escondido, asi que si por
+       lo que sea el observador nunca responde, la pagina se quedaria en
+       blanco. Si a los 3 segundos no ha aparecido nada, se muestra todo
+       y se deja de observar. Vale mas perder la animacion que la pagina. */
+    setTimeout(function () {
+      if (alguienAparecio) return;
+      obs.disconnect();
+      elementos.forEach(function (el) { el.classList.add('visto'); });
+    }, 3000);
   });
 })();
 </script>
