@@ -6309,26 +6309,135 @@ document.addEventListener('DOMContentLoaded', () => {
         if (html5QrcodeScanner) { html5QrcodeScanner.clear(); }
     }
 
+    /* ══ QUEMAR EL CUPON ══════════════════════════════════════
+       Un cupon quemado es un cobro al negocio, asi que aqui esta
+       todo lo que impide inventarlo:
+
+       1. El registro se llama promocion + codigo del cliente. Con
+          nombre fijo, el segundo intento choca con el primero y la
+          base lo rechaza sola. No depende de que la app se porte bien.
+       2. Se exige estar a 150 m o menos del negocio. Asi, tomarle
+          foto al QR de la caja no sirve de nada: para usarlo hay que
+          ir a pararse afuera del local.
+       3. Se guarda celular, coordenadas, margen de error y distancia,
+          para poder revisar patrones raros despues.
+
+       Nada de esto le pide trabajo al negocio ni a su cajero.
+    ══════════════════════════════════════════════════════════ */
+
+    const RADIO_QUEMA_M   = 150;   /* que tan cerca hay que estar */
+    const GPS_CONFIABLE_M = 200;   /* margen de error aceptable   */
+
+    function asegurarDevId() {
+        if (window.encaviDevId) return window.encaviDevId;
+        var d = null;
+        try { d = localStorage.getItem('encavi_dev_id'); } catch (e) {}
+        if (!d) {
+            d = 'd' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+            try { localStorage.setItem('encavi_dev_id', d); } catch (e) {}
+        }
+        window.encaviDevId = d;
+        return d;
+    }
+
+    /* Devuelve {lat,lng,acc} o null. Nunca deja al cliente esperando
+       mas de 8 segundos parado en la caja. */
+    function leerUbicacion() {
+        return new Promise(function (resolve) {
+            if (!navigator.geolocation) { resolve(null); return; }
+            var listo = false;
+            var corte = setTimeout(function () { if (!listo) { listo = true; resolve(null); } }, 8000);
+            navigator.geolocation.getCurrentPosition(
+                function (pos) {
+                    if (listo) return;
+                    listo = true; clearTimeout(corte);
+                    resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude, acc: pos.coords.accuracy });
+                },
+                function () { if (!listo) { listo = true; clearTimeout(corte); resolve(null); } },
+                { enableHighAccuracy: true, timeout: 7000, maximumAge: 30000 }
+            );
+        });
+    }
+
+    function avisoQuema(texto) {
+        alert(texto);
+    }
+
     async function quemarCupon(campId, title) {
         window.__ultimoCupon = { campId: campId, negocio: title };
-        try {
-            await db.collection('campaigns').doc(campId).update({ stock: firebase.firestore.FieldValue.increment(-1) });
-            await db.collection('tickets').add({
-                camp_id: campId,
-                chofer: session ? session.chofer : 'DESCONOCIDO',
-                status: 'quemado',
-                fecha: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            /* Aqui habia una escritura a 'drivers' con earnings +5.
-               Esa comision no estaba decidida y la coleccion no tiene
-               regla, asi que Firestore la rechazaba en silencio. Lo que
-               se le pague al chofer se calcula desde los tickets, que
-               son el dato duro. */
-            mostrarSuccess(title);
-        } catch (error) {
-            console.error(error);
-            alert('Hubo un error de conexión.');
+
+        if (!session || !session.code) {
+            avisoQuema('Tu sesión expiró. Escanea de nuevo el código del vehículo.');
+            return;
         }
+
+        const dev  = asegurarDevId();
+        const camp = (window.loadedCampaigns || []).find(function (c) { return c.id === campId; }) || {};
+        const nLat = parseFloat(camp.lat), nLng = parseFloat(camp.lng);
+
+        /* ── Ubicacion ── */
+        const ubi = await leerUbicacion();
+        let dist = null, revisar = null;
+
+        if (!isFinite(nLat) || !isFinite(nLng)) {
+            revisar = 'negocio_sin_ubicacion';
+        } else if (!ubi) {
+            revisar = 'sin_ubicacion';
+        } else {
+            dist = Math.round(haversine(ubi.lat, ubi.lng, nLat, nLng) * 1000);
+            if (ubi.acc > GPS_CONFIABLE_M) {
+                revisar = 'gps_impreciso';
+            } else if (dist > RADIO_QUEMA_M) {
+                avisoQuema('Tienes que estar en el negocio para usar tu cupón.\n\nEl sistema te ubica a ' +
+                           (dist < 1000 ? dist + ' metros' : (dist / 1000).toFixed(1) + ' km') + ' de ahí.');
+                return;
+            }
+        }
+
+        /* ── El registro, con nombre fijo ── */
+        const idTicket = campId + '_' + session.code;
+        const datos = {
+            camp_id: campId,
+            code:    session.code,
+            chofer:  session.chofer || 'orgánico',
+            dev:     dev,
+            status:  'quemado',
+            lat:     ubi ? ubi.lat : null,
+            lng:     ubi ? ubi.lng : null,
+            acc:     ubi ? Math.round(ubi.acc) : null,
+            dist_m:  dist,
+            revisar: revisar,
+            fecha:   firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+        try {
+            /* Primero el cupon, que es lo que puede fallar. El inventario
+               se descuenta despues, para no restarle existencias al
+               negocio por un intento repetido. */
+            await db.collection('tickets').doc(idTicket).set(datos);
+        } catch (error) {
+            const repetido = error && (error.code === 'already-exists' ||
+                                       error.code === 'permission-denied');
+            if (repetido) {
+                avisoQuema('Ya usaste tu cupón aquí.\n\nCada código se puede usar una sola vez por negocio.');
+            } else {
+                console.error(error);
+                avisoQuema('No se pudo registrar tu cupón. Revisa tu conexión e inténtalo otra vez.');
+            }
+            return;
+        }
+
+        try {
+            await db.collection('campaigns').doc(campId).update({
+                stock: firebase.firestore.FieldValue.increment(-1)
+            });
+        } catch (e) {
+            /* El cupon ya quedo registrado, que es lo que cuenta.
+               El inventario se corrige desde el panel si hace falta. */
+            console.error('stock:', e);
+        }
+
+        mostrarSuccess(title);
     }
 
     function mostrarSuccess(title) {

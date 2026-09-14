@@ -58,12 +58,29 @@ service cloud.firestore {
     }
 
     // ─────────────────────────────────────────────────────────────
-    // TICKETS (cupones reclamados)
-    // El pasajero puede crear el suyo.
-    // Leerlos, cambiarlos o borrarlos: solo tu.
+    // TICKETS (cupones quemados) — ESTO ES LO QUE SE COBRA
+    //
+    // El documento se llama: promocion + codigo del cliente.
+    // Crear: cualquiera, pero SOLO la primera vez. El segundo intento
+    // del mismo codigo en el mismo negocio cuenta como "update", y
+    // update aqui esta prohibido -> el cobro no se puede duplicar.
+    //
+    // Se exige que el nombre del documento coincida con los datos que
+    // trae dentro, para que nadie pueda crear un cupon "a mano" con
+    // otro nombre y saltarse el candado.
+    //
+    // Leerlos, corregirlos o borrarlos: solo tu, con sesion iniciada.
     // ─────────────────────────────────────────────────────────────
-    match /tickets/{doc} {
-      allow create: if true;
+    match /tickets/{id} {
+      allow create: if request.resource.data.keys().hasOnly(
+                         ['camp_id','code','chofer','dev','status',
+                          'lat','lng','acc','dist_m','revisar','fecha'])
+                    && request.resource.data.camp_id is string
+                    && request.resource.data.code    is string
+                    && request.resource.data.dev     is string
+                    && request.resource.data.status == 'quemado'
+                    && id == request.resource.data.camp_id + '_' + request.resource.data.code;
+
       allow read, update, delete: if request.auth != null;
     }
 
