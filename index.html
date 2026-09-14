@@ -5849,7 +5849,12 @@ document.addEventListener('DOMContentLoaded', () => {
         let uniqueCode = 'ENC-';
         for(let i=0; i<4; i++) uniqueCode += chars.charAt(Math.floor(Math.random() * chars.length));
         
-        session = { timestamp: now, code: uniqueCode, chofer: paramChofer || 'orgánico' };
+        /* origen: 'qr' = subio a un vehiculo y escaneo el acrilico.
+                   'libre' = llego al sitio por su cuenta.
+           El de origen libre puede ver todo, pero no reclamar. */
+        session = { timestamp: now, code: uniqueCode,
+                    chofer: paramChofer || 'orgánico',
+                    origen: paramChofer ? 'qr' : 'libre' };
         localStorage.setItem(SESSION_KEY, JSON.stringify(session));
         if(paramChofer) window.history.replaceState({}, document.title, window.location.pathname);
     } else {
@@ -5878,6 +5883,46 @@ document.addEventListener('DOMContentLoaded', () => {
        desde otro. Sin esto, quemarCupon nunca alcanzaba la sesion y
        fallaba siempre con un "error de conexion". */
     window.encaviSession = session;
+
+    /* ¿Esta sesion nacio de un QR? Las sesiones viejas no traen el
+       dato 'origen', asi que se deduce del chofer. */
+    window.egSesionConQR = function () {
+        const s = window.encaviSession;
+        if (!s) return false;
+        if (s.origen) return s.origen === 'qr';
+        return !!(s.chofer && s.chofer !== 'orgánico');
+    };
+
+    /* Lo que ve quien llego al sitio por su cuenta y quiere reclamar.
+       No es un regaño: es la explicacion de como se consigue. */
+    window.egAvisoSoloQR = function () {
+        if (document.getElementById('egSoloQR')) return;
+        const cap = document.createElement('div');
+        cap.id = 'egSoloQR';
+        cap.setAttribute('style',
+            'position:fixed; inset:0; z-index:9999; background:rgba(8,12,20,.92);' +
+            'display:flex; align-items:center; justify-content:center; padding:26px;' +
+            '-webkit-backdrop-filter:blur(3px); backdrop-filter:blur(3px);');
+        cap.innerHTML =
+            '<div style="max-width:340px; text-align:center; color:#FBF2E1; font-family:inherit;">' +
+              '<div style="font-size:46px; margin-bottom:14px;">🚕</div>' +
+              '<h2 style="font-size:21px; font-weight:900; margin:0 0 12px; line-height:1.25;">' +
+                'Los cupones se desbloquean en el viaje</h2>' +
+              '<p style="font-size:14px; line-height:1.55; color:#CBD5E1; margin:0 0 8px;">' +
+                'Puedes ver todas las promociones y el mapa cuando quieras. ' +
+                'Para reclamar una, súbete a un vehículo con EncaviGO y escanea ' +
+                'el código que trae pegado.</p>' +
+              '<p style="font-size:12px; line-height:1.5; color:#94A3B8; margin:0 0 22px;">' +
+                'Así el negocio sabe que llegaste desde un viaje, y el chofer recibe su parte.</p>' +
+              '<button id="egSoloQRCerrar" style="border:none; cursor:pointer; width:100%;' +
+                'background:#FBF2E1; color:#29374E; font-weight:800; font-size:15px;' +
+                'padding:13px 0; border-radius:11px; font-family:inherit;">Seguir viendo</button>' +
+            '</div>';
+        document.body.appendChild(cap);
+        const cerrar = () => cap.remove();
+        cap.querySelector('#egSoloQRCerrar').addEventListener('click', cerrar);
+        cap.addEventListener('click', e => { if (e.target === cap) cerrar(); });
+    };
     
     function haversine(lat1, lon1, lat2, lon2) {
         const R = 6371; 
@@ -5997,6 +6042,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // Re-attach click listeners para el Escáner O2O
         document.querySelectorAll('.track-click').forEach(btn => {
             btn.addEventListener('click', (e) => {
+                /* Sin QR no se reclama, y tampoco se cuenta el click:
+                   el contador tiene que reflejar interes de pasajeros
+                   reales, no de visitantes sueltos. */
+                if (!window.egSesionConQR()) { window.egAvisoSoloQR(); return; }
+
                 const cid = e.target.getAttribute('data-campid');
                 const cajaId = e.target.getAttribute('data-cajaid');
                 const title = e.target.getAttribute('data-title');
@@ -6354,6 +6404,11 @@ document.addEventListener('DOMContentLoaded', () => {
     let html5QrcodeScanner = null;
 
     function mostrarCodigo(campId, cajaId, title) {
+        /* Segundo candado: aqui llega tambien la ficha del mapa. */
+        if (typeof window.egSesionConQR === 'function' && !window.egSesionConQR()) {
+            window.egAvisoSoloQR();
+            return;
+        }
         document.getElementById('codigoModal').style.display = 'flex';
         document.getElementById('codigoNegocio').innerText = title;
         let _s = null;
@@ -6514,6 +6569,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const ses = window.encaviSession;
         if (!ses || !ses.code) {
             avisoQuema('Tu sesión expiró. Escanea de nuevo el código del vehículo.');
+            return;
+        }
+        if (typeof window.egSesionConQR === 'function' && !window.egSesionConQR()) {
+            window.egAvisoSoloQR();
             return;
         }
 
