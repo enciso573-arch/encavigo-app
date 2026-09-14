@@ -5578,6 +5578,12 @@
 
 
 /* ── Tarjeta de la lista cuando el negocio esta a menos de 500 m ── */
+.gps-aviso{
+  background:#FEF3C7; border:1px solid #FDE68A; color:#78350F;
+  border-radius:10px; padding:10px 12px; margin:0 0 12px;
+  font-size:12px; line-height:1.45;
+}
+.gps-aviso strong{ color:#92400E; }
 .mini-dist{ font-size:11px; color:#64748B; margin:4px 0 0 0; font-weight:600; }
 .mini-dist-cerca{ color:#F97316; }
 .mini-card-cerca{
@@ -5808,7 +5814,7 @@ function cerrarSplash() {
 <div class="pullup-drawer">
 <div class="pullup-pill" onclick="openMap()">
 <svg fill="none" height="18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewbox="0 0 24 24" width="18"><path d="M12 19V5M5 12l7-7 7 7"></path></svg>
-<span class="pullup-badge">3</span> Promos cerca de ti
+<span class="pullup-badge">&middot;</span> <span class="pullup-label">Promos en el mapa</span>
         </div>
 </div>
 <!-- FIREBASE SDK -->
@@ -5856,7 +5862,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p style="color: #94A3B8; line-height: 1.5;">Tu código promocional ha caducado. Sube a un vehículo afiliado a EncaviGO y escanea un código QR nuevo para desbloquear las ofertas de hoy.</p>
                 </div>
             `;
-            localStorage.removeItem(SESSION_KEY);
+            /* NO se borra la sesion. Borrarla era el error: al refrescar
+               ya no habia nada guardado, el codigo de abajo creaba una
+               sesion nueva y el limite de 24 horas no servia de nada.
+               Se deja marcada como caducada; solo un QR nuevo la
+               reemplaza, porque escanear entra con ?chofer= y eso
+               limpia la sesion mas arriba. */
+            session.caducada = true;
+            try { localStorage.setItem(SESSION_KEY, JSON.stringify(session)); } catch(e) {}
             return;
         }
     }
@@ -5875,6 +5888,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const drawerBadge = document.querySelector('.pullup-badge');
+    const drawerLabel = document.querySelector('.pullup-label');
     const sheetContent = document.querySelector('.sheet-content');
     window.loadedCampaigns = []; // Store them for radar
     
@@ -5884,6 +5898,7 @@ document.addEventListener('DOMContentLoaded', () => {
            marcan aparte y se mueven, para que se note que esa es la
            que se esta pasando. */
         const RADIO_CERCA_KM = 0.5;
+        const GPS_RADAR_M    = 300;   /* margen de error maximo para fiarse */
         let lista = [];
         window.loadedCampaigns.forEach(camp => {
             const cLat = parseFloat(camp.lat), cLng = parseFloat(camp.lng);
@@ -5897,8 +5912,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         lista.sort((a, b) => a.distKm - b.distKm);
 
-        const cerca = lista.filter(l => l.distKm <= RADIO_CERCA_KM);
+        /* Que tan bien te esta ubicando el telefono. Si el margen de
+           error es de kilometros, decir "la vas pasando" es mentira:
+           mejor se avisa y no se marca nada como cercano. */
+        const acc = (typeof window.egGpsAcc === 'number') ? Math.round(window.egGpsAcc) : null;
+        const gpsFiable = (acc !== null) && (acc <= GPS_RADAR_M);
+
+        const cerca = gpsFiable ? lista.filter(l => l.distKm <= RADIO_CERCA_KM) : [];
+
         if (drawerBadge) drawerBadge.innerText = cerca.length > 0 ? cerca.length : lista.length;
+        if (drawerLabel) drawerLabel.innerText = cerca.length > 0 ? 'Promos cerca de ti' : 'Promos en el mapa';
 
         if (!sheetContent) return;
 
@@ -5907,7 +5930,18 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        let html = cerca.length > 0
+        let html = '';
+
+        if (acc !== null && !gpsFiable) {
+            html += '<div class="gps-aviso">'
+                 +   '<strong>Tu ubicación es aproximada</strong> (margen de ' +
+                     (acc < 1000 ? acc + ' m' : (acc / 1000).toFixed(1) + ' km') + ').'
+                 +   ' Por eso no puedo decirte cuál vas pasando. Enciende la ubicación'
+                 +   ' precisa del teléfono para que el radar funcione.'
+                 + '</div>';
+        }
+
+        html += cerca.length > 0
             ? '<p style="font-size:12px; color:#F97316; text-align:center; margin-top:0; font-weight:700;">Vas pasando por ' + cerca.length + (cerca.length === 1 ? ' promoción' : ' promociones') + ' ahora mismo:</p>'
             : '<p style="font-size:12px; color:#94A3B8; text-align:center; margin-top:0;">Promociones en tu ruta, de la más cercana a la más lejana:</p>';
 
@@ -6078,6 +6112,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if ('geolocation' in navigator) {
             navigator.geolocation.getCurrentPosition((pos) => {
                 // Si da permiso, reconstruimos la baraja usando el GPS!
+                window.egGpsAcc = pos.coords.accuracy;
                 buildSmartDeck(pos.coords.latitude, pos.coords.longitude);
                 actualizarRadar(pos.coords.latitude, pos.coords.longitude); // Actualizar burbuja inferior
             }, (err) => console.log("GPS no autorizado de inicio"), { enableHighAccuracy: true });
@@ -6093,6 +6128,7 @@ document.addEventListener('DOMContentLoaded', () => {
             navigator.geolocation.watchPosition((position) => {
                 window.currentLat = position.coords.latitude;
                 window.currentLng = position.coords.longitude;
+                window.egGpsAcc   = position.coords.accuracy;
                 actualizarRadar(position.coords.latitude, position.coords.longitude);
                 if (typeof updateMapLive === 'function') { updateMapLive(window.currentLat, window.currentLng); }
             }, (err) => console.log(err), { enableHighAccuracy: true });
@@ -6275,6 +6311,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let mapInstance = null;
     let mapMarkers = [];
     let uMarker = null;
+    let uAccCircle = null;
 
     const getMarkerIcon = (camp, isClose) => {
         const size = isClose ? 50 : 36;
@@ -6747,6 +6784,24 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!mapInstance) return;
         if (!mapInstance.hasLayer(uMarker)) { uMarker.addTo(mapInstance); }
         uMarker.setLatLng([uLat, uLng]);
+
+        /* Circulo de incertidumbre: se ve de un golpe si el telefono
+           te esta ubicando bien o si solo esta adivinando por antena.
+           Si el circulo tapa media ciudad, el GPS no esta fino. */
+        const acc = (typeof window.egGpsAcc === 'number') ? window.egGpsAcc : null;
+        if (acc && acc > 60) {
+            if (!uAccCircle) {
+                uAccCircle = L.circle([uLat, uLng], {
+                    radius: acc, color: '#3B82F6', weight: 1,
+                    fillColor: '#3B82F6', fillOpacity: 0.12
+                }).addTo(mapInstance);
+            } else {
+                uAccCircle.setLatLng([uLat, uLng]).setRadius(acc);
+                if (!mapInstance.hasLayer(uAccCircle)) uAccCircle.addTo(mapInstance);
+            }
+        } else if (uAccCircle && mapInstance.hasLayer(uAccCircle)) {
+            mapInstance.removeLayer(uAccCircle);
+        }
 
         /* Solo se actualiza el pin (cerca / lejos). El contenido de la
            ficha se arma solo al abrirla, asi siempre sale al dia.
