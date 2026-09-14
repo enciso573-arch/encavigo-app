@@ -6,48 +6,49 @@
 <title>EncaviGO — Comparar estilos de mapa</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <style>
-  :root{ --naranja:#F97316; --tinta:#111827; }
+  :root{ --naranja:#F07150; --tinta:#29374E; }
   *{box-sizing:border-box;margin:0;padding:0}
-  body{
-    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-    background:#12100B;color:#E8E4DC;padding:22px;
-  }
+  body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+       background:#12100B;color:#E8E4DC;padding:22px}
   h1{font-size:23px;font-weight:700;color:#fff;margin-bottom:6px}
-  .intro{font-size:15px;color:#9A948A;max-width:70ch;line-height:1.6;margin-bottom:24px}
+  .intro{font-size:15px;color:#9A948A;max-width:70ch;line-height:1.6;margin-bottom:22px}
   .grid{display:grid;gap:20px}
   @media(min-width:980px){ .grid{grid-template-columns:1fr 1fr} }
   .caja{background:#1B1810;border:1px solid #2E2A22;border-radius:14px;overflow:hidden}
   .cab{padding:14px 16px;border-bottom:1px solid #2E2A22}
   .cab h2{font-size:16px;font-weight:600;color:#fff;margin-bottom:3px}
   .cab p{font-size:13px;color:#9A948A;line-height:1.5}
-  .cab .etq{
-    display:inline-block;font-size:10px;letter-spacing:.8px;text-transform:uppercase;
-    font-weight:700;padding:3px 8px;border-radius:20px;margin-bottom:7px;
-  }
+  .cab .etq{display:inline-block;font-size:10px;letter-spacing:.8px;text-transform:uppercase;
+            font-weight:700;padding:3px 8px;border-radius:20px;margin-bottom:7px}
   .hoy{background:rgba(239,68,68,.16);color:#F87171}
-  .rec{background:rgba(249,115,22,.16);color:var(--naranja)}
+  .rec{background:rgba(240,113,80,.18);color:var(--naranja)}
   .alt{background:rgba(148,163,184,.14);color:#94A3B8}
-  .mapa{height:330px;width:100%}
-  .pin{border:2px solid #fff;border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center}
+  .key{background:rgba(234,179,8,.16);color:#EAB308}
+  .mapa{height:330px;width:100%;background:#0C0A07}
+  .pin{border:2px solid #fff;border-radius:50% 50% 50% 0;transform:rotate(-45deg);
+       display:flex;align-items:center;justify-content:center}
   .pin i{transform:rotate(45deg);border-radius:50%;display:block}
-  .nota{margin-top:26px;background:#1B1810;border-left:3px solid var(--naranja);border-radius:10px;padding:16px 18px;font-size:14px;line-height:1.65;color:#B9B2A6}
+  .nota{margin-top:26px;background:#1B1810;border-left:3px solid var(--naranja);
+        border-radius:10px;padding:16px 18px;font-size:14px;line-height:1.65;color:#B9B2A6}
   .nota b{color:#fff}
+  .nota + .nota{margin-top:12px}
 </style>
 </head>
 <body>
 
 <h1>¿Cuál mapa quieres para EncaviGO?</h1>
 <p class="intro">
-  Los cuatro muestran Puerto Vallarta con cinco negocios de ejemplo: cuatro normales
-  y uno resaltado, como se ve cuando el pasajero pasa cerca. Fíjate en una sola cosa:
+  Todos muestran Puerto Vallarta con cinco negocios de ejemplo: cuatro normales y uno resaltado,
+  como se ve cuando el pasajero pasa cerca. Fíjate en una sola cosa:
   <b>en cuál se distinguen mejor tus pines del resto del mapa</b>.
 </p>
 
 <div class="grid" id="grid"></div>
 
 <div class="nota">
-  <b>Los cuatro son gratis y ninguno necesita tarjeta.</b> El cambio es una línea de código,
-  y se puede dejar puesto el que escojas en menos de cinco minutos.
+  <b>Corrección:</b> antes te dije que los mapas de CARTO eran gratis y sin llave. Ya no es cierto —
+  cambiaron la regla y ahora estampan <b>“API KEY REQUIRED”</b> encima. Por eso te sale ese texto:
+  tu <b>mapa.html</b> en línea usa uno de esos. Los de arriba marcados como <b>sin llave</b> no piden nada.
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -55,48 +56,52 @@
   var CENTRO = [20.6300, -105.2350];
 
   var ESTILOS = [
-    { id:'hoy', etq:'hoy', clase:'hoy',
-      titulo:'Lo que tienes ahora',
-      desc:'Mapa de Google. Lleno de color, con todos los comercios que Google ya conoce. Tus pines compiten contra cientos de iconos.',
+    { id:'hoy', etq:'lo de hoy', clase:'hoy',
+      titulo:'Google (lo que usa la app)',
+      desc:'Lleno de color y con todos los comercios que Google ya conoce. Tus pines compiten contra cientos de iconos ajenos. Además la app lo saca por una dirección no autorizada: se puede cortar cualquier día.',
       url:'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
       attr:'Google' },
 
-    { id:'oscuro', etq:'recomendado', clase:'rec',
+    { id:'gris', etq:'recomendado · sin llave', clase:'rec',
+      titulo:'Gris claro y limpio',
+      desc:'Calles apenas marcadas, sin negocios ajenos. El naranja de tus pines es lo único que resalta. Se lee bien de día y bajo el sol, que es cuando el pasajero va en el carro.',
+      url:'https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+      attr:'&copy; Esri, HERE, Garmin, OpenStreetMap' },
+
+    { id:'oscuro', etq:'alternativa · sin llave', clase:'alt',
       titulo:'Oscuro y limpio',
-      desc:'Fondo apagado, sin comercios ajenos. El naranja brilla encima. Va con el color de tu app, y ya lo usas en mapa.html.',
-      url:'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-      attr:'&copy; OpenStreetMap &copy; CARTO' },
+      desc:'Fondo apagado, sin comercios ajenos. El naranja brilla más que en cualquier otro. Va con el color de tu app.',
+      url:'https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+      attr:'&copy; Esri, HERE, Garmin, OpenStreetMap' },
 
-    { id:'claro', etq:'alternativa', clase:'alt',
-      titulo:'Claro y limpio',
-      desc:'Casi blanco, con calles apenas marcadas. Se lee muy fácil de día y bajo el sol, que es cuando va el pasajero en el carro.',
-      url:'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-      attr:'&copy; OpenStreetMap &copy; CARTO' },
+    { id:'calle', etq:'alternativa · sin llave', clase:'alt',
+      titulo:'Con nombres de calle',
+      desc:'Más información para ubicarse: nombres de calles y colonias, pero sin los comercios de Google. Punto medio si el gris te parece muy vacío.',
+      url:'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+      attr:'&copy; OpenStreetMap' },
 
-    { id:'medio', etq:'alternativa', clase:'alt',
-      titulo:'Intermedio',
-      desc:'Algo de color para ubicarse mejor, pero sin los comercios de Google. Punto medio si el limpio te parece muy vacío.',
-      url:'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+    { id:'carto', etq:'pide llave', clase:'key',
+      titulo:'CARTO (el del mapa.html actual)',
+      desc:'Este es el que está en línea ahora mismo. Mira el texto atravesado: eso mismo ve cualquiera que abra encavigo.com/mapa.html hoy.',
+      url:'https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
       attr:'&copy; OpenStreetMap &copy; CARTO' }
   ];
 
   var NEGOCIOS = [
-    { lat:20.6285, lng:-105.2380, nombre:'Tacos Don Beto',   cerca:false },
+    { lat:20.6285, lng:-105.2380, nombre:'Tacos Don Beto',    cerca:false },
     { lat:20.6350, lng:-105.2300, nombre:'Asador El Pariente',cerca:false },
-    { lat:20.6230, lng:-105.2320, nombre:'Spa Pacífico',      cerca:false },
-    { lat:20.6400, lng:-105.2270, nombre:'Boutique Malecón',  cerca:false },
-    { lat:20.6305, lng:-105.2355, nombre:'Cervecería (cerca)',cerca:true  }
+    { lat:20.6230, lng:-105.2320, nombre:'Spa Pacifico',      cerca:false },
+    { lat:20.6400, lng:-105.2270, nombre:'Boutique Malecon',  cerca:false },
+    { lat:20.6305, lng:-105.2355, nombre:'Cerveceria (cerca)',cerca:true  }
   ];
 
   function icono(cerca){
     var tam   = cerca ? 38 : 26;
-    var fondo = cerca ? '#F97316' : '#111827';
-    var punto = cerca ? '#FFFFFF' : '#F97316';
-    var sombra= cerca ? '0 0 16px rgba(249,115,22,.95)' : '0 2px 6px rgba(0,0,0,.45)';
+    var fondo = cerca ? '#F07150' : '#29374E';
+    var punto = cerca ? '#FFFFFF' : '#F07150';
+    var sombra= cerca ? '0 0 16px rgba(240,113,80,.95)' : '0 2px 6px rgba(0,0,0,.45)';
     return L.divIcon({
-      className:'',
-      iconSize:[tam,tam],
-      iconAnchor:[tam/2,tam],
+      className:'', iconSize:[tam,tam], iconAnchor:[tam/2,tam],
       html:'<div class="pin" style="width:'+tam+'px;height:'+tam+'px;background:'+fondo+';box-shadow:'+sombra+'">'
            + '<i style="width:'+(tam*0.3)+'px;height:'+(tam*0.3)+'px;background:'+punto+'"></i></div>'
     });
