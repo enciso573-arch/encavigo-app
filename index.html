@@ -5838,6 +5838,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const SESSION_KEY = 'encavigo_session';
     const urlParams = new URLSearchParams(window.location.search);
     const paramChofer = urlParams.get('chofer');
+    const paramDesde  = urlParams.get('desde');   /* calcomania de afuera del negocio */
     let session = null;
     try { session = JSON.parse(localStorage.getItem(SESSION_KEY)); } catch(e) {}
     
@@ -5854,7 +5855,8 @@ document.addEventListener('DOMContentLoaded', () => {
            El de origen libre puede ver todo, pero no reclamar. */
         session = { timestamp: now, code: uniqueCode,
                     chofer: paramChofer || 'orgánico',
-                    origen: paramChofer ? 'qr' : 'libre' };
+                    origen: paramChofer ? 'qr' : (paramDesde ? 'calcomania' : 'libre'),
+                    desde:  paramDesde || null };
         localStorage.setItem(SESSION_KEY, JSON.stringify(session));
         if(paramChofer) window.history.replaceState({}, document.title, window.location.pathname);
     } else {
@@ -5882,7 +5884,81 @@ document.addEventListener('DOMContentLoaded', () => {
     /* La sesion vive dentro de este bloque, pero el cupon se quema
        desde otro. Sin esto, quemarCupon nunca alcanzaba la sesion y
        fallaba siempre con un "error de conexion". */
+    /* Si ya venia navegando y ahora llega por una calcomania, se
+       apunta de cual, sin borrarle la sesion. */
+    if (paramDesde && session && session.origen !== 'qr') {
+        session.origen = 'calcomania';
+        session.desde  = paramDesde;
+        try { localStorage.setItem(SESSION_KEY, JSON.stringify(session)); } catch(e) {}
+    }
+
     window.encaviSession = session;
+
+    /* ── El codigo del vehiculo se comprueba contra el registro ──
+       Se hace despues de abrir la sesion, no antes, para que la app
+       no se quede en blanco esperando a la base. Si resulta que el
+       acrilico esta dado de baja, se corta aqui mismo y se borra la
+       sesion, asi que ese QR muere en el momento en que lo das de
+       baja en el panel.
+       Un codigo que todavia no esta en el registro sigue sirviendo:
+       no queremos tumbar vehiculos que ya andan trabajando. El panel
+       te los marca aparte para que los regularices. */
+    /* ── La calcomania de afuera del negocio ──
+       Se cuenta una sola vez por celular y por dia, con el mismo
+       candado de nombre fijo que usan los clicks: el registro se
+       llama codigo + celular + fecha, y si ya existe, Firestore lo
+       rechaza y no se vuelve a contar. Asi el numero que le enseñas
+       al negocio es gente distinta, no el mismo curioso diez veces. */
+    (function contarCalcomania() {
+        const cod = paramDesde;
+        if (!cod) return;
+
+        let dev = null;
+        try { dev = localStorage.getItem('encavi_dev_id'); } catch(e) {}
+        if (!dev) {
+            dev = 'd' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+            try { localStorage.setItem('encavi_dev_id', dev); } catch(e) {}
+        }
+        window.encaviDevId = dev;
+
+        const hoy = new Date().toISOString().slice(0, 10);
+        db.collection('calco_log').doc(cod + '_' + dev + '_' + hoy).set({
+            codigo: cod, dev: dev,
+            fecha: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(function () {
+            return db.collection('codigos').doc(cod).update({
+                escaneos: firebase.firestore.FieldValue.increment(1)
+            });
+        }).catch(function () { /* repetido hoy, o codigo sin registrar */ });
+
+        /* La direccion se limpia para que no quede guardada en favoritos
+           con la marca de la calcomania pegada. */
+        try { window.history.replaceState({}, document.title, window.location.pathname); } catch(e) {}
+    })();
+
+    (function comprobarCodigoDelVehiculo() {
+        const cod = session.chofer;
+        if (!cod || cod === 'orgánico') return;
+
+        db.collection('codigos').doc(cod).get().then(function (doc) {
+            if (!doc.exists) return;                 /* aun sin registrar */
+            const d = doc.data() || {};
+            if (d.estado !== 'baja') return;
+
+            try { localStorage.removeItem('encavigo_session'); } catch (e) {}
+            window.encaviSession = null;
+            document.body.innerHTML =
+                '<div style="height:100dvh; width:100vw; background:#0B1220; color:#FBF2E1;' +
+                'display:flex; flex-direction:column; align-items:center; justify-content:center;' +
+                'padding:30px; text-align:center; font-family:sans-serif;">' +
+                  '<div style="font-size:48px; margin-bottom:18px;">🚫</div>' +
+                  '<h1 style="font-size:23px; font-weight:900; margin:0 0 12px;">Este vehículo ya no está afiliado</h1>' +
+                  '<p style="color:#94A3B8; line-height:1.55; max-width:330px; margin:0;">' +
+                    'El código que escaneaste fue dado de baja. Las promociones de EncaviGO' +
+                    ' siguen disponibles en los vehículos que sí están afiliados.</p>' +
+                '</div>';
+        }).catch(function () { /* sin red: se deja pasar */ });
+    })();
 
     /* ¿Esta sesion nacio de un QR? Las sesiones viejas no traen el
        dato 'origen', asi que se deduce del chofer. */
@@ -5897,6 +5973,11 @@ document.addEventListener('DOMContentLoaded', () => {
        No es un regaño: es la explicacion de como se consigue. */
     window.egAvisoSoloQR = function () {
         if (document.getElementById('egSoloQR')) return;
+        /* Quien llega de una calcomania YA esta parado en el negocio.
+           Decirle "subete a un taxi" ahi seria absurdo, asi que el
+           mensaje mira al proximo viaje en vez de al pasado. */
+        const ses = window.encaviSession;
+        const deCalcomania = !!(ses && (ses.origen === 'calcomania' || ses.desde));
         const cap = document.createElement('div');
         cap.id = 'egSoloQR';
         cap.setAttribute('style',
@@ -5905,13 +5986,18 @@ document.addEventListener('DOMContentLoaded', () => {
             '-webkit-backdrop-filter:blur(3px); backdrop-filter:blur(3px);');
         cap.innerHTML =
             '<div style="max-width:340px; text-align:center; color:#FBF2E1; font-family:inherit;">' +
-              '<div style="font-size:46px; margin-bottom:14px;">🚕</div>' +
+              '<div style="font-size:46px; margin-bottom:14px;">' + (deCalcomania ? '📍' : '🚕') + '</div>' +
               '<h2 style="font-size:21px; font-weight:900; margin:0 0 12px; line-height:1.25;">' +
-                'Los cupones se desbloquean en el viaje</h2>' +
+                (deCalcomania ? 'Ya estás aquí. Guárdala para tu próximo viaje'
+                              : 'Los cupones se desbloquean en el viaje') + '</h2>' +
               '<p style="font-size:14px; line-height:1.55; color:#CBD5E1; margin:0 0 8px;">' +
-                'Puedes ver todas las promociones y el mapa cuando quieras. ' +
-                'Para reclamar una, súbete a un vehículo con EncaviGO y escanea ' +
-                'el código que trae pegado.</p>' +
+                (deCalcomania
+                  ? 'Esta promoción se activa cuando llegas en un vehículo con EncaviGO. ' +
+                    'La próxima vez que pidas un taxi, busca el código pegado adentro y ' +
+                    'escanéalo: las promociones del camino se te abren antes de bajarte.'
+                  : 'Puedes ver todas las promociones y el mapa cuando quieras. ' +
+                    'Para reclamar una, súbete a un vehículo con EncaviGO y escanea ' +
+                    'el código que trae pegado.') + '</p>' +
               '<p style="font-size:12px; line-height:1.5; color:#94A3B8; margin:0 0 22px;">' +
                 'Así el negocio sabe que llegaste desde un viaje, y el chofer recibe su parte.</p>' +
               '<button id="egSoloQRCerrar" style="border:none; cursor:pointer; width:100%;' +
@@ -6216,7 +6302,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 chofer: session.chofer,
                 fecha: firebase.firestore.FieldValue.serverTimestamp()
             }).then(() => {
-                /* Primera vez de este celular con este chofer hoy: si cuenta. */
+                /* Primera vez de este celular con este chofer hoy: si cuenta.
+                   Se suma tambien al registro de codigos, que es donde
+                   llevas el control del acrilico fisico. */
+                db.collection('codigos').doc(session.chofer).update({
+                    escaneos: firebase.firestore.FieldValue.increment(1)
+                }).catch(function () { /* codigo aun sin registrar */ });
+
                 chofRef.get().then(doc => {
                     if (doc.exists) {
                         /* lastActive tambien se refresca: antes solo se

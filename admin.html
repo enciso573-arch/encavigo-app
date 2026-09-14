@@ -138,6 +138,10 @@
 <svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="16"><line x1="12" x2="12" y1="1" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
       Cobros del mes
     </div>
+<div class="nav-item" id="nav-codigos" onclick="switchTab('codigos')">
+<svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="16"><rect height="7" width="7" x="3" y="3"></rect><rect height="7" width="7" x="14" y="3"></rect><rect height="7" width="7" x="3" y="14"></rect><path d="M14 14h3v3h-3zM18 18h3v3h-3z"></path></svg>
+      Códigos QR
+    </div>
 <div class="nav-item" id="nav-analiticas" onclick="switchTab('analiticas')">
 <svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="16"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
       Analíticas
@@ -297,6 +301,76 @@
   <div style="background:#FFF; border:1px solid #E5E7EB; border-radius:16px; padding:24px;">
     <h2 style="font-size:17px; margin:0 0 16px 0;">Lo que dijeron los clientes</h2>
     <div id="cobOpiniones"></div>
+  </div>
+</div>
+
+
+<div id="view-codigos" style="display: none;">
+  <div class="top-bar" style="margin-bottom: 20px;">
+    <h1 class="page-title">Códigos QR</h1>
+  </div>
+
+  <div id="codHuerfanos" style="display:none; background:#FFFBEB; border:1px solid #FDE68A; border-radius:16px; padding:20px 24px; margin-bottom:20px;">
+    <h2 style="font-size:16px; margin:0 0 4px 0; color:#92400E;">Códigos en la calle sin registrar</h2>
+    <p style="font-size:13px; color:#92400E; margin:0 0 14px 0;">Están funcionando pero no sabes de quién son. Regístralos para poder darlos de baja el día que haga falta.</p>
+    <div id="codHuerfanosLista"></div>
+  </div>
+
+  <div style="background:#FFF; border:1px solid #E5E7EB; border-radius:16px; padding:24px; margin-bottom:24px;">
+    <h2 style="font-size:17px; margin:0 0 4px 0;">Dar de alta un código</h2>
+    <p style="font-size:13px; color:#6B7280; margin:0 0 18px 0;">El sistema arma el código, para que nunca se repita ni se pueda adivinar. Tú solo dices de quién es.</p>
+
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:14px; align-items:end;">
+      <div>
+        <label style="display:block; font-size:12px; color:#6B7280; margin-bottom:6px; font-weight:600;">Tipo de código</label>
+        <select id="codTipo" onchange="codPintarCampos()" style="width:100%; padding:10px 12px; border:1px solid #D1D5DB; border-radius:8px; font-family:'Inter',sans-serif; font-size:14px;">
+          <option value="vehiculo">Acrílico de vehículo</option>
+          <option value="caja">Acrílico de caja (mostrador)</option>
+          <option value="calcomania">Calcomanía de afuera</option>
+        </select>
+      </div>
+      <div>
+        <label style="display:block; font-size:12px; color:#6B7280; margin-bottom:6px; font-weight:600;"><span id="codLblPrefijo">Sitio o base</span></label>
+        <input id="codPrefijo" placeholder="Ej. ALFA" style="width:100%; padding:10px 12px; border:1px solid #D1D5DB; border-radius:8px; font-family:'Inter',sans-serif; font-size:14px; text-transform:uppercase;"/>
+      </div>
+      <div>
+        <label style="display:block; font-size:12px; color:#6B7280; margin-bottom:6px; font-weight:600;"><span id="codLblTitular">Nombre del chofer</span></label>
+        <input id="codTitular" placeholder="Ej. Juan Pérez" style="width:100%; padding:10px 12px; border:1px solid #D1D5DB; border-radius:8px; font-family:'Inter',sans-serif; font-size:14px;"/>
+      </div>
+      <div>
+        <label style="display:block; font-size:12px; color:#6B7280; margin-bottom:6px; font-weight:600;">Teléfono (opcional)</label>
+        <input id="codTel" placeholder="322 000 0000" style="width:100%; padding:10px 12px; border:1px solid #D1D5DB; border-radius:8px; font-family:'Inter',sans-serif; font-size:14px;"/>
+      </div>
+      <div>
+        <label style="display:block; font-size:12px; color:#6B7280; margin-bottom:6px; font-weight:600;"><span id="codLblNota">Placas o número de unidad</span></label>
+        <input id="codNota" placeholder="Opcional" style="width:100%; padding:10px 12px; border:1px solid #D1D5DB; border-radius:8px; font-family:'Inter',sans-serif; font-size:14px;"/>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap; margin-top:18px;">
+      <button class="btn-primary" onclick="codGenerar()">Generar y registrar</button>
+      <p id="codAviso" style="font-size:13px; margin:0;"></p>
+    </div>
+  </div>
+
+  <div style="background:#FFF; border:1px solid #E5E7EB; border-radius:16px; padding:24px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; gap:12px; flex-wrap:wrap;">
+      <h2 style="font-size:17px; margin:0;">Todos los códigos</h2>
+      <select id="codFiltro" onchange="codPintarLista()" style="padding:9px 12px; border:1px solid #D1D5DB; border-radius:8px; font-family:'Inter',sans-serif; font-size:13px;">
+        <option value="activo">Solo activos</option>
+        <option value="todos">Todos</option>
+        <option value="baja">Solo dados de baja</option>
+      </select>
+    </div>
+    <div style="overflow-x:auto;">
+      <table style="width:100%; border-collapse:collapse; min-width:720px;"><thead><tr>
+        <th style="text-align:left; padding:10px; font-size:12px; color:#6B7280; border-bottom:1px solid #E5E7EB;">Código</th>
+        <th style="text-align:left; padding:10px; font-size:12px; color:#6B7280; border-bottom:1px solid #E5E7EB;">Tipo</th>
+        <th style="text-align:left; padding:10px; font-size:12px; color:#6B7280; border-bottom:1px solid #E5E7EB;">De quién es</th>
+        <th style="text-align:right; padding:10px; font-size:12px; color:#6B7280; border-bottom:1px solid #E5E7EB;">Escaneos</th>
+        <th style="text-align:left; padding:10px; font-size:12px; color:#6B7280; border-bottom:1px solid #E5E7EB;">Estado</th>
+        <th style="text-align:right; padding:10px; font-size:12px; color:#6B7280; border-bottom:1px solid #E5E7EB;"></th>
+      </tr></thead><tbody id="codLista"></tbody></table>
+    </div>
   </div>
 </div>
 
@@ -807,6 +881,286 @@ function closeModal() {
         }
     }
 
+    /* ══ CODIGOS QR ══════════════════════════════════════════════
+       El libro de todos los acrilicos y calcomanias que salen a la
+       calle. Antes no habia ninguno: el codigo del unico vehiculo no
+       tenia dueno, ni fecha, ni forma de darse de baja.
+    ═══════════════════════════════════════════════════════════════ */
+    window.codTodos = [];
+
+    /* Sin vocales ni caracteres que se confundan (0/O, 1/I/L).
+       El pasajero a veces lo teclea a mano. */
+    const COD_ALFABETO = 'ACDEFGHJKMNPQRTUVWXY34679';
+
+    function codCola(n) {
+        let t = '';
+        const a = new Uint32Array(n);
+        (window.crypto || window.msCrypto).getRandomValues(a);
+        for (let i = 0; i < n; i++) t += COD_ALFABETO[a[i] % COD_ALFABETO.length];
+        return t;
+    }
+
+    function codLimpiar(t) {
+        return String(t || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10);
+    }
+
+    function codPintarCampos() {
+        const tipo = document.getElementById('codTipo').value;
+        const P = document.getElementById('codLblPrefijo');
+        const T = document.getElementById('codLblTitular');
+        const N = document.getElementById('codLblNota');
+        const iP = document.getElementById('codPrefijo');
+        if (tipo === 'vehiculo') {
+            P.textContent = 'Sitio o base'; iP.placeholder = 'Ej. ALFA';
+            T.textContent = 'Nombre del chofer';
+            N.textContent = 'Placas o número de unidad';
+        } else {
+            P.textContent = 'Abreviatura del negocio'; iP.placeholder = 'Ej. TACOS';
+            T.textContent = 'Nombre del negocio';
+            N.textContent = 'Domicilio o referencia';
+        }
+    }
+
+    function codAvisar(texto, color) {
+        const el = document.getElementById('codAviso');
+        el.textContent = texto || '';
+        el.style.color = color || '#6B7280';
+    }
+
+    async function codGenerar() {
+        const tipo     = document.getElementById('codTipo').value;
+        const prefijo  = codLimpiar(document.getElementById('codPrefijo').value);
+        const titular  = document.getElementById('codTitular').value.trim();
+        const tel      = document.getElementById('codTel').value.trim();
+        const nota     = document.getElementById('codNota').value.trim();
+
+        if (!prefijo)  { codAvisar('Falta la abreviatura: es lo que te deja reconocer el código de un vistazo.', '#DC2626'); return; }
+        if (!titular)  { codAvisar('Falta de quién es. Un código sin dueño es justo el problema que estamos resolviendo.', '#DC2626'); return; }
+
+        /* Se reintenta por si la casualidad repite una cola. */
+        let codigo = null;
+        for (let i = 0; i < 6 && !codigo; i++) {
+            const tentativa = prefijo + '-' + codCola(4);
+            const ya = await db.collection('codigos').doc(tentativa).get();
+            if (!ya.exists) codigo = tentativa;
+        }
+        if (!codigo) { codAvisar('No se pudo generar un código libre. Inténtalo otra vez.', '#DC2626'); return; }
+
+        try {
+            await db.collection('codigos').doc(codigo).set({
+                tipo: tipo, estado: 'activo', titular: titular,
+                tel: tel || null, nota: nota || null, escaneos: 0,
+                creado: firebase.firestore.FieldValue.serverTimestamp()
+            });
+        } catch (e) { codAvisar('No se pudo guardar: ' + e.message, '#DC2626'); return; }
+
+        document.getElementById('codTitular').value = '';
+        document.getElementById('codTel').value = '';
+        document.getElementById('codNota').value = '';
+        codAvisar('Listo: ' + codigo + '. Ya puedes imprimirlo desde la lista de abajo.', '#059669');
+        codCargar();
+    }
+
+    async function codBaja(codigo) {
+        const c = window.codTodos.find(x => x.id === codigo) || {};
+        const aviso = (c.tipo === 'vehiculo')
+            ? 'Al dar de baja ' + codigo + ', ese acrílico deja de servir de inmediato.\n\nQuien lo escanee va a ver que el vehículo ya no está afiliado, y no va a poder reclamar nada.\n\n¿Seguro?'
+            : 'Al dar de baja ' + codigo + ' deja de funcionar de inmediato.\n\n¿Seguro?';
+        if (!confirm(aviso)) return;
+        const motivo = prompt('¿Por qué se da de baja? (dejó el servicio, se perdió, se dañó…)') || 'sin motivo anotado';
+        try {
+            await db.collection('codigos').doc(codigo).update({
+                estado: 'baja', motivo_baja: motivo,
+                baja_fecha: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            codCargar();
+        } catch (e) { alert('No se pudo dar de baja: ' + e.message); }
+    }
+
+    async function codReactivar(codigo) {
+        if (!confirm('Volver a activar ' + codigo + '?')) return;
+        try {
+            await db.collection('codigos').doc(codigo).update({ estado: 'activo', motivo_baja: null });
+            codCargar();
+        } catch (e) { alert('No se pudo: ' + e.message); }
+    }
+
+    /* Registra un codigo que ya anda en la calle pero nunca se anoto. */
+    async function codAdoptar(codigo, tipo) {
+        const titular = prompt('¿De quién es ' + codigo + '?\n\n' +
+            (tipo === 'vehiculo' ? 'Nombre del chofer:' : 'Nombre del negocio:'));
+        if (!titular) return;
+        try {
+            await db.collection('codigos').doc(codigo).set({
+                tipo: tipo, estado: 'activo', titular: titular.trim(),
+                tel: null, nota: 'Registrado después, ya estaba en uso', escaneos: 0,
+                creado: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            codCargar();
+        } catch (e) { alert('No se pudo registrar: ' + e.message); }
+    }
+
+    async function codCargar() {
+        try {
+            const snap = await db.collection('codigos').get();
+            window.codTodos = snap.docs.map(d => Object.assign({ id: d.id }, d.data()));
+        } catch (e) {
+            document.getElementById('codLista').innerHTML =
+                '<tr><td colspan="6" style="padding:16px; color:#DC2626;">No se pudo leer el registro: ' + e.message + '</td></tr>';
+            return;
+        }
+        codPintarLista();
+        codBuscarHuerfanos();
+    }
+
+    /* Codigos que el sistema ya esta usando pero que no estan en el
+       libro: el del vehiculo y los de las cajas de cada promocion. */
+    async function codBuscarHuerfanos() {
+        const caja = document.getElementById('codHuerfanos');
+        const lista = document.getElementById('codHuerfanosLista');
+        const registrados = new Set(window.codTodos.map(c => c.id));
+        const faltan = [];
+
+        try {
+            const ch = await db.collection('choferes').get();
+            ch.forEach(d => { if (!registrados.has(d.id)) faltan.push({ id: d.id, tipo: 'vehiculo', que: 'Vehículo en uso' }); });
+            const ca = await db.collection('campaigns').get();
+            ca.forEach(d => {
+                const k = (d.data().caja_id || '').trim();
+                if (k && !registrados.has(k)) faltan.push({ id: k, tipo: 'caja', que: 'Caja de ' + (d.data().title || 'un negocio') });
+            });
+        } catch (e) { /* si falla, simplemente no se muestra el aviso */ }
+
+        if (faltan.length === 0) { caja.style.display = 'none'; return; }
+        caja.style.display = 'block';
+        lista.innerHTML = faltan.map(f =>
+            '<div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; padding:9px 0; border-top:1px solid #FDE68A;">' +
+              '<code style="font-weight:700; color:#92400E;">' + codEsc(f.id) + '</code>' +
+              '<span style="font-size:13px; color:#92400E;">' + codEsc(f.que) + '</span>' +
+              '<button class="btn-primary" style="margin-left:auto; padding:7px 12px; font-size:12px;" ' +
+                'onclick="codAdoptar(\'' + codEsc(f.id) + '\',\'' + f.tipo + '\')">Registrar</button>' +
+            '</div>').join('');
+    }
+
+    function codEsc(t) {
+        return String(t == null ? '' : t).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
+    function codPintarLista() {
+        const filtro = document.getElementById('codFiltro').value;
+        const cuerpo = document.getElementById('codLista');
+        const nombres = { vehiculo: 'Vehículo', caja: 'Caja', calcomania: 'Calcomanía' };
+
+        let lista = window.codTodos.slice();
+        if (filtro !== 'todos') lista = lista.filter(c => (c.estado || 'activo') === filtro);
+        lista.sort((a, b) => a.id.localeCompare(b.id));
+
+        if (lista.length === 0) {
+            cuerpo.innerHTML = '<tr><td colspan="6" style="padding:16px; color:#6B7280;">Todavía no hay códigos aquí.</td></tr>';
+            return;
+        }
+
+        cuerpo.innerHTML = lista.map(function (c) {
+            const baja = (c.estado === 'baja');
+            const estado = baja
+                ? '<span style="background:#FEE2E2; color:#B91C1C; border:1px solid #FECACA; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:600;">De baja</span>'
+                : '<span class="badge-active">Activo</span>';
+            const motivo = baja && c.motivo_baja
+                ? '<div style="font-size:11px; color:#9CA3AF; margin-top:3px;">' + codEsc(c.motivo_baja) + '</div>' : '';
+            const quien = codEsc(c.titular || '—') +
+                (c.tel  ? '<div style="font-size:11px; color:#9CA3AF;">' + codEsc(c.tel) + '</div>' : '') +
+                (c.nota ? '<div style="font-size:11px; color:#9CA3AF;">' + codEsc(c.nota) + '</div>' : '');
+            const acciones = baja
+                ? '<button class="btn-cancel" style="font-size:12px; padding:6px 10px;" onclick="codReactivar(\'' + codEsc(c.id) + '\')">Reactivar</button>'
+                : '<button class="btn-cancel" style="font-size:12px; padding:6px 10px;" onclick="codImprimir(\'' + codEsc(c.id) + '\')">Imprimir</button>' +
+                  '<button class="btn-cancel" style="font-size:12px; padding:6px 10px; color:#DC2626;" onclick="codBaja(\'' + codEsc(c.id) + '\')">Dar de baja</button>';
+            return '<tr style="border-bottom:1px solid #F3F4F6;' + (baja ? ' opacity:.65;' : '') + '">' +
+                '<td style="padding:12px 10px;"><code style="font-weight:700; font-size:13px;">' + codEsc(c.id) + '</code></td>' +
+                '<td style="padding:12px 10px; font-size:13px; color:#6B7280;">' + (nombres[c.tipo] || c.tipo || '—') + '</td>' +
+                '<td style="padding:12px 10px; font-size:13px;">' + quien + '</td>' +
+                '<td style="padding:12px 10px; font-size:13px; text-align:right;">' + (c.escaneos || 0) + '</td>' +
+                '<td style="padding:12px 10px;">' + estado + motivo + '</td>' +
+                '<td style="padding:12px 10px; text-align:right; white-space:nowrap;">' + acciones + '</td>' +
+            '</tr>';
+        }).join('');
+    }
+
+    /* La hoja lista para imprimir. Cada tipo lleva su propio texto
+       porque no los lee la misma persona: el del vehiculo lo ve un
+       pasajero sentado, el de la caja lo ve alguien pagando, y la
+       calcomania la ve alguien pasando por la banqueta. */
+    function codImprimir(codigo) {
+        const c = window.codTodos.find(x => x.id === codigo);
+        if (!c) { alert('No encontré ese código.'); return; }
+
+        const base = 'https://encavigo.com/';
+        let contenido, titulo, bajada, pie, ancho;
+
+        if (c.tipo === 'vehiculo') {
+            contenido = base + '?chofer=' + encodeURIComponent(codigo);
+            titulo = 'Promociones para tu viaje';
+            bajada = 'Escanea con la cámara de tu teléfono y mira las promociones de los negocios por los que vas pasando.';
+            pie    = 'Válido 24 horas desde que escaneas.';
+            ancho  = '105mm';
+        } else if (c.tipo === 'calcomania') {
+            contenido = base + '?desde=' + encodeURIComponent(codigo);
+            titulo = 'Este negocio se mueve con EncaviGO';
+            bajada = 'Escanea y mira las promociones que traen los pasajeros que llegan en taxi.';
+            pie    = '';
+            ancho  = '90mm';
+        } else {
+            contenido = codigo;
+            titulo = 'Código de este negocio';
+            bajada = 'Escanéalo al usar tu cupón de EncaviGO. Si no puedes escanear, escribe el código a mano.';
+            pie    = '';
+            ancho  = '105mm';
+        }
+
+        const v = window.open('', '_blank');
+        if (!v) { alert('El navegador bloqueó la ventana. Permite las ventanas emergentes e inténtalo otra vez.'); return; }
+
+        v.document.write(
+'<!doctype html><html><head><meta charset="utf-8"><title>' + codEsc(codigo) + '</title>' +
+'<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"><\/script>' +
+'<style>' +
+'  @page { margin: 12mm; }' +
+'  body { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; margin:0; padding:24px;' +
+'         display:flex; justify-content:center; background:#F3F4F6; }' +
+'  .hoja { width:' + ancho + '; background:#FBF2E1; border:3px solid #29374E; border-radius:16px;' +
+'          padding:22px 20px 18px; text-align:center; color:#29374E; }' +
+'  .marca { font-size:13px; font-weight:900; letter-spacing:2px; margin:0 0 14px; }' +
+'  h1 { font-size:19px; font-weight:900; line-height:1.25; margin:0 0 10px; }' +
+'  p.baj { font-size:12.5px; line-height:1.45; margin:0 0 16px; color:#3F4E68; }' +
+'  #qr { display:flex; justify-content:center; margin-bottom:14px; }' +
+'  #qr img, #qr canvas { display:block; }' +
+'  .cod { font-family:ui-monospace, Menlo, Consolas, monospace; font-size:22px; font-weight:800;' +
+'         letter-spacing:2px; background:#29374E; color:#FBF2E1; border-radius:9px; padding:9px 0; }' +
+'  p.pie { font-size:11px; color:#6B7280; margin:12px 0 0; }' +
+'  .imprimir { margin-top:20px; text-align:center; }' +
+'  .imprimir button { font-size:14px; padding:11px 22px; border:none; border-radius:9px;' +
+'                     background:#111827; color:#FFF; font-weight:600; cursor:pointer; }' +
+'  @media print { body { background:#FFF; padding:0; } .imprimir { display:none; } }' +
+'</style></head><body><div><div class="hoja">' +
+'  <p class="marca">ENCAVIGO</p>' +
+'  <h1>' + codEsc(titulo) + '</h1>' +
+'  <p class="baj">' + codEsc(bajada) + '</p>' +
+'  <div id="qr"></div>' +
+'  <div class="cod">' + codEsc(codigo) + '</div>' +
+   (pie ? '<p class="pie">' + codEsc(pie) + '</p>' : '') +
+'</div>' +
+'<div class="imprimir"><button onclick="window.print()">Imprimir</button></div></div>' +
+'<script>' +
+'  window.addEventListener("load", function(){' +
+'    new QRCode(document.getElementById("qr"), {' +
+'      text: ' + JSON.stringify(contenido) + ', width: 230, height: 230,' +
+'      colorDark: "#29374E", colorLight: "#FBF2E1",' +
+'      correctLevel: QRCode.CorrectLevel.H });' +
+'  });' +
+'<\/script></body></html>');
+        v.document.close();
+    }
+
     function switchTab(tab) {
         // Update nav UI
         document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
@@ -817,6 +1171,11 @@ function closeModal() {
         document.getElementById('view-choferes').style.display = (tab === 'choferes') ? 'block' : 'none';
         const vAna = document.getElementById('view-analiticas');
         if(vAna) vAna.style.display = (tab === 'analiticas') ? 'flex' : 'none';
+        const vCod = document.getElementById('view-codigos');
+        if (vCod) {
+            vCod.style.display = (tab === 'codigos') ? 'block' : 'none';
+            if (tab === 'codigos') codCargar();
+        }
         const vCob = document.getElementById('view-cobros');
         if(vCob) {
             vCob.style.display = (tab === 'cobros') ? 'block' : 'none';
