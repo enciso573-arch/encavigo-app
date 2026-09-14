@@ -372,6 +372,27 @@
       </tr></thead><tbody id="codLista"></tbody></table>
     </div>
   </div>
+
+  <div style="background:#FFF; border:1px solid #FECACA; border-radius:16px; padding:24px; margin-top:24px;">
+    <h2 style="font-size:17px; margin:0 0 4px 0; color:#B91C1C;">Cerrar la etapa de pruebas</h2>
+    <p style="font-size:13px; color:#6B7280; margin:0 0 16px 0; max-width:640px;">
+      Borra todo lo que se generó probando: contadores, choferes, promociones, cupones y registros.
+      Se usa una sola vez, antes de dar de alta al primer chofer y al primer negocio de verdad.
+      <strong>Los códigos QR registrados aquí arriba no se tocan</strong>, porque esos ya podrían estar impresos.
+    </p>
+
+    <button class="btn-cancel" style="border:1px solid #D1D5DB; border-radius:8px; padding:9px 14px; font-size:13px;" onclick="limpiezaPrevia()">Ver qué se borraría</button>
+
+    <div id="limpiezaCaja" style="display:none; margin-top:18px; border-top:1px solid #FEE2E2; padding-top:18px;">
+      <div id="limpiezaLista" style="font-size:13px; margin-bottom:16px;"></div>
+      <label style="display:block; font-size:12px; color:#6B7280; margin-bottom:6px; font-weight:600;">Para confirmar, escribe BORRAR</label>
+      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+        <input id="limpiezaPalabra" placeholder="BORRAR" style="padding:10px 12px; border:1px solid #D1D5DB; border-radius:8px; font-family:'Inter',sans-serif; font-size:14px; text-transform:uppercase; width:150px;"/>
+        <button style="border:none; cursor:pointer; background:#B91C1C; color:#FFF; font-weight:600; font-size:13px; padding:10px 16px; border-radius:8px;" onclick="limpiezaEjecutar()">Borrar y empezar de cero</button>
+        <span id="limpiezaAviso" style="font-size:13px;"></span>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div id="view-analiticas" style="display: none; height: 100%; flex-direction: column;">
@@ -1261,6 +1282,97 @@ function closeModal() {
 '  });' +
 '<\/script></body></html>');
         v.document.close();
+    }
+
+    /* ══ CERRAR LA ETAPA DE PRUEBAS ══════════════════════════════
+       Todo lo que hay en la base salio de probar los formularios:
+       un chofer de ejemplo, dos promociones de relleno, y contadores
+       que no corresponden a nadie. Mientras sigan ahi, la pagina de
+       negocios publica unidades que no existen.
+       Los codigos QR NO se borran: pueden estar impresos ya.
+    ═══════════════════════════════════════════════════════════════ */
+    const LIMPIEZA_COLECCIONES = [
+        ['tickets',    'Cupones quemados'],
+        ['opiniones',  'Opiniones de clientes'],
+        ['scan_log',   'Registro de escaneos'],
+        ['click_log',  'Registro de clicks'],
+        ['calco_log',  'Escaneos de calcomanías'],
+        ['choferes',   'Choferes'],
+        ['campaigns',  'Promociones']
+    ];
+
+    async function limpiezaPrevia() {
+        const caja  = document.getElementById('limpiezaCaja');
+        const lista = document.getElementById('limpiezaLista');
+        caja.style.display = 'block';
+        lista.innerHTML = '<span style="color:#6B7280;">Contando…</span>';
+        document.getElementById('limpiezaAviso').textContent = '';
+
+        const filas = [];
+        for (const [col, nombre] of LIMPIEZA_COLECCIONES) {
+            let n = 0;
+            try { n = (await db.collection(col).get()).size; } catch (e) { n = '?'; }
+            filas.push([nombre, n]);
+        }
+        let g = null;
+        try {
+            const d = await db.collection('stats').doc('global').get();
+            if (d.exists) g = d.data();
+        } catch (e) {}
+
+        lista.innerHTML =
+            filas.map(f => '<div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #F3F4F6;">' +
+                             '<span>' + codEsc(f[0]) + '</span><strong>' + f[1] + '</strong></div>').join('') +
+            (g ? '<div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #F3F4F6;">' +
+                   '<span>Contador global (vuelve a cero)</span><strong>' +
+                   (g.scans || 0) + ' escaneos, ' + (g.clicks || 0) + ' clicks</strong></div>' : '') +
+            '<p style="color:#B91C1C; margin:12px 0 0;">Esto no se puede deshacer.</p>';
+    }
+
+    async function limpiezaEjecutar() {
+        const palabra = (document.getElementById('limpiezaPalabra').value || '').trim().toUpperCase();
+        const avi = document.getElementById('limpiezaAviso');
+        if (palabra !== 'BORRAR') {
+            avi.textContent = 'Escribe BORRAR para confirmar.';
+            avi.style.color = '#B91C1C';
+            return;
+        }
+        if (!confirm('Se borra todo el historial de pruebas y no hay vuelta atrás.\n\n¿Seguro?')) return;
+
+        avi.style.color = '#6B7280';
+        let total = 0, fallos = [];
+
+        for (const [col, nombre] of LIMPIEZA_COLECCIONES) {
+            avi.textContent = 'Borrando ' + nombre.toLowerCase() + '…';
+            try {
+                const snap = await db.collection(col).get();
+                for (const d of snap.docs) {
+                    try { await d.ref.delete(); total++; }
+                    catch (e) { fallos.push(col + '/' + d.id); }
+                }
+            } catch (e) { fallos.push(col + ' (no se pudo leer)'); }
+        }
+
+        try {
+            await db.collection('stats').doc('global').set({ scans: 0, clicks: 0 });
+        } catch (e) { fallos.push('contador global'); }
+
+        document.getElementById('limpiezaPalabra').value = '';
+
+        /* Se repinta la cuenta primero, porque limpiar la vista borra
+           el aviso, y el resultado tiene que quedar a la vista. */
+        await limpiezaPrevia();
+        codCargar();
+
+        if (fallos.length) {
+            avi.style.color = '#B91C1C';
+            avi.textContent = 'Se borraron ' + total + ', pero quedaron ' + fallos.length +
+                              ' sin borrar: ' + fallos.slice(0, 4).join(', ') +
+                              (fallos.length > 4 ? '…' : '');
+        } else {
+            avi.style.color = '#059669';
+            avi.textContent = 'Listo. Se borraron ' + total + ' registros y el contador quedó en cero.';
+        }
     }
 
     function switchTab(tab) {

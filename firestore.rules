@@ -160,7 +160,12 @@ service cloud.firestore {
                     && request.resource.data.codigo is string
                     && request.resource.data.dev is string;
       allow read: if request.auth != null;
-      allow update, delete: if false;
+
+      /* Cambiar un registro sigue prohibido para todos, incluida tu
+         sesion: ese candado es lo que impide inflar los contadores.
+         Borrarlo si puedes, para poder tirar los datos de prueba. */
+      allow update: if false;
+      allow delete: if request.auth != null;
     }
 
     // ─────────────────────────────────────────────────────────────
@@ -174,7 +179,12 @@ service cloud.firestore {
     match /click_log/{id} {
       allow create: if true;
       allow read: if request.auth != null;
-      allow update, delete: if false;
+
+      /* Cambiar un registro sigue prohibido para todos, incluida tu
+         sesion: ese candado es lo que impide inflar los contadores.
+         Borrarlo si puedes, para poder tirar los datos de prueba. */
+      allow update: if false;
+      allow delete: if request.auth != null;
     }
 
     // ─────────────────────────────────────────────────────────────
@@ -188,7 +198,12 @@ service cloud.firestore {
     match /scan_log/{id} {
       allow create: if true;
       allow read: if request.auth != null;
-      allow update, delete: if false;
+
+      /* Cambiar un registro sigue prohibido para todos, incluida tu
+         sesion: ese candado es lo que impide inflar los contadores.
+         Borrarlo si puedes, para poder tirar los datos de prueba. */
+      allow update: if false;
+      allow delete: if request.auth != null;
     }
 
     // ─────────────────────────────────────────────────────────────
