@@ -5534,6 +5534,24 @@
   .eg-pin.eg-near, .eg-pin.eg-near::after{ animation:none; }
 }
 
+
+/* ── Tarjeta de la lista cuando el negocio esta a menos de 500 m ── */
+.mini-dist{ font-size:11px; color:#64748B; margin:4px 0 0 0; font-weight:600; }
+.mini-dist-cerca{ color:#F97316; }
+.mini-card-cerca{
+  border:1px solid rgba(249,115,22,.55);
+  box-shadow:0 0 0 0 rgba(249,115,22,.5);
+  animation:mini-late 1.8s ease-out infinite;
+}
+@keyframes mini-late{
+  0%  { box-shadow:0 0 0 0 rgba(249,115,22,.5); transform:translateX(0); }
+  12% { transform:translateX(2px); }
+  24% { transform:translateX(0); }
+  70% { box-shadow:0 0 0 10px rgba(249,115,22,0); }
+  100%{ box-shadow:0 0 0 0 rgba(249,115,22,0); transform:translateX(0); }
+}
+@media (prefers-reduced-motion: reduce){ .mini-card-cerca{ animation:none; } }
+
 </style>
 <script src="https://unpkg.com/html5-qrcode"></script>
 <link rel="icon" href="/favicon.png" type="image/png" />
@@ -5814,33 +5832,54 @@ document.addEventListener('DOMContentLoaded', () => {
     window.loadedCampaigns = []; // Store them for radar
     
     function actualizarRadar(userLat, userLng) {
-        let cercanas = [];
+        /* Salen TODOS los afiliados con ubicacion, ordenados del mas
+           cercano al mas lejano. Los que estan dentro de 500 m se
+           marcan aparte y se mueven, para que se note que esa es la
+           que se esta pasando. */
+        const RADIO_CERCA_KM = 0.5;
+        let lista = [];
         window.loadedCampaigns.forEach(camp => {
-            if (camp.lat && camp.lng) {
-                const dist = haversine(userLat, userLng, parseFloat(camp.lat), parseFloat(camp.lng));
-                if (dist <= 2.0) { 
-                    cercanas.push({
-                        title: camp.title,
-                        desc: camp.desc,
-                        img: camp.img,
-                        distKm: dist
-                    });
-                }
-            }
-        });
-        
-        if (drawerBadge) drawerBadge.innerText = cercanas.length;
-        
-        if (sheetContent && cercanas.length > 0) {
-            let html = '<p style="font-size: 12px; color: #34D399; text-align: center; margin-top:0;">El conductor se acerca a estos lugares:</p>';
-            cercanas.forEach(local => {
-                const mins = Math.max(1, Math.round(local.distKm * 5));
-                html += `<div class="mini-card"><div class="mini-card-img" style="background-image: url('${local.img}');"></div><div class="mini-card-info"><h4 class="mini-title">${local.title}</h4><p class="mini-desc">${local.desc} A ${mins} mins.</p></div></div>`;
+            const cLat = parseFloat(camp.lat), cLng = parseFloat(camp.lng);
+            if (!isFinite(cLat) || !isFinite(cLng)) return;
+            lista.push({
+                title: camp.title,
+                desc:  camp.desc,
+                img:   camp.img,
+                distKm: haversine(userLat, userLng, cLat, cLng)
             });
-            sheetContent.innerHTML = html;
-        } else if (sheetContent) {
-            sheetContent.innerHTML = '<p style="text-align:center; color:#94A3B8; margin-top:20px;">No hay promociones extremadamente cerca de ti en este momento.</p>';
+        });
+        lista.sort((a, b) => a.distKm - b.distKm);
+
+        const cerca = lista.filter(l => l.distKm <= RADIO_CERCA_KM);
+        if (drawerBadge) drawerBadge.innerText = cerca.length > 0 ? cerca.length : lista.length;
+
+        if (!sheetContent) return;
+
+        if (lista.length === 0) {
+            sheetContent.innerHTML = '<p style="text-align:center; color:#94A3B8; margin-top:20px;">Todavía no hay negocios afiliados con ubicación cargada.</p>';
+            return;
         }
+
+        let html = cerca.length > 0
+            ? '<p style="font-size:12px; color:#F97316; text-align:center; margin-top:0; font-weight:700;">Vas pasando por ' + cerca.length + (cerca.length === 1 ? ' promoción' : ' promociones') + ' ahora mismo:</p>'
+            : '<p style="font-size:12px; color:#94A3B8; text-align:center; margin-top:0;">Promociones en tu ruta, de la más cercana a la más lejana:</p>';
+
+        lista.forEach(local => {
+            const esCerca = local.distKm <= RADIO_CERCA_KM;
+            const metros  = Math.round(local.distKm * 1000);
+            const cuanto  = esCerca
+                ? (metros < 100 ? 'Aquí mismo' : 'A ' + metros + ' m — la vas pasando')
+                : (local.distKm < 1 ? 'A ' + metros + ' m' : 'A ' + local.distKm.toFixed(1) + ' km');
+            html += '<div class="mini-card' + (esCerca ? ' mini-card-cerca' : '') + '">'
+                  +   '<div class="mini-card-img" style="background-image: url(\'' + (local.img || '') + '\');"></div>'
+                  +   '<div class="mini-card-info">'
+                  +     '<h4 class="mini-title">' + local.title + '</h4>'
+                  +     '<p class="mini-desc">' + (local.desc || '') + '</p>'
+                  +     '<p class="mini-dist' + (esCerca ? ' mini-dist-cerca' : '') + '">' + cuanto + '</p>'
+                  +   '</div>'
+                  + '</div>';
+        });
+        sheetContent.innerHTML = html;
     }
 
     // CARGAR CAMPAÑAS DINÁMICAS DESDE FIREBASE
