@@ -6065,13 +6065,36 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         
         if (session && session.chofer !== 'orgánico') {
-            const chofRef = db.collection('choferes').doc(session.chofer);
-            chofRef.get().then(doc => {
-                if (doc.exists) {
-                    chofRef.update({ scans: firebase.firestore.FieldValue.increment(1) });
-                } else {
-                    chofRef.set({ scans: 1, clicks: 0, lastActive: new Date() });
+            /* Mismo candado que los clicks: un escaneo por celular,
+               por chofer, por dia. Antes subia cada vez que se abria
+               la app, asi que el mismo pasajero contaba de mas. */
+            if (!window.encaviDevId) {
+                var dv = null;
+                try { dv = localStorage.getItem('encavi_dev_id'); } catch(e) {}
+                if (!dv) {
+                    dv = 'd' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+                    try { localStorage.setItem('encavi_dev_id', dv); } catch(e) {}
                 }
+                window.encaviDevId = dv;
+            }
+            const diaHoy   = new Date().toISOString().slice(0, 10);
+            const huellaSc = session.chofer + '_' + window.encaviDevId + '_' + diaHoy;
+            const chofRef  = db.collection('choferes').doc(session.chofer);
+
+            db.collection('scan_log').doc(huellaSc).set({
+                chofer: session.chofer,
+                fecha: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                /* Primera vez de este celular con este chofer hoy: si cuenta. */
+                chofRef.get().then(doc => {
+                    if (doc.exists) {
+                        chofRef.update({ scans: firebase.firestore.FieldValue.increment(1) });
+                    } else {
+                        chofRef.set({ scans: 1, clicks: 0, lastActive: new Date() });
+                    }
+                });
+            }).catch(() => {
+                /* Escaneo repetido del mismo celular: se ignora a proposito. */
             });
         }
     } catch(e) { console.error("Error Firebase:", e); }
@@ -6296,12 +6319,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 status: 'quemado',
                 fecha: firebase.firestore.FieldValue.serverTimestamp()
             });
-            if (session && session.chofer) {
-                await db.collection('drivers').doc(session.chofer).set({
-                    earnings: firebase.firestore.FieldValue.increment(5),
-                    redemptions: firebase.firestore.FieldValue.increment(1)
-                }, {merge: true});
-            }
+            /* Aqui habia una escritura a 'drivers' con earnings +5.
+               Esa comision no estaba decidida y la coleccion no tiene
+               regla, asi que Firestore la rechazaba en silencio. Lo que
+               se le pague al chofer se calcula desde los tickets, que
+               son el dato duro. */
             mostrarSuccess(title);
         } catch (error) {
             console.error(error);

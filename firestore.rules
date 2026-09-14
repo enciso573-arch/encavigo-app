@@ -102,6 +102,20 @@ service cloud.firestore {
     }
 
     // ─────────────────────────────────────────────────────────────
+    // REGISTRO DE ESCANEOS (anti-inflado)
+    // Cada registro se llama: chofer + celular + fecha.
+    // Crear: cualquiera, pero SOLO la primera vez.
+    // El segundo intento del mismo celular cuenta como "update",
+    // y update aqui esta prohibido -> el escaneo no se repite.
+    // Leer: solo tu, con sesion iniciada.
+    // ─────────────────────────────────────────────────────────────
+    match /scan_log/{id} {
+      allow create: if true;
+      allow read: if request.auth != null;
+      allow update, delete: if false;
+    }
+
+    // ─────────────────────────────────────────────────────────────
     // TODO LO DEMAS QUEDA CERRADO
     // ─────────────────────────────────────────────────────────────
     match /{document=**} {
