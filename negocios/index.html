@@ -40,7 +40,13 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{
-  background:var(--page);color:var(--body);
+  background-color:#FFFCF8;
+  background-image:
+    radial-gradient(62% 38% at 86% 16%, rgba(255,140,0,.10) 0%, rgba(255,140,0,0) 62%),
+    radial-gradient(58% 34% at 6% 52%, rgba(15,122,102,.06) 0%, rgba(15,122,102,0) 64%),
+    radial-gradient(70% 40% at 70% 88%, rgba(255,140,0,.08) 0%, rgba(255,140,0,0) 66%);
+  background-repeat:no-repeat;
+  color:var(--body);
   font-family:var(--font);font-size:16px;line-height:1.65;font-weight:400;
   -webkit-font-smoothing:antialiased;overflow-x:hidden;
 }
@@ -161,7 +167,7 @@ h2{
 .lead{font-size:16.5px;color:var(--body);max-width:34em}
 
 .sheet{
-  background:var(--card);border:1px solid var(--line);
+  background:#FBF9F6;border:1px solid var(--line);
   border-radius:var(--radius);
 }
 .sheet h3{color:var(--ink);font-weight:600}
@@ -221,7 +227,7 @@ h2{
 .extra b{color:var(--orange);font-weight:600}
 
 /* fotos */
-.photo-box{padding:26px 24px;margin-top:14px;max-width:640px;border-left:3px solid var(--orange)}
+.photo-box{padding:26px 24px;margin-top:14px;max-width:640px}
 .photo-box .kicker{
   font-size:11px;font-weight:600;letter-spacing:1.1px;text-transform:uppercase;
   color:var(--orange);margin-bottom:8px;
