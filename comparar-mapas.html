@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EncaviGO — Comparar estilos de mapa</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  :root{ --naranja:#F97316; --tinta:#111827; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    background:#12100B;color:#E8E4DC;padding:22px;
+  }
+  h1{font-size:23px;font-weight:700;color:#fff;margin-bottom:6px}
+  .intro{font-size:15px;color:#9A948A;max-width:70ch;line-height:1.6;margin-bottom:24px}
+  .grid{display:grid;gap:20px}
+  @media(min-width:980px){ .grid{grid-template-columns:1fr 1fr} }
+  .caja{background:#1B1810;border:1px solid #2E2A22;border-radius:14px;overflow:hidden}
+  .cab{padding:14px 16px;border-bottom:1px solid #2E2A22}
+  .cab h2{font-size:16px;font-weight:600;color:#fff;margin-bottom:3px}
+  .cab p{font-size:13px;color:#9A948A;line-height:1.5}
+  .cab .etq{
+    display:inline-block;font-size:10px;letter-spacing:.8px;text-transform:uppercase;
+    font-weight:700;padding:3px 8px;border-radius:20px;margin-bottom:7px;
+  }
+  .hoy{background:rgba(239,68,68,.16);color:#F87171}
+  .rec{background:rgba(249,115,22,.16);color:var(--naranja)}
+  .alt{background:rgba(148,163,184,.14);color:#94A3B8}
+  .mapa{height:330px;width:100%}
+  .pin{border:2px solid #fff;border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center}
+  .pin i{transform:rotate(45deg);border-radius:50%;display:block}
+  .nota{margin-top:26px;background:#1B1810;border-left:3px solid var(--naranja);border-radius:10px;padding:16px 18px;font-size:14px;line-height:1.65;color:#B9B2A6}
+  .nota b{color:#fff}
+</style>
+</head>
+<body>
+
+<h1>¿Cuál mapa quieres para EncaviGO?</h1>
+<p class="intro">
+  Los cuatro muestran Puerto Vallarta con cinco negocios de ejemplo: cuatro normales
+  y uno resaltado, como se ve cuando el pasajero pasa cerca. Fíjate en una sola cosa:
+  <b>en cuál se distinguen mejor tus pines del resto del mapa</b>.
+</p>
+
+<div class="grid" id="grid"></div>
+
+<div class="nota">
+  <b>Los cuatro son gratis y ninguno necesita tarjeta.</b> El cambio es una línea de código,
+  y se puede dejar puesto el que escojas en menos de cinco minutos.
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  var CENTRO = [20.6300, -105.2350];
+
+  var ESTILOS = [
+    { id:'hoy', etq:'hoy', clase:'hoy',
+      titulo:'Lo que tienes ahora',
+      desc:'Mapa de Google. Lleno de color, con todos los comercios que Google ya conoce. Tus pines compiten contra cientos de iconos.',
+      url:'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
+      attr:'Google' },
+
+    { id:'oscuro', etq:'recomendado', clase:'rec',
+      titulo:'Oscuro y limpio',
+      desc:'Fondo apagado, sin comercios ajenos. El naranja brilla encima. Va con el color de tu app, y ya lo usas en mapa.html.',
+      url:'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+      attr:'&copy; OpenStreetMap &copy; CARTO' },
+
+    { id:'claro', etq:'alternativa', clase:'alt',
+      titulo:'Claro y limpio',
+      desc:'Casi blanco, con calles apenas marcadas. Se lee muy fácil de día y bajo el sol, que es cuando va el pasajero en el carro.',
+      url:'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+      attr:'&copy; OpenStreetMap &copy; CARTO' },
+
+    { id:'medio', etq:'alternativa', clase:'alt',
+      titulo:'Intermedio',
+      desc:'Algo de color para ubicarse mejor, pero sin los comercios de Google. Punto medio si el limpio te parece muy vacío.',
+      url:'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+      attr:'&copy; OpenStreetMap &copy; CARTO' }
+  ];
+
+  var NEGOCIOS = [
+    { lat:20.6285, lng:-105.2380, nombre:'Tacos Don Beto',   cerca:false },
+    { lat:20.6350, lng:-105.2300, nombre:'Asador El Pariente',cerca:false },
+    { lat:20.6230, lng:-105.2320, nombre:'Spa Pacífico',      cerca:false },
+    { lat:20.6400, lng:-105.2270, nombre:'Boutique Malecón',  cerca:false },
+    { lat:20.6305, lng:-105.2355, nombre:'Cervecería (cerca)',cerca:true  }
+  ];
+
+  function icono(cerca){
+    var tam   = cerca ? 38 : 26;
+    var fondo = cerca ? '#F97316' : '#111827';
+    var punto = cerca ? '#FFFFFF' : '#F97316';
+    var sombra= cerca ? '0 0 16px rgba(249,115,22,.95)' : '0 2px 6px rgba(0,0,0,.45)';
+    return L.divIcon({
+      className:'',
+      iconSize:[tam,tam],
+      iconAnchor:[tam/2,tam],
+      html:'<div class="pin" style="width:'+tam+'px;height:'+tam+'px;background:'+fondo+';box-shadow:'+sombra+'">'
+           + '<i style="width:'+(tam*0.3)+'px;height:'+(tam*0.3)+'px;background:'+punto+'"></i></div>'
+    });
+  }
+
+  var grid = document.getElementById('grid');
+
+  ESTILOS.forEach(function(e){
+    var caja = document.createElement('div');
+    caja.className = 'caja';
+    caja.innerHTML =
+      '<div class="cab"><span class="etq '+e.clase+'">'+e.etq+'</span>'
+      + '<h2>'+e.titulo+'</h2><p>'+e.desc+'</p></div>'
+      + '<div class="mapa" id="m-'+e.id+'"></div>';
+    grid.appendChild(caja);
+
+    var m = L.map('m-'+e.id, { zoomControl:false, attributionControl:true }).setView(CENTRO, 14);
+    L.tileLayer(e.url, { maxZoom:19, attribution:e.attr }).addTo(m);
+    NEGOCIOS.forEach(function(n){
+      L.marker([n.lat,n.lng], { icon: icono(n.cerca) }).addTo(m).bindPopup(n.nombre);
+    });
+  });
+</script>
+
+</body>
+</html>
