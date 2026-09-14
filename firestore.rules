@@ -68,6 +68,26 @@ service cloud.firestore {
     }
 
     // ─────────────────────────────────────────────────────────────
+    // OPINIONES Y QUEJAS DE LOS CLIENTES
+    // El pasajero deja su opinion despues de quemar el cupon.
+    // Crear: cualquiera, pero solo con los campos esperados, para
+    //        que nadie use la coleccion de bodega.
+    // Leer, cambiar o borrar: solo tu, con sesion iniciada.
+    // ─────────────────────────────────────────────────────────────
+    match /opiniones/{doc} {
+      allow create: if request.resource.data.keys().hasOnly(
+                         ['camp_id','negocio','chofer','respetado',
+                          'estrellas','comentario','atendida','fecha'])
+                    && request.resource.data.respetado is bool
+                    && request.resource.data.estrellas is int
+                    && request.resource.data.estrellas >= 0
+                    && request.resource.data.estrellas <= 5
+                    && request.resource.data.comentario.size() <= 600;
+
+      allow read, update, delete: if request.auth != null;
+    }
+
+    // ─────────────────────────────────────────────────────────────
     // REGISTRO DE CLICKS (anti-inflado)
     // Cada registro se llama: promo + celular + fecha.
     // Crear: cualquiera, pero SOLO la primera vez.
