@@ -6290,28 +6290,77 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
+    /* Lo que se esta por quemar, para que el plan B manual lo alcance */
+    let cajaEsperada = null, campanaEnCurso = null, tituloEnCurso = null;
+
+    function normalizarCaja(t) {
+        return String(t || '').toUpperCase().replace(/\s+/g, '').trim();
+    }
+
+    function coincideCaja(leido) {
+        const a = normalizarCaja(leido), b = normalizarCaja(cajaEsperada);
+        return !!b && (a === b || a.indexOf(b) !== -1);
+    }
+
     function abrirScanner(campId, expectedCajaId, title) {
+        cajaEsperada   = expectedCajaId;
+        campanaEnCurso = campId;
+        tituloEnCurso  = title;
+
         document.getElementById('scannerModal').style.display = 'flex';
-        
+        document.getElementById('cajaManual').style.display = 'none';
+        document.getElementById('btnManual').style.display = 'inline';
+        document.getElementById('errorCaja').style.display = 'none';
+        document.getElementById('inputCaja').value = '';
+
         if (!html5QrcodeScanner) {
             html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: {width: 250, height: 250} }, false);
         }
-        
-        html5QrcodeScanner.render((decodedText, decodedResult) => {
-            console.log("QR Leido: ", decodedText);
-            if (decodedText.includes(expectedCajaId) || decodedText === expectedCajaId) {
-                html5QrcodeScanner.clear();
-                document.getElementById('scannerModal').style.display = 'none';
-                quemarCupon(campId, title);
-            } else {
-                alert('Código incorrecto. Asegúrate de escanear el QR de la caja de este negocio.');
-            }
-        }, (error) => {});
+
+        try {
+            html5QrcodeScanner.render((decodedText) => {
+                if (coincideCaja(decodedText)) {
+                    cerrarScanner();
+                    quemarCupon(campanaEnCurso, tituloEnCurso);
+                } else {
+                    alert('Código incorrecto. Asegúrate de escanear el QR de la caja de este negocio.');
+                }
+            }, () => {});
+        } catch (e) {
+            /* Sin camara o sin permiso: se ofrece el plan B de inmediato,
+               para que nadie se quede parado en la caja sin poder cobrar. */
+            console.error('camara:', e);
+            mostrarCodigoManual();
+        }
+    }
+
+    function mostrarCodigoManual() {
+        document.getElementById('btnManual').style.display = 'none';
+        document.getElementById('cajaManual').style.display = 'block';
+        document.getElementById('inputCaja').focus();
+    }
+
+    function confirmarCodigoManual() {
+        const escrito = document.getElementById('inputCaja').value;
+        const err = document.getElementById('errorCaja');
+        if (!normalizarCaja(escrito)) {
+            err.innerText = 'Escribe el código de la caja.';
+            err.style.display = 'block';
+            return;
+        }
+        if (!coincideCaja(escrito)) {
+            err.innerText = 'Ese código no es el de este negocio. Revisa el letrero de la caja.';
+            err.style.display = 'block';
+            return;
+        }
+        err.style.display = 'none';
+        cerrarScanner();
+        quemarCupon(campanaEnCurso, tituloEnCurso);
     }
 
     function cerrarScanner() {
         document.getElementById('scannerModal').style.display = 'none';
-        if (html5QrcodeScanner) { html5QrcodeScanner.clear(); }
+        if (html5QrcodeScanner) { try { html5QrcodeScanner.clear(); } catch (e) {} }
     }
 
     /* ══ QUEMAR EL CUPON ══════════════════════════════════════
@@ -6609,6 +6658,22 @@ document.addEventListener('DOMContentLoaded', () => {
     <h2 style="color: white; margin-bottom: 20px; text-align: center;">Escanea el código de la caja</h2>
     <div id="reader" style="width: 300px; border-radius: 12px; overflow: hidden; background: #000; margin-bottom: 30px;"></div>
     <button onclick="cerrarScanner()" style="background: #4B5563; color: white; border: none; padding: 12px 30px; border-radius: 30px; font-size: 16px;">Cancelar</button>
+
+    <!-- Plan B: sin camara, con la camara rota o con el permiso negado.
+         No baja la seguridad: el codigo de la caja esta impreso a la
+         vista de todos, y el candado de verdad es el de ubicacion. -->
+    <button id="btnManual" onclick="mostrarCodigoManual()" style="background: none; color: #94A3B8; border: none; margin-top: 18px; font-size: 14px; text-decoration: underline;">No puedo escanear</button>
+
+    <div id="cajaManual" style="display: none; margin-top: 18px; width: 300px; text-align: center;">
+        <p style="color: #94A3B8; font-size: 13px; line-height: 1.5; margin-bottom: 12px;">
+            Escribe el código que viene junto al QR de la caja.
+        </p>
+        <input id="inputCaja" type="text" autocapitalize="characters" autocomplete="off"
+               placeholder="Ej. CAJA-01"
+               style="width: 100%; padding: 14px; border-radius: 10px; border: 1px solid #4B5563; background: #111827; color: #fff; font-size: 17px; text-align: center; letter-spacing: 1px;" />
+        <p id="errorCaja" style="color: #F87171; font-size: 13px; margin-top: 10px; display: none;"></p>
+        <button onclick="confirmarCodigoManual()" style="width: 100%; margin-top: 12px; background: #F97316; color: #fff; border: none; padding: 14px; border-radius: 30px; font-size: 16px; font-weight: 700;">Usar mi cupón</button>
+    </div>
 </div>
 
 <!-- SUCCESS MODAL -->
