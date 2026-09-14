@@ -5495,12 +5495,52 @@
     .locate-btn { position: absolute; bottom: 30px; right: 20px; z-index: 1000; background: white; border: none; width: 45px; height: 45px; border-radius: 50%; box-shadow: 0 2px 10px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; cursor: pointer; color: #3B82F6; }
     .locate-btn svg { width: 24px; height: 24px; }
 
+
+/* ── PIN DE NEGOCIO AFILIADO — lleva la marca EncaviGO ──
+   Lejos: gota azul con la marca en crema.
+   Dentro del radio: gota naranja, mas grande, con brinco
+   y un aro que late, para que se note que esa se va a pasar. */
+.eg-pin{
+  width:30px; height:30px; border-radius:50% 50% 50% 0;
+  transform:rotate(-45deg); background:#29374E;
+  border:2px solid #fff; box-shadow:-2px 2px 6px rgba(0,0,0,.35);
+  display:flex; align-items:center; justify-content:center;
+  position:relative; color:#FBF2E1;
+}
+.eg-pin .eg-glyph{ transform:rotate(45deg); display:flex; }
+.eg-pin svg{ width:15px; height:18px; display:block; }
+.eg-pin.eg-near{
+  width:44px; height:44px; background:#F07150; color:#fff;
+  box-shadow:-3px 3px 14px rgba(240,113,80,.85);
+  animation:eg-bob 1.1s ease-in-out infinite;
+}
+.eg-pin.eg-near svg{ width:23px; height:27px; }
+.eg-pin.eg-near::after{
+  content:''; position:absolute; top:50%; left:50%;
+  width:44px; height:44px; border-radius:50%;
+  border:2px solid #F07150; pointer-events:none;
+  animation:eg-ring 1.7s ease-out infinite;
+}
+@keyframes eg-bob{
+  0%,100%{ transform:rotate(-45deg) translate(0,0); }
+  50%    { transform:rotate(-45deg) translate(2px,-2px); }
+}
+@keyframes eg-ring{
+  0%  { transform:translate(-50%,-50%) scale(.55); opacity:.75; }
+  70% { transform:translate(-50%,-50%) scale(2.3);  opacity:0; }
+  100%{ transform:translate(-50%,-50%) scale(2.3);  opacity:0; }
+}
+@media (prefers-reduced-motion: reduce){
+  .eg-pin.eg-near, .eg-pin.eg-near::after{ animation:none; }
+}
+
 </style>
 <script src="https://unpkg.com/html5-qrcode"></script>
 <link rel="icon" href="/favicon.png" type="image/png" />
 <link rel="apple-touch-icon" href="/icon-192.png" />
 </head>
 <body>
+<svg width="0" height="0" aria-hidden="true" style="position:absolute"><symbol id="egMark" viewBox="183 0 195 227"><path fill="currentColor" fill-rule="evenodd" d="M286.00,225.87C277.94,225.35 273.45,224.75 266.00,223.21C263.44,222.67 261.99,222.31 257.60,221.08C253.70,219.99 247.16,217.83 245.30,217.01C244.09,216.48 242.56,215.81 241.90,215.54C240.09,214.78 235.66,212.58 234.30,211.77C233.64,211.37 232.33,210.60 231.40,210.05C224.89,206.22 215.22,197.79 208.37,190.00C205.41,186.63 201.59,181.30 199.49,177.60C198.96,176.67 198.23,175.41 197.88,174.80C196.85,173.05 192.63,164.48 191.76,162.40C187.95,153.19 185.66,144.44 184.42,134.40C182.80,121.26 182.68,110.48 184.02,99.30C184.62,94.32 186.42,85.56 187.79,81.00C188.13,79.84 188.64,78.14 188.92,77.20C189.63,74.82 191.06,70.58 191.76,68.80C193.50,64.39 195.50,59.80 196.47,57.96C198.18,54.74 198.89,53.46 199.23,52.97C199.43,52.68 199.60,52.36 199.60,52.25C199.60,52.15 199.86,51.67 200.17,51.18C202.53,47.51 203.73,45.76 205.49,43.42C206.59,41.95 207.68,40.51 207.90,40.21C208.79,39.01 213.29,34.10 216.40,30.93C222.06,25.15 226.94,21.17 232.90,17.47C237.17,14.81 238.17,14.24 241.00,12.87C242.48,12.15 244.02,11.40 244.40,11.20C244.78,11.00 245.59,10.64 246.18,10.41C246.78,10.17 247.64,9.81 248.10,9.60C248.55,9.39 250.14,8.82 251.61,8.33C253.09,7.85 254.53,7.35 254.80,7.24C255.07,7.13 256.11,6.79 257.10,6.49C258.09,6.19 259.57,5.74 260.40,5.48C265.78,3.84 273.32,2.36 280.60,1.52C289.82,0.45 304.06,0.62 313.70,1.90C320.76,2.83 330.01,4.86 335.20,6.61C341.02,8.56 344.64,10.15 351.10,13.56C354.39,15.30 354.74,15.51 359.65,18.74C365.02,22.28 368.06,24.63 369.60,26.43C373.07,30.49 374.41,34.01 374.43,39.08C374.45,43.71 373.60,46.28 370.44,51.20C369.25,53.05 367.14,55.22 364.91,56.87C362.88,58.39 362.21,58.73 359.93,59.44C357.98,60.04 357.77,60.07 354.30,60.07C351.01,60.08 350.52,60.03 348.60,59.53C345.97,58.84 344.44,58.24 341.90,56.91C339.20,55.49 334.09,52.65 333.10,52.03C332.32,51.53 326.09,48.40 325.89,48.40C325.83,48.40 325.09,48.09 324.24,47.72C319.03,45.40 314.25,44.07 306.88,42.88C299.66,41.71 287.64,42.11 280.00,43.78C274.59,44.96 270.56,46.36 264.40,49.21C261.56,50.52 261.23,50.71 258.50,52.54C252.69,56.42 247.69,61.15 243.67,66.58C243.22,67.20 242.62,67.97 242.35,68.30C241.41,69.43 237.96,75.27 236.91,77.50C236.50,78.38 235.86,79.73 235.49,80.50C234.80,81.96 234.18,83.57 232.71,87.80C231.94,90.01 231.58,91.35 230.50,96.10C230.35,96.76 229.99,99.05 229.69,101.20C229.17,105.04 229.16,105.23 229.26,113.10C229.36,120.10 229.43,121.58 229.87,124.90C231.16,134.62 232.01,138.03 235.01,145.50C236.68,149.64 237.74,151.70 239.95,155.09C243.04,159.83 244.89,162.11 248.79,166.01C252.65,169.88 254.27,171.21 257.80,173.43C261.17,175.55 262.15,176.11 264.80,177.40C272.92,181.37 281.24,183.25 294.90,184.22C299.77,184.57 306.50,184.15 313.00,183.08C316.79,182.46 318.38,182.08 322.50,180.78C331.86,177.83 334.45,176.61 334.99,174.92C335.24,174.12 335.56,167.98 335.80,159.00C335.91,155.09 336.07,151.54 336.17,151.10C337.40,145.45 339.78,141.66 343.64,139.19C347.50,136.71 353.59,135.52 360.09,135.98C366.88,136.46 370.84,138.26 374.05,142.35C375.86,144.64 376.80,147.36 377.22,151.50C377.49,154.16 377.48,180.06 377.21,186.56C376.85,194.84 375.48,198.85 371.67,202.67C370.40,203.94 368.54,205.31 364.93,207.62C362.97,208.88 355.92,212.49 352.50,214.00C348.36,215.82 347.46,216.20 347.32,216.20C347.24,216.20 346.62,216.46 345.94,216.78C343.87,217.74 338.98,219.40 335.90,220.20C335.57,220.29 333.91,220.76 332.20,221.25C330.50,221.75 328.69,222.22 328.20,222.29C327.71,222.37 326.81,222.56 326.20,222.71C322.62,223.60 312.89,224.96 307.00,225.40C300.45,225.87 289.80,226.12 286.00,225.87ZM281.94,153.00C279.64,152.59 276.86,150.65 275.50,148.50C274.81,147.42 274.13,145.73 273.78,144.24C273.62,143.58 273.54,134.69 273.49,114.90C273.42,83.36 273.43,82.93 274.59,80.15C275.22,78.65 276.98,76.33 278.14,75.47C280.10,74.03 282.07,73.51 284.98,73.65C287.58,73.77 289.61,74.42 292.64,76.11C293.77,76.74 295.15,77.51 295.70,77.81C298.72,79.47 300.09,80.24 301.90,81.30C303.00,81.95 304.57,82.85 305.40,83.31C307.87,84.67 309.37,85.56 310.26,86.16C310.72,86.48 311.84,87.20 312.75,87.77C313.66,88.34 315.10,89.24 315.95,89.77C316.80,90.30 318.28,91.23 319.23,91.82C320.18,92.41 321.21,93.05 321.53,93.23C322.85,93.99 326.40,96.17 327.76,97.05C328.56,97.57 329.25,98.00 329.30,98.00C329.49,98.00 334.62,101.14 336.79,102.58C338.05,103.42 339.59,104.57 340.22,105.15C342.49,107.25 343.77,110.91 343.20,113.73C343.07,114.37 342.60,115.67 342.16,116.60C341.06,118.90 339.04,120.89 335.32,123.32C328.78,127.58 326.68,128.90 324.20,130.30C323.26,130.83 322.19,131.46 321.80,131.71C321.42,131.95 319.98,132.80 318.60,133.61C317.23,134.41 314.84,135.89 313.30,136.90C310.41,138.79 309.97,139.06 306.35,141.22C302.33,143.61 301.86,143.90 300.28,144.88C299.41,145.42 297.84,146.42 296.80,147.10C293.39,149.32 288.58,151.97 287.01,152.50C285.29,153.07 283.37,153.26 281.94,153.00Z"/></symbol></svg>
 
 <!-- SPLASH SCREEN DE BIENVENIDA -->
 <div id="splashScreen" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #09090B; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; transition: opacity 0.4s ease, visibility 0.4s ease;">
@@ -6119,42 +6159,13 @@ document.addEventListener('DOMContentLoaded', () => {
     let uMarker = null;
 
     const getMarkerIcon = (camp, isClose) => {
-        const size = isClose ? 40 : 28;
-        const bg = isClose ? '#F97316' : '#111827'; 
-        const inner = isClose ? '#FFFFFF' : '#F97316';
-        
-        const shadow = isClose ? '-3px 3px 15px rgba(249,115,22,0.9)' : '-2px 2px 6px rgba(0,0,0,0.4)';
-        const anim = isClose ? 'animation: pulse 1.5s infinite;' : '';
-        const zindex = isClose ? 'z-index: 1000;' : 'z-index: 500;';
-
-        const html = `
-            <div style="
-                width: ${size}px; 
-                height: ${size}px; 
-                background: ${bg}; 
-                border-radius: 50% 50% 50% 0; 
-                transform: rotate(-45deg); 
-                border: 2px solid white; 
-                box-shadow: ${shadow}; 
-                position: relative;
-                ${anim}
-                ${zindex}
-            ">
-                <div style="
-                    width: ${size/2.5}px; 
-                    height: ${size/2.5}px; 
-                    background: ${inner}; 
-                    border-radius: 50%; 
-                    position: absolute; 
-                    top: 50%; 
-                    left: 50%; 
-                    transform: translate(-50%, -50%);
-                "></div>
-            </div>
-        `;
-        return L.divIcon({ 
-            className: 'custom-div-icon', 
-            html: html, 
+        const size = isClose ? 44 : 30;
+        const html = `<div class="eg-pin ${isClose ? 'eg-near' : ''}">`
+                   + `<span class="eg-glyph"><svg><use href="#egMark"/></svg></span>`
+                   + `</div>`;
+        return L.divIcon({
+            className: 'custom-div-icon',
+            html: html,
             iconSize: [size, size],
             iconAnchor: [size/2, size]
         });
