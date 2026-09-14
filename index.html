@@ -5820,6 +5820,11 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
     }
+
+    /* La sesion vive dentro de este bloque, pero el cupon se quema
+       desde otro. Sin esto, quemarCupon nunca alcanzaba la sesion y
+       fallaba siempre con un "error de conexion". */
+    window.encaviSession = session;
     
     function haversine(lat1, lon1, lat2, lon2) {
         const R = 6371; 
@@ -6366,7 +6371,8 @@ document.addEventListener('DOMContentLoaded', () => {
     async function quemarCupon(campId, title) {
         window.__ultimoCupon = { campId: campId, negocio: title };
 
-        if (!session || !session.code) {
+        const ses = window.encaviSession;
+        if (!ses || !ses.code) {
             avisoQuema('Tu sesión expiró. Escanea de nuevo el código del vehículo.');
             return;
         }
@@ -6395,11 +6401,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         /* ── El registro, con nombre fijo ── */
-        const idTicket = campId + '_' + session.code;
+        const idTicket = campId + '_' + ses.code;
         const datos = {
             camp_id: campId,
-            code:    session.code,
-            chofer:  session.chofer || 'orgánico',
+            code:    ses.code,
+            chofer:  ses.chofer || 'orgánico',
             dev:     dev,
             status:  'quemado',
             lat:     ubi ? ubi.lat : null,
@@ -6511,7 +6517,7 @@ document.addEventListener('DOMContentLoaded', () => {
             db.collection('opiniones').add({
                 camp_id:    cupon.campId || null,
                 negocio:    cupon.negocio || null,
-                chofer:     (typeof session !== 'undefined' && session && session.chofer) ? session.chofer : 'desconocido',
+                chofer:     (window.encaviSession && window.encaviSession.chofer) ? window.encaviSession.chofer : 'desconocido',
                 respetado:  opEstado.respetado,
                 estrellas:  opEstado.respetado ? opEstado.estrellas : 0,
                 comentario: comentario,
