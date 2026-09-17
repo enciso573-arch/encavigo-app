@@ -5940,10 +5940,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const cod = session.chofer;
         if (!cod || cod === 'orgánico') return;
 
-        db.collection('codigos').doc(cod).get().then(function (doc) {
-            if (!doc.exists) return;                 /* aun sin registrar */
-            const d = doc.data() || {};
-            if (d.estado !== 'baja') return;
+        /* Se consulta la lista de bajas, no el libro de códigos.
+           El libro trae nombres y teléfonos y está cerrado; esta lista
+           solo dice qué acrílicos dejaron de servir. Si el código no
+           está aquí, sigue vigente. */
+        db.collection('bajas').doc(cod).get().then(function (doc) {
+            if (!doc.exists) return;                 /* no está dado de baja */
 
             try { localStorage.removeItem('encavigo_session'); } catch (e) {}
             window.encaviSession = null;

@@ -1160,6 +1160,15 @@ function closeModal() {
                 estado: 'baja', motivo_baja: motivo,
                 baja_fecha: firebase.firestore.FieldValue.serverTimestamp()
             });
+
+            /* La lista negra que sí puede leer el teléfono del pasajero.
+               Aquí no va el motivo ni de quién era: solo que ese código
+               dejó de servir. Los datos de la persona se quedan en el
+               libro, que es tuyo. */
+            await db.collection('bajas').doc(codigo).set({
+                fecha: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
             codCargar();
         } catch (e) { alert('No se pudo dar de baja: ' + e.message); }
     }
@@ -1168,6 +1177,7 @@ function closeModal() {
         if (!confirm('Volver a activar ' + codigo + '?')) return;
         try {
             await db.collection('codigos').doc(codigo).update({ estado: 'activo', motivo_baja: null });
+            await db.collection('bajas').doc(codigo).delete();
             codCargar();
         } catch (e) { alert('No se pudo: ' + e.message); }
     }

@@ -143,18 +143,37 @@ service cloud.firestore {
     // Dar de alta, cambiar o dar de baja: solo tu, con sesion.
     // ─────────────────────────────────────────────────────────────
     match /codigos/{codigo} {
-      allow read: if true;
+      /* CERRADO. Aqui viven los nombres y telefonos de choferes y
+         negocios. Antes estaba abierto a lectura porque la app tenia
+         que comprobar si un acrilico seguia vigente, pero en Firestore
+         no se puede abrir un solo campo: se abre el documento entero,
+         y con el los datos personales. Esa comprobacion se mudo a la
+         coleccion "bajas", que no trae nada de nadie. */
+      allow read: if request.auth != null;
 
-      /* Igual que en los otros contadores: cualquiera puede sumar 1 a
-         "escaneos" y nada mas. Sirve para saber cuanto trabaja cada
-         calcomania sin abrir la puerta a que alguien se infle el
-         numero cambiando otros campos. */
+      /* Sumar 1 a "escaneos" sigue siendo publico: es lo que cuenta el
+         trabajo de cada acrilico. Solo ese campo y solo de uno en uno,
+         asi que nadie puede inflarlo ni tocar lo demas. Sumar no es
+         leer: quien suma no ve lo que hay dentro. */
       allow update: if request.resource.data.diff(resource.data)
                          .affectedKeys().hasOnly(['escaneos'])
                     && request.resource.data.escaneos == resource.data.escaneos + 1;
 
       allow create, delete: if request.auth != null;
       allow update: if request.auth != null;
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // BAJAS (la lista negra de acrilicos)
+    // Solo dice que un codigo dejo de servir. Ni nombres, ni
+    // telefonos, ni de quien era: nada mas el nombre del codigo.
+    // Leer: cualquiera, porque el telefono del pasajero tiene que
+    //       poder comprobarlo antes de abrir la sesion.
+    // Escribir: solo tu. Dar de baja es una decision tuya.
+    // ─────────────────────────────────────────────────────────────
+    match /bajas/{codigo} {
+      allow read: if true;
+      allow create, update, delete: if request.auth != null;
     }
 
     // ─────────────────────────────────────────────────────────────
