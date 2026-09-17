@@ -197,6 +197,24 @@ service cloud.firestore {
     }
 
     // ─────────────────────────────────────────────────────────────
+    // INTERES (lo que pide la gente donde todavia no hay negocios)
+    // Cuando el pasajero abre la app y no hay promociones cerca, se
+    // le pregunta que giro le gustaria encontrar. Una respuesta por
+    // celular y por dia: el registro se llama celular + fecha.
+    // Crear: cualquiera, pero solo la primera vez del dia.
+    // Leer: solo tu, con sesion iniciada.
+    // ─────────────────────────────────────────────────────────────
+    match /interes/{id} {
+      allow create: if request.resource.data.keys().hasOnly(['giro','dev','fecha'])
+                    && request.resource.data.giro is string
+                    && request.resource.data.giro.size() <= 20
+                    && request.resource.data.dev is string;
+      allow read: if request.auth != null;
+      allow update: if false;
+      allow delete: if request.auth != null;
+    }
+
+    // ─────────────────────────────────────────────────────────────
     // REGISTRO DE CLICKS (anti-inflado)
     // Cada registro se llama: promo + celular + fecha.
     // Crear: cualquiera, pero SOLO la primera vez.

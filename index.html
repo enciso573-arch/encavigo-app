@@ -5537,6 +5537,40 @@
 }
 
 
+/* ── Pantalla cuando no hay promociones que mostrar ─────────── */
+.vacio-caja{
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  height:100%; text-align:center; padding:0 26px;
+}
+.vacio-dibujo{ width:min(260px,72%); height:auto; margin-bottom:22px; }
+.vacio-titulo{
+  font-size:24px; font-weight:900; color:#FBF2E1; line-height:1.2;
+  margin:0 0 10px; text-wrap:balance;
+}
+.vacio-texto{
+  font-size:14.5px; line-height:1.55; color:rgba(251,242,225,.72);
+  margin:0 0 26px; max-width:30ch;
+}
+.vacio-pregunta{
+  font-size:12px; font-weight:700; letter-spacing:.09em; text-transform:uppercase;
+  color:rgba(251,242,225,.45); margin:0 0 12px;
+}
+.vacio-chips{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center; max-width:330px; }
+.vacio-chip{
+  border:1px solid rgba(251,242,225,.28); background:rgba(251,242,225,.06);
+  color:#FBF2E1; font-family:inherit; font-size:13.5px; font-weight:600;
+  padding:9px 15px; border-radius:999px; cursor:pointer;
+  transition:background .15s, border-color .15s, transform .15s;
+}
+.vacio-chip:active{ transform:scale(.96); }
+.vacio-chip.elegido{ background:#F07150; border-color:#F07150; color:#1B2534; }
+.vacio-chip:disabled{ cursor:default; opacity:.45; }
+.vacio-chip.elegido:disabled{ opacity:1; }
+.vacio-gracias{
+  font-size:14px; color:#F07150; font-weight:700; margin:0; padding:9px 0;
+}
+
+
 /* ── Ficha que sale al tocar un pin del mapa ────────────────────
    Antes el pin no decia nada: se veia bonito pero el pasajero no
    sabia de que negocio era. Esta ficha resuelve eso sin sacarlo
@@ -6112,23 +6146,100 @@ document.addEventListener('DOMContentLoaded', () => {
            y el chofer queda mal. Mejor decirle la verdad. */
         if (!deck || deck.length === 0) {
             const hayAlgunas = (window.loadedCampaigns || []).length > 0;
+
+            /* Dibujo propio, hecho con formas simples a proposito: un
+               SVG pesado fue lo que tumbaba la app en celulares con
+               poca memoria. Son veinte formas, no seiscientas. */
+            const dibujo =
+              '<svg class="vacio-dibujo" viewBox="0 0 240 132" fill="none" aria-hidden="true">' +
+                '<circle cx="196" cy="30" r="15" fill="#F07150" opacity=".16"/>' +
+                '<circle cx="46" cy="24" r="8" fill="#FBF2E1" opacity=".10"/>' +
+                /* local izquierdo */
+                '<rect x="18" y="52" width="52" height="46" rx="4" fill="#FBF2E1" opacity=".92"/>' +
+                '<path d="M14 52h60l-7-13H21z" fill="#F07150"/>' +
+                '<rect x="27" y="66" width="16" height="32" rx="2" fill="#29374E" opacity=".55"/>' +
+                '<rect x="50" y="66" width="13" height="12" rx="2" fill="#29374E" opacity=".30"/>' +
+                /* local derecho */
+                '<rect x="168" y="60" width="54" height="38" rx="4" fill="#FBF2E1" opacity=".82"/>' +
+                '<path d="M164 60h62l-7-11h-48z" fill="#F07150" opacity=".85"/>' +
+                '<rect x="178" y="72" width="14" height="26" rx="2" fill="#29374E" opacity=".50"/>' +
+                '<rect x="200" y="72" width="12" height="11" rx="2" fill="#29374E" opacity=".28"/>' +
+                /* banqueta */
+                '<rect x="0" y="98" width="240" height="4" rx="2" fill="#FBF2E1" opacity=".22"/>' +
+                /* el carro */
+                '<path d="M78 96c0-9 5-14 12-14h4l9-10c2-2 4-3 7-3h20c3 0 5 1 7 3l9 10h4c7 0 12 5 12 14z" fill="#FBF2E1"/>' +
+                '<path d="M112 72h-8l-7 9h15z" fill="#29374E" opacity=".45"/>' +
+                '<path d="M118 72h13c2 0 3 0 4 2l6 7h-23z" fill="#29374E" opacity=".45"/>' +
+                '<circle cx="97" cy="96" r="7" fill="#29374E"/><circle cx="97" cy="96" r="3" fill="#FBF2E1"/>' +
+                '<circle cx="145" cy="96" r="7" fill="#29374E"/><circle cx="145" cy="96" r="3" fill="#FBF2E1"/>' +
+                /* pin sobre el carro */
+                '<path d="M121 22c-8 0-14 6-14 14 0 10 14 22 14 22s14-12 14-22c0-8-6-14-14-14z" fill="#F07150"/>' +
+                '<circle cx="121" cy="36" r="5.5" fill="#FBF2E1"/>' +
+              '</svg>';
+
+            const giros = [
+              ['comida',  'Comida'],
+              ['bar',     'Bar o café'],
+              ['belleza', 'Belleza y barbería'],
+              ['spa',     'Spa y masaje'],
+              ['tours',   'Tours y paseos'],
+              ['compras', 'Tiendas']
+            ];
+
             mainFeed.innerHTML =
               '<article class="immersive-card">' +
-                '<div class="card-overlay" style="background:linear-gradient(160deg,#1B2534 0%,#0B1220 100%);"></div>' +
-                '<div class="card-ui" style="display:flex; flex-direction:column; justify-content:center; height:100%; text-align:center; padding:0 28px;">' +
-                  '<div style="font-size:44px; margin-bottom:16px;">🧭</div>' +
-                  '<h2 class="card-headline" style="font-size:25px; margin-bottom:12px;">' +
-                    (hayAlgunas ? 'Hoy no hay promociones en tu zona'
-                                : 'Estamos armando las promociones de tu zona') + '</h2>' +
-                  '<p class="card-body" style="margin-bottom:18px;">' +
+                '<div class="card-overlay" style="background:linear-gradient(165deg,#1B2534 0%,#0B1220 100%);"></div>' +
+                '<div class="card-ui vacio-caja">' +
+                  dibujo +
+                  '<h2 class="vacio-titulo">' +
+                    (hayAlgunas ? 'Hoy no toca ninguna por aquí'
+                                : 'Apenas vamos llegando a esta zona') + '</h2>' +
+                  '<p class="vacio-texto">' +
                     (hayAlgunas
-                      ? 'Las promociones cambian de un día a otro. Vuelve a escanear mañana y busca las que te queden de paso.'
-                      : 'Ya vamos con los negocios de por aquí. En cuanto entren, los vas a ver en el camino, y tu código sigue siendo válido.') +
+                      ? 'Las promociones cambian de un día a otro. Escanea otra vez en tu próximo viaje y fíjate cuáles te quedan de paso.'
+                      : 'Todavía no hay negocios afiliados por donde vas pasando. Estamos sumando, y en cuanto entre el primero lo vas a ver aquí.') +
                   '</p>' +
-                  '<p style="font-size:13px; color:rgba(255,255,255,.55); margin:0;">' +
-                    'Mientras tanto, tu oportunidad del viaje gratis ya quedó registrada.</p>' +
+                  '<div id="vacioEncuesta">' +
+                    '<p class="vacio-pregunta">¿De qué te gustaría encontrar?</p>' +
+                    '<div class="vacio-chips">' +
+                      giros.map(function (g) {
+                        return '<button type="button" class="vacio-chip" data-giro="' + g[0] + '">' + g[1] + '</button>';
+                      }).join('') +
+                    '</div>' +
+                  '</div>' +
                 '</div>' +
               '</article>';
+
+            /* Una respuesta por celular y por día, con el mismo candado
+               de nombre fijo que usan los clicks. El número que salga
+               es de gente real: sirve para saber qué negocio buscar en
+               esta zona y para enseñárselo a ese negocio. */
+            const chips = mainFeed.querySelectorAll('.vacio-chip');
+            chips.forEach(function (b) {
+              b.addEventListener('click', function () {
+                const giro = b.getAttribute('data-giro');
+                chips.forEach(function (o) { o.disabled = true; });
+                b.classList.add('elegido');
+
+                let dev = null;
+                try { dev = localStorage.getItem('encavi_dev_id'); } catch (e) {}
+                if (!dev) {
+                  dev = 'd' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+                  try { localStorage.setItem('encavi_dev_id', dev); } catch (e) {}
+                }
+                const hoy = new Date().toISOString().slice(0, 10);
+
+                db.collection('interes').doc(dev + '_' + hoy).set({
+                  giro: giro, dev: dev,
+                  fecha: firebase.firestore.FieldValue.serverTimestamp()
+                }).catch(function () { /* ya contestó hoy */ });
+
+                setTimeout(function () {
+                  const caja = document.getElementById('vacioEncuesta');
+                  if (caja) caja.innerHTML = '<p class="vacio-gracias">Gracias. Lo tomamos en cuenta para esta zona.</p>';
+                }, 450);
+              });
+            });
             return;
         }
 

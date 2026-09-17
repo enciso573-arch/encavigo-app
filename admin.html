@@ -199,6 +199,14 @@
 <div class="metric-trend" style="color: #6B7280;"><span id="val-top-scans">0 escaneos</span></div>
 </div>
 </div>
+<div class="data-section" id="cajaInteres" style="padding:22px 24px; margin-bottom:22px; display:none;">
+  <div style="display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:14px;">
+    <h3 style="margin:0; font-size:16px;">Lo que pide la gente</h3>
+    <span style="font-size:12.5px; color:#6B7280;">Pasajeros que abrieron la app donde todavía no hay negocios. Una respuesta por celular al día.</span>
+  </div>
+  <div id="interesLista"></div>
+</div>
+
 <div class="data-section" style="padding:22px 24px; margin-bottom:22px;">
   <div style="display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:16px;">
     <h3 style="margin:0; font-size:16px;">La semana</h3>
@@ -499,6 +507,8 @@
            registros reales, que ya vienen sin repetir: un escaneo por
            celular, por chofer y por dia; un click por celular, por
            promocion y por dia. Son mas chicos y son ciertos. */
+        cargarInteres();
+
         db.collection('scan_log').onSnapshot(snap => {
             if (valScans) valScans.innerText = snap.size.toLocaleString();
         }, () => { if (valScans) valScans.innerText = '—'; });
@@ -720,6 +730,47 @@
        otro es justo donde se cuelan los errores de orden. */
     /* La semana de un vistazo: qué sale cada día y qué día quedó
        vacío. Es el control de la promesa de tres por semana. */
+    /* Lo que piden los pasajeros donde todavia no hay negocios.
+       Es el unico dato que se genera solo mientras no hay nada
+       cargado, y es el que te dice que negocio ir a buscar en esa
+       zona — y con que argumento tocarle la puerta. */
+    function cargarInteres() {
+        db.collection('interes').onSnapshot(function (snap) {
+            const caja = document.getElementById('cajaInteres');
+            const lista = document.getElementById('interesLista');
+            if (!caja || !lista) return;
+            if (snap.empty) { caja.style.display = 'none'; return; }
+
+            const NOMBRES = {
+                comida:'Comida', bar:'Bar o café', belleza:'Belleza y barbería',
+                spa:'Spa y masaje', tours:'Tours y paseos', compras:'Tiendas'
+            };
+            const cuenta = {};
+            snap.forEach(function (d) {
+                const g = (d.data() || {}).giro || 'otro';
+                cuenta[g] = (cuenta[g] || 0) + 1;
+            });
+            const filas = Object.keys(cuenta).map(function (g) { return [g, cuenta[g]]; })
+                                .sort(function (a, b) { return b[1] - a[1]; });
+            const total = snap.size;
+            const tope = filas[0][1];
+
+            caja.style.display = 'block';
+            lista.innerHTML = filas.map(function (f) {
+                const ancho = Math.round((f[1] / tope) * 100);
+                return '<div style="display:flex; align-items:center; gap:12px; padding:7px 0;">' +
+                         '<span style="width:150px; font-size:13.5px; flex:0 0 auto;">' + (NOMBRES[f[0]] || f[0]) + '</span>' +
+                         '<div style="flex:1; height:8px; background:#F3F4F6; border-radius:99px; overflow:hidden;">' +
+                           '<div style="width:' + ancho + '%; height:100%; background:#F97316; border-radius:99px;"></div>' +
+                         '</div>' +
+                         '<span style="width:38px; text-align:right; font-size:13px; font-weight:600; font-variant-numeric:tabular-nums;">' + f[1] + '</span>' +
+                       '</div>';
+            }).join('') +
+            '<p style="font-size:12.5px; color:#6B7280; margin:12px 0 0;">' + total +
+            (total === 1 ? ' respuesta en total.' : ' respuestas en total.') + '</p>';
+        }, function () { /* sin permiso o sin red: no se muestra */ });
+    }
+
     function pintarSemana(snapshot) {
         const caja = document.getElementById('semanaGrid');
         if (!caja) return;
