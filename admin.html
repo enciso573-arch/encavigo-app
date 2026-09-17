@@ -186,7 +186,7 @@
 <div class="metric-card">
 <div class="metric-label">Escaneos QR Totales</div>
 <div class="metric-value" id="val-scans">0</div>
-<div class="metric-trend">desde que arrancó</div>
+<div class="metric-trend">sin repetir: 1 por celular al día</div>
 </div>
 <div class="metric-card">
 <div class="metric-label">Cupones Quemados</div>
@@ -494,14 +494,18 @@
         const valClicks = document.getElementById('val-clicks');
         const tbody = document.querySelector('tbody');
         
-        // Leer estadísticas globales
-        db.collection('stats').doc('global').onSnapshot((doc) => {
-            if(doc.exists) {
-                const data = doc.data();
-                if(valScans) valScans.innerText = (data.scans || 0).toLocaleString();
-                if(valClicks) valClicks.innerText = (data.clicks || 0).toLocaleString();
-            }
-        });
+        /* Los dos numeros de arriba salian de un contador global que
+           subia con cada recarga de la app. Ahora salen de los
+           registros reales, que ya vienen sin repetir: un escaneo por
+           celular, por chofer y por dia; un click por celular, por
+           promocion y por dia. Son mas chicos y son ciertos. */
+        db.collection('scan_log').onSnapshot(snap => {
+            if (valScans) valScans.innerText = snap.size.toLocaleString();
+        }, () => { if (valScans) valScans.innerText = '—'; });
+
+        db.collection('click_log').onSnapshot(snap => {
+            if (valClicks) valClicks.innerText = snap.size.toLocaleString();
+        }, () => { if (valClicks) valClicks.innerText = '—'; });
         
         // Leer Top Chofer
         // Contar tickets quemados

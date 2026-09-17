@@ -14,6 +14,12 @@ service cloud.firestore {
                          .affectedKeys().hasOnly(['clicks'])
                     && request.resource.data.clicks == resource.data.clicks + 1;
 
+      /* Sin esta linea, poner el contador en cero desde el panel
+         era imposible: en Firestore escribir sobre un documento que
+         ya existe cuenta como "update", y la regla de arriba solo
+         deja sumar un click. La limpieza fallaba en silencio. */
+      allow update: if request.auth != null;
+
       allow create, delete: if request.auth != null;
     }
 
@@ -28,6 +34,9 @@ service cloud.firestore {
       allow update: if request.resource.data.diff(resource.data)
                          .affectedKeys().hasOnly(['clicks'])
                     && request.resource.data.clicks == resource.data.clicks + 1;
+
+      /* Tu, desde el panel, puedes corregir cualquier campo. */
+      allow update: if request.auth != null;
 
       allow create, delete: if request.auth != null;
     }
