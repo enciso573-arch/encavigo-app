@@ -553,6 +553,7 @@
                           : '<span style="background:#F3F4F6; color:#6B7280; border:1px solid #E5E7EB; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:500;">Hoy no</span>' }</td>
                       <td>
                         <button class="action-icon" onclick='editarCampana(${JSON.stringify(doc.id)})' title="Editar">✏️</button>
+                        <button class="action-icon" onclick='duplicarCampana(${JSON.stringify(doc.id)})' title="Duplicar">⧉</button>
                         <button class="action-icon" onclick="deleteCampaign('${doc.id}')" title="Eliminar">🗑️</button>
                       </td>
                     `;
@@ -766,6 +767,29 @@
         const d = camp.dias;
         if (!Array.isArray(d) || d.length === 0) return true;
         return d.map(Number).indexOf(new Date().getDay()) !== -1;
+    }
+
+    /* Duplicar: abre el formulario con todo copiado menos el nombre,
+       para dar de alta el siguiente negocio sin volver a escribir
+       tarifa, días, inventario ni ubicación. Cargar diez negocios a
+       mano, campo por campo, es donde se abandona el trabajo. */
+    function duplicarCampana(id) {
+        db.collection('campaigns').doc(id).get().then(function (d) {
+            if (!d.exists) { alert('Esa promoción ya no existe.'); return; }
+            const c = d.data();
+            openEditModal(null, '', c.desc, c.img, c.badge, c.lat, c.lng,
+                          c.stock, c.caja_id, c.startDate, c.endDate, c.tarifa);
+            marcarDias(c.dias);
+
+            /* editModeId se limpia a propósito: esto se guarda como una
+               promoción nueva, no encima de la que copiamos. */
+            editModeId = null;
+
+            const t = document.getElementById('cTitle');
+            t.value = '';
+            t.placeholder = 'Nombre del negocio nuevo';
+            t.focus();
+        }).catch(function (e) { alert('No se pudo duplicar: ' + e.message); });
     }
 
     function editarCampana(id) {

@@ -6106,6 +6106,32 @@ document.addEventListener('DOMContentLoaded', () => {
     // ALGORITMO DE BARAJA INTELIGENTE (Max 15 Tarjetas)
     function renderDeck(deck) {
         if(!mainFeed) return;
+
+        /* Sin promociones el feed quedaba en blanco, y esa es la peor
+           primera impresión posible: el pasajero escanea, no ve nada,
+           y el chofer queda mal. Mejor decirle la verdad. */
+        if (!deck || deck.length === 0) {
+            const hayAlgunas = (window.loadedCampaigns || []).length > 0;
+            mainFeed.innerHTML =
+              '<article class="immersive-card">' +
+                '<div class="card-overlay" style="background:linear-gradient(160deg,#1B2534 0%,#0B1220 100%);"></div>' +
+                '<div class="card-ui" style="display:flex; flex-direction:column; justify-content:center; height:100%; text-align:center; padding:0 28px;">' +
+                  '<div style="font-size:44px; margin-bottom:16px;">🧭</div>' +
+                  '<h2 class="card-headline" style="font-size:25px; margin-bottom:12px;">' +
+                    (hayAlgunas ? 'Hoy no hay promociones en tu zona'
+                                : 'Estamos armando las promociones de tu zona') + '</h2>' +
+                  '<p class="card-body" style="margin-bottom:18px;">' +
+                    (hayAlgunas
+                      ? 'Las promociones cambian de un día a otro. Vuelve a escanear mañana y busca las que te queden de paso.'
+                      : 'Ya vamos con los negocios de por aquí. En cuanto entren, los vas a ver en el camino, y tu código sigue siendo válido.') +
+                  '</p>' +
+                  '<p style="font-size:13px; color:rgba(255,255,255,.55); margin:0;">' +
+                    'Mientras tanto, tu oportunidad del viaje gratis ya quedó registrada.</p>' +
+                '</div>' +
+              '</article>';
+            return;
+        }
+
         let html = '';
         deck.forEach(camp => {
             html += `
