@@ -433,6 +433,13 @@ function cargarPromos() {
     snap.forEach(doc => {
       const c = doc.data() || {};
       if (c.active === false) return;
+
+      /* Cada promoción corre sus días. Sin días marcados, sale
+         todos. Igual que en la app del pasajero. */
+      const dd = c.dias;
+      if (Array.isArray(dd) && dd.length > 0 &&
+          dd.map(Number).indexOf(new Date().getDay()) === -1) return;
+
       const lat = parseFloat(c.lat), lng = parseFloat(c.lng);
       if (!isFinite(lat) || !isFinite(lng)) return;   // sin ubicacion no se puede pintar
       PROMOS.push({

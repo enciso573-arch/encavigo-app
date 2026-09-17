@@ -95,6 +95,27 @@
     background: #FFFFFF; border-top: 1px solid #E5E7EB;
     border-radius: 0 0 12px 12px;
   }
+  .sem-col { border:1px solid #E5E7EB; border-radius:9px; padding:9px 8px; min-height:92px; background:#FFF; }
+  .sem-col.hoy { border-color:#F97316; box-shadow:0 0 0 1px #F97316 inset; }
+  .sem-dia { font-size:10.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+             color:#9CA3AF; margin-bottom:7px; }
+  .sem-col.hoy .sem-dia { color:#F97316; }
+  .sem-item { font-size:11.5px; line-height:1.3; color:#111827; background:#F9FAFB;
+              border-radius:5px; padding:4px 6px; margin-bottom:4px; overflow:hidden;
+              text-overflow:ellipsis; white-space:nowrap; }
+  .sem-vacio { font-size:11px; color:#D1D5DB; }
+  @media (max-width: 820px){ #semanaGrid { grid-template-columns:repeat(4,1fr); } }
+  @media (max-width: 460px){ #semanaGrid { grid-template-columns:repeat(2,1fr); } }
+  .dia-chip { position:relative; cursor:pointer; }
+  .dia-chip input { position:absolute; opacity:0; width:0; height:0; }
+  .dia-chip span { display:block; padding:7px 12px; border:1px solid #D1D5DB; border-radius:8px;
+                   font-size:12.5px; font-weight:600; color:#6B7280; background:#F9FAFB;
+                   user-select:none; transition:all .12s; }
+  .dia-chip input:checked + span { background:#111827; border-color:#111827; color:#FFF; }
+  .dia-chip input:focus-visible + span { outline:2px solid #F97316; outline-offset:2px; }
+  .dias-pastilla { display:inline-block; font-size:11px; font-weight:600; letter-spacing:.04em;
+                   color:#6B7280; background:#F3F4F6; border-radius:5px; padding:2px 7px;
+                   font-family:ui-monospace,Menlo,Consolas,monospace; }
   .btn-cancel { background: transparent; color: #6B7280; border: none; cursor: pointer; padding: 10px 20px; font-weight: 500; }
   .btn-cancel:hover { color: #111827; }
 
@@ -178,6 +199,14 @@
 <div class="metric-trend" style="color: #6B7280;"><span id="val-top-scans">0 escaneos</span></div>
 </div>
 </div>
+<div class="data-section" style="padding:22px 24px; margin-bottom:22px;">
+  <div style="display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:16px;">
+    <h3 style="margin:0; font-size:16px;">La semana</h3>
+    <span style="font-size:12.5px; color:#6B7280;">Qué promoción sale cada día. El negocio contrata tres por semana.</span>
+  </div>
+  <div id="semanaGrid" style="display:grid; grid-template-columns:repeat(7,1fr); gap:8px; min-width:0;"></div>
+</div>
+
 <div class="data-section">
 <div class="data-header">
 <h3>Directorio de Campañas Activas</h3>
@@ -188,7 +217,7 @@
 <tr>
 <th>Negocio Registrado</th>
 <th>Rendimiento (Clics)</th>
-<th>Generación Leads</th>
+<th>Días que sale</th>
 <th>Estado</th>
 <th>Acciones</th>
 </tr>
@@ -514,8 +543,10 @@
                         <div style="font-weight: 500; color: #111827; margin-bottom: 4px;">${camp.clicks || 0} clics</div>
                         <div class="performance-bar"><div class="performance-fill" style="width: ${Math.min((camp.clicks||0), 100)}%;"></div></div>
                       </td>
-                      <td>Activa</td>
-                      <td><span class="badge-active">Online</span></td>
+                      <td><span class="dias-pastilla">${diasTexto(camp.dias)}</span></td>
+                      <td>${ saleHoy(camp)
+                          ? '<span class="badge-active">Sale hoy</span>'
+                          : '<span style="background:#F3F4F6; color:#6B7280; border:1px solid #E5E7EB; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:500;">Hoy no</span>' }</td>
                       <td>
                         <button class="action-icon" onclick='editarCampana(${JSON.stringify(doc.id)})' title="Editar">✏️</button>
                         <button class="action-icon" onclick="deleteCampaign('${doc.id}')" title="Eliminar">🗑️</button>
@@ -525,6 +556,7 @@
                     
                 });
             }
+            pintarSemana(snapshot);
         }, err => console.error(err));
 
         const choferesTbody = document.getElementById('choferes-tbody');
@@ -678,12 +710,67 @@
     /* El boton de editar no existia: openEditModal estaba escrita pero
        nadie la llamaba, asi que la unica forma de cambiar algo era
        borrar la promocion y volverla a capturar. */
+    /* Marca las casillas de los días. Se hace aparte y no como un
+       argumento más de openEditModal, que ya lleva doce: agregarle
+       otro es justo donde se cuelan los errores de orden. */
+    /* La semana de un vistazo: qué sale cada día y qué día quedó
+       vacío. Es el control de la promesa de tres por semana. */
+    function pintarSemana(snapshot) {
+        const caja = document.getElementById('semanaGrid');
+        if (!caja) return;
+        const NOMBRES = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+        const ORDEN = [1,2,3,4,5,6,0];
+        const hoy = new Date().getDay();
+        const porDia = {0:[],1:[],2:[],3:[],4:[],5:[],6:[]};
+
+        snapshot.forEach(function (doc) {
+            const c = doc.data();
+            if (c.active === false) return;
+            const d = Array.isArray(c.dias) && c.dias.length ? c.dias.map(Number) : [0,1,2,3,4,5,6];
+            d.forEach(function (n) { if (porDia[n]) porDia[n].push(c.title || 'Sin título'); });
+        });
+
+        caja.innerHTML = ORDEN.map(function (n) {
+            const items = porDia[n];
+            return '<div class="sem-col' + (n === hoy ? ' hoy' : '') + '">' +
+                     '<div class="sem-dia">' + NOMBRES[n].slice(0,3) + (n === hoy ? ' · hoy' : '') + '</div>' +
+                     (items.length
+                        ? items.map(function (t) { return '<div class="sem-item" title="' + codEsc(t) + '">' + codEsc(t) + '</div>'; }).join('')
+                        : '<div class="sem-vacio">Sin promoción</div>') +
+                   '</div>';
+        }).join('');
+    }
+
+    function marcarDias(dias) {
+        const lista = Array.isArray(dias) ? dias.map(Number) : [];
+        document.querySelectorAll('#cDias input').forEach(function (c) {
+            c.checked = lista.indexOf(parseInt(c.value, 10)) !== -1;
+        });
+    }
+
+    /* Texto corto para la tabla: "L M J" o "Todos los días". */
+    function diasTexto(dias) {
+        const N = { 0:'D', 1:'L', 2:'M', 3:'X', 4:'J', 5:'V', 6:'S' };
+        if (!Array.isArray(dias) || dias.length === 0 || dias.length === 7) return 'Todos los días';
+        return [1,2,3,4,5,6,0].filter(function (d) { return dias.indexOf(d) !== -1; })
+                              .map(function (d) { return N[d]; }).join(' ');
+    }
+
+    /* ¿Sale hoy? Misma regla que usa la app del pasajero. */
+    function saleHoy(camp) {
+        if (camp.active === false) return false;
+        const d = camp.dias;
+        if (!Array.isArray(d) || d.length === 0) return true;
+        return d.map(Number).indexOf(new Date().getDay()) !== -1;
+    }
+
     function editarCampana(id) {
         db.collection('campaigns').doc(id).get().then(function (d) {
             if (!d.exists) { alert('Esa promoción ya no existe.'); return; }
             const c = d.data();
             openEditModal(id, c.title, c.desc, c.img, c.badge, c.lat, c.lng,
                           c.stock, c.caja_id, c.startDate, c.endDate, c.tarifa);
+            marcarDias(c.dias);
         }).catch(function (e) { alert('No se pudo abrir: ' + e.message); });
     }
 
@@ -798,10 +885,14 @@ function closeModal() {
         const stock = parseInt(document.getElementById('cStock').value) || 0;
         const caja_id = document.getElementById('cCaja').value;
         const tarifa  = parseInt(document.getElementById('cTarifa').value);
+        const dias = Array.prototype.slice
+            .call(document.querySelectorAll('#cDias input:checked'))
+            .map(function (c) { return parseInt(c.value, 10); })
+            .sort();
 
         if(!title || !img) { alert('Título e Imagen son obligatorios'); return; }
 
-        const data = { title, desc, img, badge, lat, lng, stock, caja_id, tarifa: isNaN(tarifa) ? 25 : tarifa, startDate: startDate || null, endDate: endDate || null, active: true };
+        const data = { title, desc, img, badge, lat, lng, stock, caja_id, tarifa: isNaN(tarifa) ? 25 : tarifa, dias: dias, startDate: startDate || null, endDate: endDate || null, active: true };
 
         if (typeof editModeId !== 'undefined' && editModeId) {
             db.collection('campaigns').doc(editModeId).update(data).then(() => { alert('¡Campaña Actualizada exitosamente!'); closeModal(); limpiarFormulario(); }).catch(err => alert('Error: ' + err));
@@ -812,7 +903,7 @@ function closeModal() {
     }
 
     function limpiarFormulario() {
-        document.getElementById('cTitle').value = ''; document.getElementById('cDesc').value = ''; document.getElementById('cImg').value = ''; document.getElementById('cBadge').value = ''; document.getElementById('cLat').value = ''; document.getElementById('cLng').value = ''; document.getElementById('cStock').value = '50'; document.getElementById('cCaja').value = ''; document.getElementById('cTarifa').value = '25'; document.getElementById('cStart').value = ''; document.getElementById('cEnd').value = ''; if(typeof editModeId !== 'undefined') editModeId = null;
+        document.getElementById('cTitle').value = ''; document.getElementById('cDesc').value = ''; document.getElementById('cImg').value = ''; document.getElementById('cBadge').value = ''; document.getElementById('cLat').value = ''; document.getElementById('cLng').value = ''; document.getElementById('cStock').value = '50'; document.getElementById('cCaja').value = ''; document.getElementById('cTarifa').value = '25'; document.getElementById('cStart').value = ''; document.getElementById('cEnd').value = ''; marcarDias([]); if(typeof editModeId !== 'undefined') editModeId = null;
     }
 
     function deleteCampaign(id) {
@@ -1565,6 +1656,20 @@ function closeModal() {
                 <span id="cCajaAviso" style="font-size:11.5px; color:#6B7280;"></span>
             </div>
         </div>
+    </div>
+
+    <div class="form-group" style="margin-top:15px;">
+        <label>Días que sale esta promoción</label>
+        <div id="cDias" style="display:flex; gap:6px; flex-wrap:wrap; margin-top:6px;">
+            <label class="dia-chip"><input type="checkbox" value="1"><span>Lun</span></label>
+            <label class="dia-chip"><input type="checkbox" value="2"><span>Mar</span></label>
+            <label class="dia-chip"><input type="checkbox" value="3"><span>Mié</span></label>
+            <label class="dia-chip"><input type="checkbox" value="4"><span>Jue</span></label>
+            <label class="dia-chip"><input type="checkbox" value="5"><span>Vie</span></label>
+            <label class="dia-chip"><input type="checkbox" value="6"><span>Sáb</span></label>
+            <label class="dia-chip"><input type="checkbox" value="0"><span>Dom</span></label>
+        </div>
+        <p style="font-size:11.5px; color:#6B7280; margin:7px 0 0;">Sin ningún día marcado, sale todos los días. Un cupón ya reclamado sigue valiendo 24 horas aunque cambie el día.</p>
     </div>
 
     <div class="form-group" style="margin-top:15px;">

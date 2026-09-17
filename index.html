@@ -6234,10 +6234,21 @@ document.addEventListener('DOMContentLoaded', () => {
         renderDeck(finalDeck);
     }
 
+    /* ¿Esta promoción sale hoy?
+       El negocio contrata tres por semana y cada una corre sus días.
+       Sin días marcados sale todos los días, para que ninguna
+       promoción vieja desaparezca por este cambio. */
+    window.egSaleHoy = function (camp) {
+        const d = camp && camp.dias;
+        if (!Array.isArray(d) || d.length === 0) return true;
+        return d.map(Number).indexOf(new Date().getDay()) !== -1;
+    };
+
     db.collection('campaigns').where('active', '==', true).get().then(snapshot => {
         snapshot.forEach(doc => {
             const camp = doc.data();
             camp.id = doc.id;
+            if (!window.egSaleHoy(camp)) return;   /* hoy no le toca */
             window.loadedCampaigns.push(camp);
         });
         
