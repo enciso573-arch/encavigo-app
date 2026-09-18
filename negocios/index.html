@@ -424,7 +424,7 @@ footer a:hover{color:var(--orange-bright)}
         pasando. Tú pagas cuando esa persona llega a tu puerta.
       </p>
       <div class="cta-row">
-        <a class="btn btn-primary" href="/registro.html">Quiero mi lugar</a>
+        <a class="btn btn-primary js-registro" href="/registro.html">Quiero mi lugar</a>
         <a class="btn btn-ghost" href="/?chofer=DEMO">Ver la app</a>
       </div>
       <p class="note">Sin contratos largos · Sin costo de instalación · Cancelas cuando quieras</p>
@@ -811,8 +811,8 @@ footer a:hover{color:var(--orange-bright)}
     <h2>Las unidades ya están rodando.</h2>
     <p class="lead">Falta que la gente que va adentro vea tu negocio. Déjanos tus datos y te contactamos hoy mismo.</p>
     <div class="cta-row">
-      <a class="btn btn-primary" href="/registro.html">Quiero mi lugar</a>
-      <a class="btn btn-ghost" href="https://wa.me/523221592596?text=Hola%20EncaviGO%2C%20quiero%20informaci%C3%B3n%20para%20mi%20negocio" target="_blank" rel="noopener">Escríbenos por WhatsApp</a>
+      <a class="btn btn-primary js-registro" href="/registro.html">Quiero mi lugar</a>
+      <a class="btn btn-ghost" href="https://wa.me/523221592596?text=Hola%20EncaviGO%2C%20quiero%20informaci%C3%B3n%20para%20mi%20negocio" class="js-wa" target="_blank" rel="noopener">Escríbenos por WhatsApp</a>
     </div>
   </div>
 </section>
@@ -861,6 +861,26 @@ footer a:hover{color:var(--orange-bright)}
        la acompana. Queda solo el compromiso del reporte mensual. */
     NUM.style.display = 'none';
     FRASE.style.display = 'none';
+  });
+})();
+</script>
+<script>
+/* ── El código del chofer que trajo a este negocio ──
+   Llega en la dirección del QR que el chofer enseña en su teléfono.
+   El dueño nunca lo ve ni lo escribe: solo viaja pegado a los
+   botones, para que cuando pida informes ya sepamos quién lo mandó
+   y a quién hay que pagarle el referido. */
+(function () {
+  var ref = new URLSearchParams(location.search).get('ref');
+  if (!ref) return;
+  ref = ref.toUpperCase().replace(/[^A-Z0-9_-]/g, '').slice(0, 24);
+  if (!ref) return;
+
+  document.querySelectorAll('a.js-registro').forEach(function (a) {
+    a.href = '/registro.html?ref=' + encodeURIComponent(ref);
+  });
+  document.querySelectorAll('a.js-wa').forEach(function (a) {
+    a.href = a.href + encodeURIComponent('\n\nMe recomendó el chofer ' + ref);
   });
 })();
 </script>

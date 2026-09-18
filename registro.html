@@ -238,12 +238,19 @@ footer a:hover{color:var(--orange)}
     if (!val('f-negocio')) { shake('f-negocio'); return; }
     if (!val('f-tel'))     { shake('f-tel');     return; }
 
+    /* El código del chofer viene pegado a la dirección desde el QR
+       que él enseña. El dueño no lo escribió ni lo vio: aparece
+       solo en el mensaje, para saber a quién pagarle el referido. */
+    var ref = new URLSearchParams(location.search).get('ref');
+    ref = ref ? ref.toUpperCase().replace(/[^A-Z0-9_-]/g, '').slice(0, 24) : '';
+
     var partes = ['Hola EncaviGO, me interesa anunciar mi negocio.'];
     partes.push('Negocio: ' + val('f-negocio'));
     if (val('f-giro'))   partes.push('Giro: ' + val('f-giro'));
     if (val('f-zona'))   partes.push('Zona: ' + val('f-zona'));
     if (val('f-nombre')) partes.push('Contacto: ' + val('f-nombre'));
     partes.push('WhatsApp: ' + val('f-tel'));
+    if (ref) partes.push('Referido por el chofer: ' + ref);
 
     window.open(
       'https://wa.me/' + WA + '?text=' + encodeURIComponent(partes.join('\n')),

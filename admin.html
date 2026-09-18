@@ -1376,7 +1376,10 @@ function closeModal() {
                 (c.nota ? '<div style="font-size:11px; color:#9CA3AF;">' + codEsc(c.nota) + '</div>' : '');
             const acciones = baja
                 ? '<button class="btn-cancel" style="font-size:12px; padding:6px 10px;" onclick="codReactivar(\'' + codEsc(c.id) + '\')">Reactivar</button>'
-                : '<button class="btn-cancel" style="font-size:12px; padding:6px 10px;" onclick="codImprimir(\'' + codEsc(c.id) + '\')">Imprimir</button>' +
+                : '<button class="btn-cancel" style="font-size:12px; padding:6px 10px;" onclick="codImprimir(\'' + codEsc(c.id) + '\')">Acrílico</button>' +
+                  (c.tipo === 'vehiculo'
+                    ? '<button class="btn-cancel" style="font-size:12px; padding:6px 10px;" onclick="codReferido(\'' + codEsc(c.id) + '\')">Para negocios</button>'
+                    : '') +
                   '<button class="btn-cancel" style="font-size:12px; padding:6px 10px; color:#DC2626;" onclick="codBaja(\'' + codEsc(c.id) + '\')">Dar de baja</button>';
             return '<tr style="border-bottom:1px solid #F3F4F6;' + (baja ? ' opacity:.65;' : '') + '">' +
                 '<td style="padding:12px 10px;"><code style="font-weight:700; font-size:13px;">' + codEsc(c.id) + '</code></td>' +
@@ -1393,6 +1396,68 @@ function closeModal() {
        porque no los lee la misma persona: el del vehiculo lo ve un
        pasajero sentado, el de la caja lo ve alguien pagando, y la
        calcomania la ve alguien pasando por la banqueta. */
+    /* El QR que el chofer le enseña a un negocio.
+       Lleva su código pegado, así que cuando ese dueño pida informes
+       el mensaje llega diciendo quién lo mandó. El chofer no explica
+       nada: la página se lo explica por él.
+       No hace falta imprimirlo — el chofer lo guarda como foto en su
+       teléfono y lo enseña en pantalla. */
+    function codReferido(codigo) {
+        const c = window.codTodos.find(x => x.id === codigo);
+        if (!c) { alert('No encontré ese código.'); return; }
+
+        const url = 'https://encavigo.com/negocios/?ref=' + encodeURIComponent(codigo);
+        const v = window.open('', '_blank');
+        if (!v) { alert('El navegador bloqueó la ventana. Permite las ventanas emergentes e inténtalo otra vez.'); return; }
+
+        v.document.write(
+'<!doctype html><html><head><meta charset="utf-8"><title>' + codEsc(codigo) + ' — para negocios</title>' +
+'<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"><\/script>' +
+'<style>' +
+'  @page { margin: 12mm; }' +
+'  body { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; margin:0; padding:24px;' +
+'         display:flex; justify-content:center; background:#F3F4F6; }' +
+'  .hoja { width:105mm; background:#FBF2E1; border:3px solid #29374E; border-radius:16px;' +
+'          padding:22px 20px 18px; text-align:center; color:#29374E; }' +
+'  .marca { font-size:13px; font-weight:900; letter-spacing:2px; margin:0 0 14px; }' +
+'  h1 { font-size:19px; font-weight:900; line-height:1.25; margin:0 0 10px; }' +
+'  p.baj { font-size:12.5px; line-height:1.45; margin:0 0 16px; color:#3F4E68; }' +
+'  #qr { display:flex; justify-content:center; margin-bottom:14px; }' +
+'  #qr img, #qr canvas { display:block; }' +
+'  .cod { font-family:ui-monospace, Menlo, Consolas, monospace; font-size:13px; font-weight:700;' +
+'         letter-spacing:1.5px; color:#6B7280; }' +
+'  .como { max-width:105mm; margin-top:20px; font-size:12.5px; line-height:1.55; color:#374151; }' +
+'  .como strong { color:#111827; }' +
+'  .imprimir { margin-top:18px; text-align:center; }' +
+'  .imprimir button { font-size:14px; padding:11px 22px; border:none; border-radius:9px;' +
+'                     background:#111827; color:#FFF; font-weight:600; cursor:pointer; }' +
+'  @media print { body { background:#FFF; padding:0; } .imprimir, .como { display:none; } }' +
+'</style></head><body><div><div class="hoja">' +
+'  <p class="marca">ENCAVIGO</p>' +
+'  <h1>Clientes que llegan desde el viaje</h1>' +
+'  <p class="baj">Escanee para ver cómo funciona y cuánto cuesta. Sin compromiso.</p>' +
+'  <div id="qr"></div>' +
+'  <div class="cod">' + codEsc(codigo) + '</div>' +
+'</div>' +
+'<div class="como">' +
+'  <p><strong>Para ' + codEsc(c.titular || 'el chofer') + ':</strong> guarda esta imagen en tu teléfono. ' +
+'  Cuando veas un negocio que le pueda servir, se la enseñas y le dices:</p>' +
+'  <p style="background:#FFF; border-left:3px solid #F97316; padding:10px 12px; border-radius:0 8px 8px 0;">' +
+'  “Oiga, traigo algo que le puede servir para traerle gente. Escanee esto y ahí viene todo.”</p>' +
+'  <p>Ese código es tuyo. Si ese negocio entra, te toca tu parte.</p>' +
+'</div>' +
+'<div class="imprimir"><button onclick="window.print()">Imprimir</button></div></div>' +
+'<script>' +
+'  window.addEventListener("load", function(){' +
+'    new QRCode(document.getElementById("qr"), {' +
+'      text: ' + JSON.stringify(url) + ', width: 230, height: 230,' +
+'      colorDark: "#29374E", colorLight: "#FBF2E1",' +
+'      correctLevel: QRCode.CorrectLevel.H });' +
+'  });' +
+'<\/script></body></html>');
+        v.document.close();
+    }
+
     function codImprimir(codigo) {
         const c = window.codTodos.find(x => x.id === codigo);
         if (!c) { alert('No encontré ese código.'); return; }
