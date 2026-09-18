@@ -5970,6 +5970,19 @@ document.addEventListener('DOMContentLoaded', () => {
         try { window.history.replaceState({}, document.title, window.location.pathname); } catch(e) {}
     })();
 
+    /* ¿A este vehículo todavía le queda el viaje gratis de hoy?
+       Se consulta al entrar, para que el juego ya sepa la respuesta
+       cuando el pasajero lo abra. El dato vive en la base, no en el
+       teléfono: borrar datos de navegación no lo revive. */
+    (function revisarPremioDelDia() {
+        const cod = session.chofer;
+        if (!cod || cod === 'orgánico') { window.egPremioLibre = false; return; }
+        const hoy = new Date().toISOString().slice(0, 10);
+        db.collection('premios').doc(cod + '_' + hoy).get()
+          .then(function (d) { window.egPremioLibre = !d.exists; })
+          .catch(function () { window.egPremioLibre = true; });
+    })();
+
     (function comprobarCodigoDelVehiculo() {
         const cod = session.chofer;
         if (!cod || cod === 'orgánico') return;
@@ -6501,19 +6514,51 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('gameModal').style.display = 'flex';
         document.getElementById('scratchBanner').style.display = 'none';
         
+        const ses    = window.encaviSession || {};
+        const chofer = ses.chofer || 'orgánico';
+
+        /* ── Quién puede ganarse el viaje ──
+           Dos candados, y ninguno vive en el teléfono:
+
+           1) Sin QR de vehículo no hay viaje gratis. Quien llega
+              escribiendo la dirección no tiene chofer a quién
+              mostrarle la pantalla, así que no hay premio que dar.
+              Esto solo cierra el borrar datos y volver a jugar: para
+              intentarlo hay que estar arriba de un carro afiliado.
+
+           2) Un premio por vehículo y por día, anotado en la base.
+              Aunque alguien borre sus datos veinte veces en el mismo
+              carro, ese carro ya no puede volver a dar viaje hoy.
+              Así el costo tuyo queda acotado a carros, no a teléfonos. */
+        const puedeGanarViaje = (chofer !== 'orgánico') && (window.egPremioLibre !== false);
+
         const chance = Math.random();
-        isJackpot = (chance <= 0.01);
+        isJackpot = puedeGanarViaje && (chance <= 0.01);
 
         if (isJackpot) {
+            window.egPremioLibre = false;
+            const hoyP = new Date().toISOString().slice(0, 10);
+            db.collection('premios').doc(chofer + '_' + hoyP).set({
+                chofer: chofer,
+                dev: window.encaviDevId || 'sin-id',
+                fecha: firebase.firestore.FieldValue.serverTimestamp()
+            }).catch(function () { /* ya se dio uno hoy en este carro */ });
+
             sequence = [logoImg, logoImg, logoImg];
             winData = { title: '<span style="color: #10B981;">🎉 VIAJE GRATIS 🎉</span>', msg: 'Muéstrale esta pantalla a tu chofer ahora.' };
         } else {
-            // CONECTADO A BASE DE DATOS DE FIREBASE
-            const activeCampaigns = window.loadedCampaigns || [];
+            const activeCampaigns = (window.loadedCampaigns || []).slice();
+
+            /* Sin negocios cargados NO se inventa una categoría.
+               Antes salía "¡Cupón en Servicios!" y no había ningún
+               servicio detrás: un cupón que nadie iba a respetar. */
             if (activeCampaigns.length === 0) {
-                // Fallback de seguridad si el internet falló
-                activeCampaigns.push({ title: 'Comida Local', imgUrl: null, fallbackIcon: '🍔' });
-                activeCampaigns.push({ title: 'Servicios', imgUrl: null, fallbackIcon: '✂️' });
+                sequence = [logoImg, '<div style="font-size:45px;">📍</div>', logoImg];
+                winData = {
+                    title: '<span style="color:#F97316;">Esta vez no salió</span>',
+                    msg: 'Todavía no hay negocios por aquí. Vuelve a escanear en tu próximo viaje: el juego se repite y las promociones van llegando.'
+                };
+                return;
             }
             
             const winIndex = Math.floor(Math.random() * activeCampaigns.length);
@@ -6524,8 +6569,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const loseCamp = activeCampaigns[loseIndex];
             
             // Build the HTML for the card faces (Use their actual image from Firebase!)
+            /* El campo es "img", no "imgUrl": por eso nunca salía la
+               foto del negocio en las cartas y siempre caía al regalito. */
             const getIconHTML = (camp) => {
-                if (camp.imgUrl) return `<img src="${camp.imgUrl}" style="width:100%; height:100%; object-fit:cover; border-radius:10px;">`;
+                if (camp.img) return `<img src="${camp.img}" style="width:100%; height:100%; object-fit:cover; border-radius:10px;">`;
                 return `<div style="font-size:45px;">${camp.fallbackIcon || '🎁'}</div>`;
             };
 

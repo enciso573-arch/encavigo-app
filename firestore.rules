@@ -197,6 +197,25 @@ service cloud.firestore {
     }
 
     // ─────────────────────────────────────────────────────────────
+    // PREMIOS (el viaje gratis del minijuego)
+    // El registro se llama vehiculo + fecha, asi que cada carro puede
+    // dar UN viaje gratis al dia y no mas. Crear: cualquiera, pero
+    // solo la primera vez; el segundo intento del mismo carro el
+    // mismo dia cuenta como "update", y update aqui esta prohibido.
+    // Leer: cualquiera, porque el telefono tiene que saber si a ese
+    // carro todavia le queda el premio de hoy. No trae dato personal.
+    // Borrarlo, solo tu: sirve para reponer un premio si hizo falta.
+    // ─────────────────────────────────────────────────────────────
+    match /premios/{id} {
+      allow create: if request.resource.data.keys().hasOnly(['chofer','dev','fecha'])
+                    && request.resource.data.chofer is string
+                    && request.resource.data.dev is string;
+      allow read: if true;
+      allow update: if false;
+      allow delete: if request.auth != null;
+    }
+
+    // ─────────────────────────────────────────────────────────────
     // INTERES (lo que pide la gente donde todavia no hay negocios)
     // Cuando el pasajero abre la app y no hay promociones cerca, se
     // le pregunta que giro le gustaria encontrar. Una respuesta por
