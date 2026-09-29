@@ -911,17 +911,17 @@ footer a:hover{color:var(--orange-bright)}
       </div>
     </div>
 
-    <!-- 2. DETALLES ABAJO: 2 COLUMNAS EQUILIBRADAS DE LA MISMA ALTURA -->
+    <!-- 2. DETALLES ABAJO: PLAN LOCAL A LA IZQUIERDA Y CAMPAÑA MUNICIPAL A LA DERECHA -->
     <div class="comisiones-math-grid">
-      <!-- Columna Izquierda: Tabla de comisiones por cliente -->
+      <!-- Columna Izquierda: Plan Local (Comisiones por Cliente Canjeado) -->
       <div class="box-balance">
-        <p class="eyebrow" style="margin-bottom:6px;">Pago por resultado</p>
-        <h3>Comisión por cliente que llega</h3>
+        <p class="eyebrow" style="margin-bottom:6px;">Plan Local · $990/mes</p>
+        <h3>Comisión por cliente canjeado</h3>
         <p style="font-size:14px; line-height:1.55; color:var(--body); margin-bottom:16px;">
-          Aparte de tu plan mensual, pagas una comisión fija solo cuando un cliente llega a tu negocio y canjea su código:
+          Aparte de tu cuota mensual, pagas una comisión fija al chofer <strong>únicamente cuando el cliente llega a tu local y canjea su código</strong>:
         </p>
 
-        <table class="tarifas">
+        <table class="tarifas" style="margin-bottom:14px;">
           <thead>
             <tr><th>Tu ticket promedio</th><th>Por cliente que llega</th></tr>
           </thead>
@@ -947,38 +947,59 @@ footer a:hover{color:var(--orange-bright)}
           </tbody>
         </table>
 
-        <p class="nota-tarifa" style="margin-top:auto; margin-bottom:0; padding-top:14px; border-top:1px solid var(--line);">
-          Tu rango se fija <strong>una sola vez, al firmar</strong>, según el ticket promedio
-          de tu negocio. No cambia de un cliente a otro ni te cobramos según lo que cada quien consuma.
+        <!-- Ejemplo en números unificado -->
+        <div style="background:#FAF8F5; border:1px solid var(--line); border-radius:14px; padding:12px 16px; margin-bottom:14px;">
+          <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px;">
+            <span>Insumo de promoción (ej. taco gratis):</span>
+            <span style="font-weight:600; color:var(--ink);">&minus;$8</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:6px;">
+            <span>Comisión directa al chofer que lo llevó:</span>
+            <span style="font-weight:600; color:var(--ink);">&minus;$25</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:13.5px; font-weight:700; border-top:1px solid var(--line); padding-top:6px; color:var(--orange);">
+            <span>Costo total por cliente nuevo:</span>
+            <span>$33</span>
+          </div>
+        </div>
+
+        <p class="nota-tarifa" style="margin-top:auto; margin-bottom:0; padding-top:14px; border-top:1px solid var(--line); font-size:13px;">
+          Tu rango se fija <strong>una sola vez al firmar</strong>. Si el cliente regresa después, entra directo a precio regular sin promociones ni comisión.
         </p>
       </div>
 
-      <!-- Columna Derecha: ¿Cuánto te cuesta traer un cliente? -->
+      <!-- Columna Derecha: Campaña Municipal (Tarifa Plana y Cero Comisiones) -->
       <div class="box-balance">
-        <p class="eyebrow" style="margin-bottom:6px;">Desglose y Números</p>
-        <h3>¿Cuánto te cuesta traer un cliente?</h3>
-        
-        <div class="math" style="padding:0; margin:0; border:none; background:transparent;">
-          <div class="row">
-            <span>Por cada cliente que llega<span class="hint">va completo al chofer que te lo trajo</span></span>
-            <span>$25 a $80</span>
-          </div>
-          <div class="row">
-            <span>El descuento de tu promoción<span class="hint">lo decides tú, del tamaño que quieras</span></span>
-            <span class="yours">lo pones tú</span>
-          </div>
-          <p class="after" style="font-size:14px; margin-top:14px;">
-            <strong>Ese dinero no se queda con nosotros: es del chofer que te llevó al cliente.</strong>
-            Por eso te recomienda de verdad. No es un anuncio pegado en un vidrio — es alguien que gana cuando tú ganas.
-          </p>
-          <div class="cuenta" style="margin:14px 0 6px;">
-            <div class="crow"><span>Costo de <em>producir</em> el taco que regalas<span class="chint">tu costo de insumo, no precio carta</span></span><span>&minus;$8</span></div>
-            <div class="crow"><span>Comisión del chofer que lo trajo</span><span>&minus;$25</span></div>
-            <div class="crow total"><span>Traer a ese cliente te costó</span><span>$33</span></div>
-          </div>
-          <p class="aviso-ej" style="margin-top:8px;">Cifras de ejemplo. Cada negocio tiene sus propios costos y los fijas tú.</p>
-          <p class="after" style="font-size:14px; margin-top:10px;">
-            Ese cliente consumió más en su visita y pagó precio normal. Y es solo la primera vez: <strong>si regresa, entra directo sin comisión ni promociones.</strong>
+        <p class="eyebrow" style="margin-bottom:6px; color:var(--orange);">Campaña Municipal · $2,990 (30 días)</p>
+        <h3>Cero comisiones: Tarifa plana fija</h3>
+        <p style="font-size:14px; line-height:1.55; color:var(--body); margin-bottom:16px;">
+          En la Campaña Municipal <strong>no hay cupones de caja ni comisiones adicionales</strong>. Tu inversión es fija y obtienes presencia masiva en toda la flota de tu municipio.
+        </p>
+
+        <!-- Bloque de beneficios de campaña -->
+        <div style="background:#FAF8F5; border:1px solid var(--line); border-radius:14px; padding:16px 18px; margin-bottom:16px;">
+          <div style="font-size:13.5px; font-weight:600; color:var(--ink); margin-bottom:10px;">Lo que incluye tu campaña:</div>
+          <ul style="list-style:none; display:grid; gap:8px; font-size:13px; color:var(--body); padding:0; margin:0;">
+            <li style="display:flex; gap:8px;">
+              <span style="color:var(--orange); font-weight:700;">✓</span>
+              <span><strong>Presencia en toda la red:</strong> Rota en todos los vehículos en circulación del municipio elegido.</span>
+            </li>
+            <li style="display:flex; gap:8px;">
+              <span style="color:var(--orange); font-weight:700;">✓</span>
+              <span><strong>Acción directa:</strong> Enlace a tu WhatsApp, catálogo en línea, cómo llegar o llamada directa.</span>
+            </li>
+            <li style="display:flex; gap:8px;">
+              <span style="color:var(--orange); font-weight:700;">✓</span>
+              <span><strong>Exclusividad estricta:</strong> Solo 5 marcas al mes para garantizar máxima recordación sin saturar al pasajero.</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Ejemplo en números de retorno -->
+        <div style="margin-top:auto; padding-top:14px; border-top:1px solid var(--line);">
+          <div style="font-size:12.5px; font-weight:700; text-transform:uppercase; letter-spacing:.8px; color:var(--orange); margin-bottom:6px;">El retorno en números:</div>
+          <p style="font-size:13.5px; line-height:1.5; color:var(--body); margin:0;">
+            Con un ticket promedio de $1,000 a $1,500 (tours, beach clubs, clínicas o restaurantes de destino): <strong>con solo 2 o 3 clientes o reservaciones en todo el mes</strong> recuperas el 100% de tu inversión publicitaria. Todo el alcance de marca restante es ganancia líquida.
           </p>
         </div>
       </div>
