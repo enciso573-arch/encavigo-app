@@ -220,6 +220,36 @@ h2{
   border-radius:20px;padding:32px 28px;max-width:640px;
   box-shadow:0 10px 34px rgba(224,120,0,.14);
 }
+.pricing-grid{display:grid;gap:14px;margin-bottom:24px}
+@media(min-width:600px){.pricing-grid{grid-template-columns:1fr 1fr}}
+.plan-card{
+  background:var(--page);border:1.5px solid var(--line);
+  border-radius:18px;padding:22px 20px;display:flex;flex-direction:column;
+  transition:border-color .15s ease, box-shadow .15s ease;
+}
+.plan-card.featured{
+  border-color:var(--orange);box-shadow:0 8px 24px rgba(224,120,0,.12);
+  background:linear-gradient(180deg, #FFFFFF 0%, #FFFBF5 100%);
+}
+.plan-tag{
+  font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;
+  color:var(--orange);background:rgba(255,140,0,.12);padding:4px 9px;
+  border-radius:50px;align-self:flex-start;margin-bottom:10px;
+}
+.plan-tag.muted{color:var(--soft);background:rgba(0,0,0,.05)}
+.plan-title{font-size:18px;font-weight:700;color:var(--ink);margin-bottom:4px;letter-spacing:-.4px}
+.plan-sub{font-size:13px;color:var(--soft);line-height:1.45;margin-bottom:14px}
+.plan-cost{display:flex;align-items:baseline;gap:6px;margin-bottom:14px}
+.plan-cost .p-num{font-size:38px;font-weight:700;letter-spacing:-1.5px;color:var(--ink);line-height:1}
+.plan-cost .p-per{font-size:14px;color:var(--soft)}
+.plan-features{list-style:none;display:grid;gap:8px;font-size:13.5px;color:var(--body);line-height:1.5;margin-bottom:14px}
+.plan-features li{display:flex;gap:8px;align-items:flex-start}
+.plan-features .chk{color:var(--orange);font-weight:700}
+.plan-ideal{
+  border-top:1px dashed var(--line);padding-top:10px;font-size:12.5px;
+  color:var(--soft);line-height:1.45;margin-top:auto;
+}
+.plan-ideal b{color:var(--ink);font-weight:600}
 .amount{display:flex;align-items:baseline;gap:9px;margin-bottom:6px}
 .amount .num{font-size:56px;font-weight:700;letter-spacing:-2.4px;color:var(--ink);line-height:1}
 .amount .per{font-size:16px;color:var(--soft)}
@@ -479,10 +509,10 @@ footer a:hover{color:var(--orange-bright)}
     <div class="sheet pitch">
       <p class="big">Un espectacular no te dice quién entró. Nosotros sí.</p>
       <p>
-        Cuando pagas una lona, un volante o una publicación, nadie te puede decir
-        cuánta gente entró por eso. Aquí cada cliente llega con un código, y ese
-        código se quema en tu negocio. Al final del mes sabes
-        <strong>exactamente cuántas personas te mandamos</strong>.
+        Cuando pagas una lona, volantes o anuncios en redes, nadie contabiliza cuántos clientes
+        reales llegaron por eso: es una moneda al aire donde solo te ofrecen porcentajes o probabilidades.
+        Aquí cada cliente llega con un código único que se valida y canjea directamente en tu negocio.
+        Nosotros no te damos probabilidades: <strong>te entregamos clientes reales, contables y cifras verificables</strong>.
       </p>
     </div>
   </div>
@@ -495,7 +525,7 @@ footer a:hover{color:var(--orange-bright)}
     <div class="col">
       <p class="eyebrow">Cómo funciona</p>
       <h2>Cuatro pasos, y ninguno es tuyo</h2>
-      <p class="lead">Nosotros ponemos las unidades, la app y los códigos. Tú nada más atiendes al cliente cuando llegue.</p>
+      <p class="lead">Nosotros ponemos los vehículos en circulación, la app y la red de pasajeros. Tú solo atiendes al cliente cuando llegue.</p>
     </div>
 
     <div class="flow-grid">
@@ -583,7 +613,7 @@ footer a:hover{color:var(--orange-bright)}
     <div class="cards">
       <div class="sheet card">
         <h3>Clientes nuevos</h3>
-        <p>Gente que iba pasando y que no te conocía. No le estás dando descuento a quien ya iba a entrar.</p>
+        <p>Clientes que iban en trayecto y no te conocían. No le estás dando descuento a quien ya iba a entrar.</p>
       </div>
       <div class="sheet card">
         <h3>Números reales</h3>
@@ -591,7 +621,7 @@ footer a:hover{color:var(--orange-bright)}
       </div>
       <div class="sheet card">
         <h3>Pagas por resultado</h3>
-        <p>Fuera de tu mensualidad, solo pagas por cada persona que de verdad llegó y quemó su código.</p>
+        <p>Fuera de tu cuota mensual, solo pagas por cada cliente que de verdad llegó y canjeó su código en caja.</p>
       </div>
     </div>
   </div>
@@ -661,11 +691,41 @@ footer a:hover{color:var(--orange-bright)}
     </div>
 
     <div class="price-box">
-      <div class="amount">
-        <span class="num">$990</span>
-        <span class="per">al mes</span>
+      <div class="pricing-grid">
+        <div class="plan-card">
+          <span class="plan-tag muted">1 Zona / Corredor</span>
+          <h4 class="plan-title">Plan Local</h4>
+          <p class="plan-sub">Para negocios de colonia y comercio de cercanía.</p>
+          <div class="plan-cost">
+            <span class="p-num">$990</span>
+            <span class="p-per">al mes</span>
+          </div>
+          <ul class="plan-features">
+            <li><span class="chk">✓</span><span>Cobertura enfocada en tu corredor (radio de 3 km: ej. Pitillal, Centro o Marina).</span></li>
+            <li><span class="chk">✓</span><span>Apareces prioritario cuando el vehículo circula cerca de tu local.</span></li>
+            <li><span class="chk">✓</span><span>Máximo 3 negocios de tu mismo giro por zona para proteger tu visibilidad.</span></li>
+          </ul>
+          <p class="plan-ideal"><b>Ideal para:</b> Taquerías, cafés, barberías, estéticas, fondas y talleres.</p>
+        </div>
+
+        <div class="plan-card featured">
+          <span class="plan-tag">Cobertura Total</span>
+          <h4 class="plan-title">Vallarta y Bahía de Banderas</h4>
+          <p class="plan-sub">Para marcas de destino y negocios de alto impacto.</p>
+          <div class="plan-cost">
+            <span class="p-num">$1,990</span>
+            <span class="p-per">al mes</span>
+          </div>
+          <ul class="plan-features">
+            <li><span class="chk">✓</span><span>Presencia activa en <strong>todos los vehículos en circulación de Puerto Vallarta y Bahía de Banderas</strong>.</span></li>
+            <li><span class="chk">✓</span><span>Visibilidad garantizada sin importar en qué zona o municipio circule la unidad.</span></li>
+            <li><span class="chk">✓</span><span>Mayor frecuencia de exposición ante miles de pasajeros diarios.</span></li>
+          </ul>
+          <p class="plan-ideal"><b>Ideal para:</b> Beach clubs, agencias de tours, clínicas, plazas y marcas de alto impacto.</p>
+        </div>
       </div>
-      <p class="incl">Tu lugar en la plataforma. Aparte, pagas por cada cliente que llega.</p>
+
+      <p class="incl" style="margin-top:8px;">Aparte de tu plan mensual, pagas una comisión fija solo cuando un cliente llega a tu negocio y canjea su código:</p>
 
       <table class="tarifas">
         <thead>
@@ -700,13 +760,13 @@ footer a:hover{color:var(--orange-bright)}
       </p>
 
       <ul class="plist">
-        <li><span class="dot"></span><span>Se cobra <strong>solo cuando el cliente llega a tu negocio</strong> y quema su código. Si no llegó, no se cobra.</span></li>
+        <li><span class="dot"></span><span>Se cobra <strong>solo cuando el cliente llega a tu negocio</strong> y canjea su código. Si no llegó, no se cobra.</span></li>
         <li><span class="dot"></span><span>Cambias tu promoción las veces que quieras, sin costo.</span></li>
         <li><span class="dot"></span><span>Sin cuota de alta ni de instalación.</span></li>
         <li><span class="dot"></span><span>Se paga por adelantado, así que <strong>no hay cobranza ni deudas</strong>. Si un mes no quieres, tu promoción se pausa.</span></li>
       </ul>
       <div class="extra">
-        <b>No te vamos a saturar:</b> cuidamos cuántos negocios del mismo giro entran
+        <b>Visibilidad protegida:</b> cuidamos cuántos comercios del mismo giro entran
         en una misma zona, y tu promoción nunca sale el mismo día que la de un competidor
         directo. El pasajero ve una opción de tu giro, no una lista para comparar.
       </div>
@@ -763,7 +823,7 @@ footer a:hover{color:var(--orange-bright)}
     <div class="faq">
       <details class="sheet">
         <summary>¿Y si no me llega nadie?</summary>
-        <p>Pierdes los $500 del mes y nada más. No hay plazo forzoso ni cargos adicionales, y si un mes no te sirvió, no lo vuelves a pagar. La mensualidad es baja justamente para que probarlo no represente un riesgo.</p>
+        <p>Solo pagaste tu cuota del mes y nada más. No hay plazo forzoso ni cargos adicionales, y si un mes no te sirvió, no lo vuelves a pagar. La inversión es accesible justamente para que probarlo no represente un riesgo.</p>
       </details>
       <details class="sheet">
         <summary>¿Hay plazo forzoso?</summary>
@@ -782,12 +842,12 @@ footer a:hover{color:var(--orange-bright)}
         <p>Podemos tomarlas. CreaFilms, nuestro equipo de producción, va a tu negocio y hace la sesión. Es un servicio aparte con su propio costo, y es opcional: si ya tienes fotos que te gusten, con esas armamos tu tarjeta.</p>
       </details>
       <details class="sheet">
-        <summary>¿Cómo sé que los clientes son de ustedes?</summary>
-        <p>Porque cada uno llega con un código que solo sirve una vez y que se quema con el código de tu caja. Si ese cliente no lo escaneó ahí, no cuenta y no se te cobra.</p>
+        <summary>¿Cómo sé que los clientes llegaron por ustedes?</summary>
+        <p>Porque cada cliente llega con un código único de un solo uso que se valida y canjea directamente en tu caja. Si el cliente no lo hace válido en tu establecimiento, no cuenta y no se te cobra.</p>
       </details>
       <details class="sheet">
         <summary>¿Va a estar mi competencia ahí también?</summary>
-        <p>Puede que sí, pero no te vamos a rodear de gente de tu mismo giro. Cuidamos cuántos entran en una misma zona y los repartimos en días distintos, así que <strong>tu promoción nunca sale el mismo día que la de un competidor directo</strong>. El pasajero no ve tres taquerías para comparar: ve una, y ese día es la tuya.</p>
+        <p>Puede que sí, pero no te vamos a saturar de comercios de tu mismo giro. Cuidamos cuántos entran en una misma zona y los distribuimos en días distintos, así que <strong>tu promoción nunca sale el mismo día que la de un competidor directo</strong>. El pasajero no ve tres opciones para comparar: ve una, y ese día es la tuya.</p>
       </details>
       <details class="sheet">
         <summary>¿En qué tipo de transporte están?</summary>
@@ -809,7 +869,7 @@ footer a:hover{color:var(--orange-bright)}
 <section class="final">
   <div class="wrap">
     <h2>Las unidades ya están rodando.</h2>
-    <p class="lead">Falta que la gente que va adentro vea tu negocio. Déjanos tus datos y te contactamos hoy mismo.</p>
+    <p class="lead">Miles de pasajeros se mueven todos los días por Puerto Vallarta y Bahía de Banderas. Haz que vean tu negocio en su trayecto. Déjanos tus datos y te contactamos hoy mismo.</p>
     <div class="cta-row">
       <a class="btn btn-primary js-registro" href="/registro.html">Quiero mi lugar</a>
       <a class="btn btn-ghost" href="https://wa.me/523221592596?text=Hola%20EncaviGO%2C%20quiero%20informaci%C3%B3n%20para%20mi%20negocio" class="js-wa" target="_blank" rel="noopener">Escríbenos por WhatsApp</a>
