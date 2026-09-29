@@ -214,46 +214,157 @@ h2{
 .card h3{font-size:16.5px;margin:15px 0 6px}
 .card p{font-size:14.5px}
 
-/* precio — destacada */
-.price-box{
-  background:var(--page);border:2px solid var(--orange);
-  border-radius:20px;padding:32px 28px;max-width:640px;
-  box-shadow:0 10px 34px rgba(224,120,0,.14);
+/* ══════ PRECIOS Y PLANES ══════ */
+.pricing-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:20px;
+  margin:28px 0 32px;
 }
-.pricing-grid{display:grid;gap:14px;margin-bottom:24px}
-@media(min-width:600px){.pricing-grid{grid-template-columns:1fr 1fr}}
+@media(min-width:760px){
+  .pricing-grid{
+    grid-template-columns:1fr 1fr;
+    gap:24px;
+  }
+}
 .plan-card{
-  background:var(--page);border:1.5px solid var(--line);
-  border-radius:18px;padding:22px 20px;display:flex;flex-direction:column;
-  transition:border-color .15s ease, box-shadow .15s ease;
+  background:#FFFFFF;
+  border:1.5px solid var(--line);
+  border-radius:20px;
+  padding:32px 28px;
+  display:flex;
+  flex-direction:column;
+  box-shadow:0 4px 18px rgba(0,0,0,.03);
+  position:relative;
 }
 .plan-card.featured{
-  border-color:var(--orange);box-shadow:0 8px 24px rgba(224,120,0,.12);
-  background:linear-gradient(180deg, #FFFFFF 0%, #FFFBF5 100%);
+  border:2px solid var(--orange);
+  box-shadow:0 8px 30px rgba(224,120,0,.12);
+}
+.plan-tags-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  align-items:center;
+  margin-bottom:14px;
 }
 .plan-tag{
-  font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;
-  color:var(--orange);background:rgba(255,140,0,.12);padding:4px 9px;
-  border-radius:50px;align-self:flex-start;margin-bottom:10px;
+  font-size:11px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.8px;
+  color:var(--ink);
+  background:rgba(0,0,0,.06);
+  padding:4px 10px;
+  border-radius:50px;
 }
-.plan-tag.muted{color:var(--soft);background:rgba(0,0,0,.05)}
-.plan-title{font-size:18px;font-weight:700;color:var(--ink);margin-bottom:4px;letter-spacing:-.4px}
-.plan-sub{font-size:13px;color:var(--soft);line-height:1.45;margin-bottom:14px}
-.plan-cost{display:flex;align-items:baseline;gap:6px;margin-bottom:14px}
-.plan-cost .p-num{font-size:38px;font-weight:700;letter-spacing:-1.5px;color:var(--ink);line-height:1}
-.plan-cost .p-per{font-size:14px;color:var(--soft)}
-.plan-features{list-style:none;display:grid;gap:8px;font-size:13.5px;color:var(--body);line-height:1.5;margin-bottom:14px}
-.plan-features li{display:flex;gap:8px;align-items:flex-start}
-.plan-features .chk{color:var(--orange);font-weight:700}
+.plan-tag.accent{
+  color:var(--orange);
+  background:rgba(255,140,0,.12);
+}
+.plan-pill-alert{
+  font-size:11px;
+  font-weight:700;
+  color:#B44A12;
+  background:#FFEAD9;
+  padding:4px 10px;
+  border-radius:50px;
+  letter-spacing:.4px;
+}
+.plan-title{
+  font-size:22px;
+  font-weight:700;
+  color:var(--ink);
+  margin-bottom:6px;
+  letter-spacing:-.6px;
+}
+.plan-sub{
+  font-size:14px;
+  color:var(--soft);
+  line-height:1.5;
+  margin-bottom:16px;
+}
+.plan-cost{
+  display:flex;
+  align-items:baseline;
+  gap:8px;
+  margin-bottom:18px;
+  padding-bottom:16px;
+  border-bottom:1px solid var(--line);
+}
+.plan-cost .p-num{
+  font-size:46px;
+  font-weight:700;
+  letter-spacing:-2px;
+  color:var(--ink);
+  line-height:1;
+}
+.plan-cost .p-per{
+  font-size:15px;
+  color:var(--soft);
+}
+.plan-features{
+  list-style:none;
+  display:grid;
+  gap:10px;
+  font-size:14px;
+  color:var(--body);
+  line-height:1.55;
+  margin-bottom:20px;
+}
+.plan-features li{
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+}
+.plan-features .chk{
+  color:var(--orange);
+  font-weight:700;
+  flex:0 0 auto;
+}
 .plan-ideal{
-  border-top:1px dashed var(--line);padding-top:10px;font-size:12.5px;
-  color:var(--soft);line-height:1.45;margin-top:auto;
+  border-top:1px dashed var(--line);
+  padding-top:14px;
+  font-size:13px;
+  color:var(--soft);
+  line-height:1.5;
+  margin-top:auto;
 }
-.plan-ideal b{color:var(--ink);font-weight:600}
-.amount{display:flex;align-items:baseline;gap:9px;margin-bottom:6px}
-.amount .num{font-size:56px;font-weight:700;letter-spacing:-2.4px;color:var(--ink);line-height:1}
-.amount .per{font-size:16px;color:var(--soft)}
-.incl{font-size:16.5px;color:var(--body);margin-bottom:22px}
+.plan-ideal b{
+  color:var(--ink);
+  font-weight:600;
+}
+
+/* Grilla inferior (comisiones + math/fotos) */
+.pricing-details-grid{
+  display:grid;
+  gap:24px;
+}
+@media(min-width:960px){
+  .pricing-details-grid{
+    grid-template-columns:minmax(0, 1.15fr) minmax(0, 0.85fr);
+    align-items:start;
+  }
+}
+.price-rules-box{
+  background:var(--page);
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:32px 28px;
+  box-shadow:0 4px 18px rgba(0,0,0,.03);
+}
+.pricing-side-stack{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+.pricing-side-stack .photo-box,
+.pricing-side-stack .math{
+  margin-top:0 !important;
+  max-width:none !important;
+}
+
+.incl{font-size:16px;color:var(--body);margin-bottom:20px}
 .plist{list-style:none;display:grid;gap:12px;margin-bottom:22px}
 .plist li{display:flex;gap:11px;align-items:flex-start;font-size:15px;max-width:60ch}
 .plist .dot{flex:0 0 auto;margin-top:.62em;width:5px;height:5px;border-radius:50%;background:var(--orange)}
@@ -340,22 +451,7 @@ h2{
    vea. Para una pagina que se le ensena a un cliente, que cargue
    siempre vale mas que el efecto. */
 
-/* precio a dos columnas en pantalla ancha */
-@media(min-width:1000px){
-  #precio .wrap{
-    display:grid;
-    grid-template-columns:minmax(0,1fr) minmax(0,1fr);
-    column-gap:26px;
-    align-items:start;
-  }
-  #precio .col{grid-column:1 / -1}
-  #precio .price-box{
-    grid-column:1;grid-row:2 / span 2;margin:0;
-    align-self:start;position:sticky;top:24px;
-  }
-  #precio .photo-box{grid-column:2;grid-row:2;margin-top:0;max-width:none}
-  #precio .math{grid-column:2;grid-row:3;margin-top:14px;max-width:none}
-}
+
 
 /* preguntas */
 .faq{display:grid;gap:9px;margin-top:24px;max-width:760px}
@@ -690,127 +786,141 @@ footer a:hover{color:var(--orange-bright)}
       <h2>Claro y sin letras chiquitas</h2>
     </div>
 
-    <div class="price-box">
-      <div class="pricing-grid">
-        <div class="plan-card">
-          <span class="plan-tag muted">1 Zona / Corredor</span>
-          <h4 class="plan-title">Plan Local</h4>
-          <p class="plan-sub">Para negocios de colonia y comercio de cercanía.</p>
-          <div class="plan-cost">
-            <span class="p-num">$990</span>
-            <span class="p-per">al mes</span>
-          </div>
-          <ul class="plan-features">
-            <li><span class="chk">✓</span><span>Cobertura enfocada en tu corredor (radio de 3 km: ej. Pitillal, Centro o Marina).</span></li>
-            <li><span class="chk">✓</span><span>Apareces prioritario cuando el vehículo circula cerca de tu local.</span></li>
-            <li><span class="chk">✓</span><span>Máximo 3 negocios de tu mismo giro por zona para proteger tu visibilidad.</span></li>
-          </ul>
-          <p class="plan-ideal"><b>Ideal para:</b> Taquerías, cafés, barberías, estéticas, fondas y talleres.</p>
+    <!-- 1. LOS DOS PLANES EN SU FILA DEDICADA Y ANCHA -->
+    <div class="pricing-grid">
+      <div class="plan-card">
+        <div class="plan-tags-row">
+          <span class="plan-tag">1 Zona / Corredor</span>
         </div>
-
-        <div class="plan-card featured">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-            <span class="plan-tag">Cobertura Municipal</span>
-            <span style="font-size:10.5px; font-weight:700; color:#B44A12; background:#FFEAD9; padding:3px 8px; border-radius:30px; letter-spacing:.5px;">5 cupos por municipio</span>
-          </div>
-          <h4 class="plan-title">Puerto Vallarta o Bahía de Banderas</h4>
-          <p class="plan-sub">Campaña exclusiva de 1 mes (30 días) en todo el municipio elegido.</p>
-          <div class="plan-cost">
-            <span class="p-num">$2,990</span>
-            <span class="p-per">por 1 mes (30 días)</span>
-          </div>
-          <ul class="plan-features">
-            <li><span class="chk">✓</span><span>Presencia activa en <strong>todos los vehículos en circulación</strong> de Puerto Vallarta o Bahía de Banderas.</span></li>
-            <li><span class="chk">✓</span><span><strong>Solo 5 cupos exclusivos por municipio</strong> (10 marcas en total) para asegurar máxima frecuencia e impacto visual.</span></li>
-            <li><span class="chk">✓</span><span>Duración fija de 1 mes completo para lanzamientos, eventos y temporadas altas.</span></li>
-          </ul>
-          <p class="plan-ideal"><b>Ideal para:</b> Beach clubs, agencias de tours, clínicas, plazas y marcas de alto impacto.</p>
+        <h4 class="plan-title">Plan Local</h4>
+        <p class="plan-sub">Para comercios de colonia y negocio de cercanía.</p>
+        <div class="plan-cost">
+          <span class="p-num">$990</span>
+          <span class="p-per">al mes</span>
         </div>
+        <ul class="plan-features">
+          <li><span class="chk">✓</span><span>Cobertura enfocada en tu corredor (radio de 3 km: ej. Pitillal, Centro o Marina).</span></li>
+          <li><span class="chk">✓</span><span>Apareces prioritario cuando el vehículo circula cerca de tu local.</span></li>
+          <li><span class="chk">✓</span><span>Máximo 3 negocios de tu mismo giro por zona para proteger tu visibilidad.</span></li>
+        </ul>
+        <p class="plan-ideal"><b>Ideal para:</b> Taquerías, cafés, barberías, estéticas, fondas y talleres.</p>
       </div>
 
-      <p class="incl" style="margin-top:8px;">Aparte de tu plan mensual, pagas una comisión fija solo cuando un cliente llega a tu negocio y canjea su código:</p>
-
-      <table class="tarifas">
-        <thead>
-          <tr><th>Tu ticket promedio</th><th>Por cliente que llega</th></tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><span class="rango">Hasta $250</span>
-                <span class="giro">Taquerías, cafés, fondas, barberías</span></td>
-            <td><span class="tarifa">$25</span>
-                <span class="pct">10% de un ticket de $250</span></td>
-          </tr>
-          <tr>
-            <td><span class="rango">$250 a $500</span>
-                <span class="giro">Restaurantes, bares, estéticas</span></td>
-            <td><span class="tarifa">$45</span>
-                <span class="pct">9% de un ticket de $500</span></td>
-          </tr>
-          <tr>
-            <td><span class="rango">$500 a $1,000</span>
-                <span class="giro">Spas, tours, talleres, clínicas</span></td>
-            <td><span class="tarifa">$80</span>
-                <span class="pct">8% de un ticket de $1,000</span></td>
-          </tr>
-        </tbody>
-      </table>
-
-      <p class="nota-tarifa">
-        Tu rango se fija <strong>una sola vez, al firmar</strong>, según el ticket promedio
-        de tu negocio. No cambia de un cliente a otro ni te cobramos según lo que cada
-        quien consuma.
-      </p>
-
-      <ul class="plist">
-        <li><span class="dot"></span><span>Se cobra <strong>solo cuando el cliente llega a tu negocio</strong> y canjea su código. Si no llegó, no se cobra.</span></li>
-        <li><span class="dot"></span><span>Cambias tu promoción las veces que quieras, sin costo.</span></li>
-        <li><span class="dot"></span><span>Sin cuota de alta ni de instalación.</span></li>
-        <li><span class="dot"></span><span>Se paga por adelantado, así que <strong>no hay cobranza ni deudas</strong>. Si un mes no quieres, tu promoción se pausa.</span></li>
-      </ul>
-      <div class="extra">
-        <b>Visibilidad protegida:</b> cuidamos cuántos comercios del mismo giro entran
-        en una misma zona. En Cobertura Municipal, el cupo está estrictamente limitado a solo 5 marcas por municipio (5 en Puerto Vallarta y 5 en Bahía de Banderas) para asegurar que tu negocio reciba una frecuencia constante de vistas y un retorno real de inversión.
+      <div class="plan-card featured">
+        <div class="plan-tags-row">
+          <span class="plan-tag accent">Cobertura Municipal</span>
+          <span class="plan-pill-alert">Solo 5 cupos por municipio</span>
+        </div>
+        <h4 class="plan-title">Puerto Vallarta o Bahía de Banderas</h4>
+        <p class="plan-sub">Campaña exclusiva de 1 mes (30 días) en todo el municipio elegido.</p>
+        <div class="plan-cost">
+          <span class="p-num">$2,990</span>
+          <span class="p-per">por 1 mes (30 días)</span>
+        </div>
+        <ul class="plan-features">
+          <li><span class="chk">✓</span><span>Presencia activa en <strong>todos los vehículos en circulación</strong> de Puerto Vallarta o Bahía de Banderas.</span></li>
+          <li><span class="chk">✓</span><span><strong>Solo 5 cupos exclusivos por municipio</strong> (10 marcas en total) para asegurar máxima frecuencia e impacto.</span></li>
+          <li><span class="chk">✓</span><span>Duración fija de 1 mes completo para lanzamientos, eventos y temporadas altas.</span></li>
+        </ul>
+        <p class="plan-ideal"><b>Ideal para:</b> Beach clubs, agencias de tours, clínicas, plazas y marcas de alto impacto.</p>
       </div>
     </div>
 
-    <div class="sheet photo-box">
-      <p class="kicker">Servicio adicional · opcional</p>
-      <h3>Fotografía profesional, si la necesitas</h3>
-      <p>La foto es lo que hace que el pasajero se detenga en tu tarjeta en vez de pasarle de largo. Si no tienes fotos que te convenzan, CreaFilms —nuestro equipo de producción— va a tu negocio y las hace.</p>
-      <p>Es un servicio aparte, con su propio costo, y <strong>no es obligatorio</strong>: si ya tienes buenas fotos, con esas armamos tu tarjeta y listo.</p>
-      <p class="up">También producimos video y contenido para tus redes. Pregúntanos por el paquete.</p>
-    </div>
+    <!-- 2. DETALLES ABAJO: 2 COLUMNAS NIVELADAS Y SIN HUECOS -->
+    <div class="pricing-details-grid">
+      <!-- Columna Izquierda: Comisiones y Condiciones -->
+      <div class="price-rules-box">
+        <p class="eyebrow" style="margin-bottom:8px;">Pago por resultado</p>
+        <h3 style="font-size:20px; font-weight:700; color:var(--ink); margin-bottom:12px;">Comisión por cliente que llega</h3>
+        <p class="incl" style="font-size:14.5px; line-height:1.6; margin-bottom:18px;">
+          Aparte de tu plan mensual, pagas una comisión fija solo cuando un cliente llega a tu negocio y canjea su código:
+        </p>
 
-    <div class="sheet math">
-      <p class="eyebrow">¿Cuánto te cuesta traer un cliente?</p>
-      <div class="row">
-        <span>Por cada cliente que llega<span class="hint">va completo al chofer que te lo trajo</span></span>
-        <span>$25 a $80</span>
+        <table class="tarifas">
+          <thead>
+            <tr><th>Tu ticket promedio</th><th>Por cliente que llega</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="rango">Hasta $250</span>
+                  <span class="giro">Taquerías, cafés, fondas, barberías</span></td>
+              <td><span class="tarifa">$25</span>
+                  <span class="pct">10% de un ticket de $250</span></td>
+            </tr>
+            <tr>
+              <td><span class="rango">$250 a $500</span>
+                  <span class="giro">Restaurantes, bares, estéticas</span></td>
+              <td><span class="tarifa">$45</span>
+                  <span class="pct">9% de un ticket de $500</span></td>
+            </tr>
+            <tr>
+              <td><span class="rango">$500 a $1,000</span>
+                  <span class="giro">Spas, tours, talleres, clínicas</span></td>
+              <td><span class="tarifa">$80</span>
+                  <span class="pct">8% de un ticket de $1,000</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p class="nota-tarifa">
+          Tu rango se fija <strong>una sola vez, al firmar</strong>, según el ticket promedio
+          de tu negocio. No cambia de un cliente a otro ni te cobramos según lo que cada
+          quien consuma.
+        </p>
+
+        <ul class="plist">
+          <li><span class="dot"></span><span>Se cobra <strong>solo cuando el cliente llega a tu negocio</strong> y canjea su código. Si no llegó, no se cobra.</span></li>
+          <li><span class="dot"></span><span>Cambias tu promoción las veces que quieras, sin costo.</span></li>
+          <li><span class="dot"></span><span>Sin cuota de alta ni de instalación.</span></li>
+          <li><span class="dot"></span><span>Se paga por adelantado, así que <strong>no hay cobranza ni deudas</strong>. Si un mes no quieres, tu promoción se pausa.</span></li>
+        </ul>
+        <div class="extra">
+          <b>Visibilidad protegida:</b> cuidamos cuántos comercios del mismo giro entran
+          en una misma zona. En Cobertura Municipal, el cupo está estrictamente limitado a solo 5 marcas por municipio (5 en Puerto Vallarta y 5 en Bahía de Banderas) para asegurar que tu negocio reciba una frecuencia constante de vistas y un retorno real de inversión.
+        </div>
       </div>
-      <div class="row">
-        <span>El descuento de tu promoción<span class="hint">lo decides tú, del tamaño que quieras</span></span>
-        <span class="yours">lo pones tú</span>
+
+      <!-- Columna Derecha: Math + CreaFilms Fotos (JUNTOS, SIN ESPACIO EN BLANCO) -->
+      <div class="pricing-side-stack">
+        <div class="sheet math">
+          <p class="eyebrow">¿Cuánto te cuesta traer un cliente?</p>
+          <div class="row">
+            <span>Por cada cliente que llega<span class="hint">va completo al chofer que te lo trajo</span></span>
+            <span>$25 a $80</span>
+          </div>
+          <div class="row">
+            <span>El descuento de tu promoción<span class="hint">lo decides tú, del tamaño que quieras</span></span>
+            <span class="yours">lo pones tú</span>
+          </div>
+          <p class="after">
+            <strong>Ese dinero no se queda con nosotros: es del chofer que te llevó al cliente.</strong>
+            Por eso te recomienda de verdad. No es un anuncio pegado en un vidrio —
+            es alguien que gana cuando tú ganas.
+          </p>
+          <p class="after">
+            <strong>Pongámoslo en números.</strong> Tomemos la promoción del primer taco gratis:
+          </p>
+          <div class="cuenta">
+            <div class="crow"><span>Lo que te cuesta <em>producir</em> el taco que regalas<span class="chint">tu costo, no el precio de tu carta &mdash; eso nunca lo ibas a cobrar</span></span><span>&minus;$8</span></div>
+            <div class="crow"><span>Comisión del chofer que lo trajo</span><span>&minus;$25</span></div>
+            <div class="crow total"><span>Traer a ese cliente te costó</span><span>$33</span></div>
+          </div>
+          <p class="aviso-ej">Cifras de ejemplo. Cada negocio tiene sus propios costos,
+          y los tuyos los pones tú cuando armemos tu promoción.</p>
+          <p class="after">
+            Ese cliente se sentó y pidió lo demás pagando precio normal. Y es solo la primera
+            visita: <strong>si regresa, entra completo. Ya no hay regalo ni comisión.</strong>
+          </p>
+        </div>
+
+        <div class="sheet photo-box">
+          <p class="kicker">Servicio adicional · opcional</p>
+          <h3>Fotografía profesional, si la necesitas</h3>
+          <p>La foto es lo que hace que el pasajero se detenga en tu tarjeta en vez de pasarle de largo. Si no tienes fotos que te convenzan, CreaFilms —nuestro equipo de producción— va a tu negocio y las hace.</p>
+          <p>Es un servicio aparte, con su propio costo, y <strong>no es obligatorio</strong>: si ya tienes buenas fotos, con esas armamos tu tarjeta y listo.</p>
+          <p class="up">También producimos video y contenido para tus redes. Pregúntanos por el paquete.</p>
+        </div>
       </div>
-      <p class="after">
-        <strong>Ese dinero no se queda con nosotros: es del chofer que te llevó al cliente.</strong>
-        Por eso te recomienda de verdad. No es un anuncio pegado en un vidrio —
-        es alguien que gana cuando tú ganas.
-      </p>
-      <p class="after">
-        <strong>Pongámoslo en números.</strong> Tomemos la promoción del primer taco gratis:
-      </p>
-      <div class="cuenta">
-        <div class="crow"><span>Lo que te cuesta <em>producir</em> el taco que regalas<span class="chint">tu costo, no el precio de tu carta &mdash; eso nunca lo ibas a cobrar</span></span><span>&minus;$8</span></div>
-        <div class="crow"><span>Comisión del chofer que lo trajo</span><span>&minus;$25</span></div>
-        <div class="crow total"><span>Traer a ese cliente te costó</span><span>$33</span></div>
-      </div>
-      <p class="aviso-ej">Cifras de ejemplo. Cada negocio tiene sus propios costos,
-      y los tuyos los pones tú cuando armemos tu promoción.</p>
-      <p class="after">
-        Ese cliente se sentó y pidió lo demás pagando precio normal. Y es solo la primera
-        visita: <strong>si regresa, entra completo. Ya no hay regalo ni comisión.</strong>
-      </p>
     </div>
   </div>
 </section>
