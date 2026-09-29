@@ -335,33 +335,118 @@ h2{
   font-weight:600;
 }
 
-/* Grilla inferior (comisiones + math/fotos) */
-.pricing-details-grid{
+/* Bloque comisiones y desglose equilibrados */
+.comisiones-math-grid{
   display:grid;
-  gap:24px;
+  grid-template-columns:1fr;
+  gap:20px;
+  margin-bottom:20px;
 }
-@media(min-width:960px){
-  .pricing-details-grid{
-    grid-template-columns:minmax(0, 1.15fr) minmax(0, 0.85fr);
-    align-items:start;
+@media(min-width:880px){
+  .comisiones-math-grid{
+    grid-template-columns:1fr 1fr;
+    align-items:stretch;
   }
 }
-.price-rules-box{
-  background:var(--page);
-  border:1px solid var(--line);
+.box-balance{
+  background:#FFFFFF;
+  border:1.5px solid var(--line);
   border-radius:20px;
-  padding:32px 28px;
-  box-shadow:0 4px 18px rgba(0,0,0,.03);
-}
-.pricing-side-stack{
+  padding:28px 26px;
   display:flex;
   flex-direction:column;
-  gap:16px;
+  box-shadow:0 4px 16px rgba(0,0,0,.03);
 }
-.pricing-side-stack .photo-box,
-.pricing-side-stack .math{
-  margin-top:0 !important;
-  max-width:none !important;
+.box-balance h3{
+  font-size:19px;
+  font-weight:700;
+  color:var(--ink);
+  letter-spacing:-.4px;
+  margin-bottom:10px;
+}
+
+/* Barra de garantias en 4 columnas */
+.garantias-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:12px;
+  margin:20px 0;
+}
+@media(min-width:600px){
+  .garantias-grid{
+    grid-template-columns:repeat(2, 1fr);
+  }
+}
+@media(min-width:960px){
+  .garantias-grid{
+    grid-template-columns:repeat(4, 1fr);
+  }
+}
+.garantia-card{
+  background:#FFFFFF;
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:16px 18px;
+  font-size:13.5px;
+  line-height:1.45;
+  color:var(--body);
+  box-shadow:0 2px 8px rgba(0,0,0,.02);
+}
+.garantia-card b{
+  display:block;
+  font-size:14px;
+  color:var(--ink);
+  margin-bottom:4px;
+  font-weight:600;
+}
+
+/* Banner horizontal CreaFilms */
+.photo-banner{
+  background:#FFFFFF;
+  border:1.5px solid var(--line);
+  border-left:4px solid var(--orange);
+  border-radius:16px;
+  padding:22px 26px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  margin-top:20px;
+  box-shadow:0 4px 16px rgba(0,0,0,.03);
+}
+@media(min-width:760px){
+  .photo-banner{
+    flex-direction:row;
+    align-items:center;
+    justify-content:space-between;
+    gap:24px;
+  }
+}
+.photo-banner-txt{flex:1 1 500px}
+.photo-banner-txt .kicker{
+  font-size:11px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  color:var(--orange);
+  margin-bottom:4px;
+  display:block;
+}
+.photo-banner-txt h3{
+  font-size:18px;
+  font-weight:700;
+  color:var(--ink);
+  margin-bottom:4px;
+}
+.photo-banner-txt p{
+  font-size:13.5px;
+  color:var(--body);
+  line-height:1.5;
+  margin:0;
+}
+.photo-banner-sub{
+  font-size:12.5px;
+  color:var(--soft);
+  margin-top:6px !important;
 }
 
 .incl{font-size:16px;color:var(--body);margin-bottom:20px}
@@ -826,13 +911,13 @@ footer a:hover{color:var(--orange-bright)}
       </div>
     </div>
 
-    <!-- 2. DETALLES ABAJO: 2 COLUMNAS NIVELADAS Y SIN HUECOS -->
-    <div class="pricing-details-grid">
-      <!-- Columna Izquierda: Comisiones y Condiciones -->
-      <div class="price-rules-box">
-        <p class="eyebrow" style="margin-bottom:8px;">Pago por resultado</p>
-        <h3 style="font-size:20px; font-weight:700; color:var(--ink); margin-bottom:12px;">Comisión por cliente que llega</h3>
-        <p class="incl" style="font-size:14.5px; line-height:1.6; margin-bottom:18px;">
+    <!-- 2. DETALLES ABAJO: 2 COLUMNAS EQUILIBRADAS DE LA MISMA ALTURA -->
+    <div class="comisiones-math-grid">
+      <!-- Columna Izquierda: Tabla de comisiones por cliente -->
+      <div class="box-balance">
+        <p class="eyebrow" style="margin-bottom:6px;">Pago por resultado</p>
+        <h3>Comisión por cliente que llega</h3>
+        <p style="font-size:14px; line-height:1.55; color:var(--body); margin-bottom:16px;">
           Aparte de tu plan mensual, pagas una comisión fija solo cuando un cliente llega a tu negocio y canjea su código:
         </p>
 
@@ -862,28 +947,18 @@ footer a:hover{color:var(--orange-bright)}
           </tbody>
         </table>
 
-        <p class="nota-tarifa">
+        <p class="nota-tarifa" style="margin-top:auto; margin-bottom:0; padding-top:14px; border-top:1px solid var(--line);">
           Tu rango se fija <strong>una sola vez, al firmar</strong>, según el ticket promedio
-          de tu negocio. No cambia de un cliente a otro ni te cobramos según lo que cada
-          quien consuma.
+          de tu negocio. No cambia de un cliente a otro ni te cobramos según lo que cada quien consuma.
         </p>
-
-        <ul class="plist">
-          <li><span class="dot"></span><span>Se cobra <strong>solo cuando el cliente llega a tu negocio</strong> y canjea su código. Si no llegó, no se cobra.</span></li>
-          <li><span class="dot"></span><span>Cambias tu promoción las veces que quieras, sin costo.</span></li>
-          <li><span class="dot"></span><span>Sin cuota de alta ni de instalación.</span></li>
-          <li><span class="dot"></span><span>Se paga por adelantado, así que <strong>no hay cobranza ni deudas</strong>. Si un mes no quieres, tu promoción se pausa.</span></li>
-        </ul>
-        <div class="extra">
-          <b>Visibilidad protegida:</b> cuidamos cuántos comercios del mismo giro entran
-          en una misma zona. En Cobertura Municipal, el cupo está estrictamente limitado a solo 5 marcas por municipio (5 en Puerto Vallarta y 5 en Bahía de Banderas) para asegurar que tu negocio reciba una frecuencia constante de vistas y un retorno real de inversión.
-        </div>
       </div>
 
-      <!-- Columna Derecha: Math + CreaFilms Fotos (JUNTOS, SIN ESPACIO EN BLANCO) -->
-      <div class="pricing-side-stack">
-        <div class="sheet math">
-          <p class="eyebrow">¿Cuánto te cuesta traer un cliente?</p>
+      <!-- Columna Derecha: ¿Cuánto te cuesta traer un cliente? -->
+      <div class="box-balance">
+        <p class="eyebrow" style="margin-bottom:6px;">Desglose y Números</p>
+        <h3>¿Cuánto te cuesta traer un cliente?</h3>
+        
+        <div class="math" style="padding:0; margin:0; border:none; background:transparent;">
           <div class="row">
             <span>Por cada cliente que llega<span class="hint">va completo al chofer que te lo trajo</span></span>
             <span>$25 a $80</span>
@@ -892,34 +967,54 @@ footer a:hover{color:var(--orange-bright)}
             <span>El descuento de tu promoción<span class="hint">lo decides tú, del tamaño que quieras</span></span>
             <span class="yours">lo pones tú</span>
           </div>
-          <p class="after">
+          <p class="after" style="font-size:14px; margin-top:14px;">
             <strong>Ese dinero no se queda con nosotros: es del chofer que te llevó al cliente.</strong>
-            Por eso te recomienda de verdad. No es un anuncio pegado en un vidrio —
-            es alguien que gana cuando tú ganas.
+            Por eso te recomienda de verdad. No es un anuncio pegado en un vidrio — es alguien que gana cuando tú ganas.
           </p>
-          <p class="after">
-            <strong>Pongámoslo en números.</strong> Tomemos la promoción del primer taco gratis:
-          </p>
-          <div class="cuenta">
-            <div class="crow"><span>Lo que te cuesta <em>producir</em> el taco que regalas<span class="chint">tu costo, no el precio de tu carta &mdash; eso nunca lo ibas a cobrar</span></span><span>&minus;$8</span></div>
+          <div class="cuenta" style="margin:14px 0 6px;">
+            <div class="crow"><span>Costo de <em>producir</em> el taco que regalas<span class="chint">tu costo de insumo, no precio carta</span></span><span>&minus;$8</span></div>
             <div class="crow"><span>Comisión del chofer que lo trajo</span><span>&minus;$25</span></div>
             <div class="crow total"><span>Traer a ese cliente te costó</span><span>$33</span></div>
           </div>
-          <p class="aviso-ej">Cifras de ejemplo. Cada negocio tiene sus propios costos,
-          y los tuyos los pones tú cuando armemos tu promoción.</p>
-          <p class="after">
-            Ese cliente se sentó y pidió lo demás pagando precio normal. Y es solo la primera
-            visita: <strong>si regresa, entra completo. Ya no hay regalo ni comisión.</strong>
+          <p class="aviso-ej" style="margin-top:8px;">Cifras de ejemplo. Cada negocio tiene sus propios costos y los fijas tú.</p>
+          <p class="after" style="font-size:14px; margin-top:10px;">
+            Ese cliente consumió más en su visita y pagó precio normal. Y es solo la primera vez: <strong>si regresa, entra directo sin comisión ni promociones.</strong>
           </p>
         </div>
+      </div>
+    </div>
 
-        <div class="sheet photo-box">
-          <p class="kicker">Servicio adicional · opcional</p>
-          <h3>Fotografía profesional, si la necesitas</h3>
-          <p>La foto es lo que hace que el pasajero se detenga en tu tarjeta en vez de pasarle de largo. Si no tienes fotos que te convenzan, CreaFilms —nuestro equipo de producción— va a tu negocio y las hace.</p>
-          <p>Es un servicio aparte, con su propio costo, y <strong>no es obligatorio</strong>: si ya tienes buenas fotos, con esas armamos tu tarjeta y listo.</p>
-          <p class="up">También producimos video y contenido para tus redes. Pregúntanos por el paquete.</p>
-        </div>
+    <!-- 3. BARRA HORIZONTAL DE GARANTÍAS Y PROTECCIÓN -->
+    <div class="garantias-grid">
+      <div class="garantia-card">
+        <b>Pago por resultado</b>
+        Se cobra únicamente cuando el cliente llega a tu local y canjea su código. Si no llegó, no se cobra.
+      </div>
+      <div class="garantia-card">
+        <b>Cambios sin costo</b>
+        Modificas o actualizas tu promoción las veces que quieras en el mes sin ningún cargo extra.
+      </div>
+      <div class="garantia-card">
+        <b>Sin costos ocultos</b>
+        Cero cuota de alta y cero costo de instalación de material en tu caja.
+      </div>
+      <div class="garantia-card">
+        <b>Sin deudas ni plazos</b>
+        Se paga por adelantado; si un mes decides pausar tu campaña, se pausa sin penalización.
+      </div>
+    </div>
+
+    <div class="extra" style="background:#FFFFFF; border:1.5px solid var(--line); border-radius:14px; padding:16px 20px; margin-bottom:20px;">
+      <b>Visibilidad protegida:</b> Cuidamos cuántos comercios del mismo giro entran en una misma zona. En Cobertura Municipal, el cupo está estrictamente limitado a solo 5 marcas por municipio (5 en Puerto Vallarta y 5 en Bahía de Banderas) para asegurar que tu negocio reciba una frecuencia constante de vistas y un retorno real de inversión.
+    </div>
+
+    <!-- 4. BANNER HORIZONTAL CREAFILMS FOTOGRAFÍA -->
+    <div class="photo-banner">
+      <div class="photo-banner-txt">
+        <span class="kicker">Servicio adicional · Opcional</span>
+        <h3>Fotografía profesional de tus productos o local</h3>
+        <p>Una buena foto hace que el pasajero se detenga en tu tarjeta. Si no tienes fotos que te convenzan, CreaFilms —nuestro equipo de producción— va a tu negocio y hace la sesión profesional.</p>
+        <p class="photo-banner-sub">Es un servicio independiente y <strong>no es obligatorio</strong>. También producimos video para tus redes sociales.</p>
       </div>
     </div>
   </div>
