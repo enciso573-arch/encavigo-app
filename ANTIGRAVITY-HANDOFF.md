@@ -1,10 +1,14 @@
 # Informe de Entrega Técnica — Antigravity (Fase 1: Acceso, Sesión y Juego)
 
-**Fecha:** 2 de octubre de 2026  
-**Repositorio:** `https://github.com/enciso573-arch/encavigo-app`  
-**Carpeta de trabajo:** `C:\Users\Enciso\Desktop\EncaviGO`  
-**Rama de trabajo:** `antigravity/fase1-acceso-juego`  
-**Commit base:** `0b7a4da` (`main`)  
+**Fecha:** 2 de octubre de 2026
+
+**Repositorio:** `https://github.com/enciso573-arch/encavigo-app`
+
+**Carpeta de trabajo:** `C:\Users\Enciso\Desktop\EncaviGO`
+
+**Rama de trabajo:** `antigravity/fase1-acceso-juego`
+
+**Commit base:** `0b7a4da` (`main`)
 
 ---
 

@@ -5897,25 +5897,42 @@ function escapeHTML(str) {
 }
 
 function evaluarEstadoAcceso({ session, paramChofer, now = Date.now(), sessionHours = 24 }) {
-    // 1. QR nuevo escaneado en vehículo
-    if (paramChofer && typeof paramChofer === 'string' && paramChofer.trim() !== '' && paramChofer.trim() !== 'orgánico') {
+    const choferNuevo = (typeof paramChofer === 'string') ? paramChofer.trim() : '';
+    const qrNuevoValido = choferNuevo !== '' && choferNuevo !== 'orgánico';
+    const haySesion = !!session && typeof session === 'object';
+    const esDeQR = haySesion && session.origen === 'qr' && session.chofer && session.chofer !== 'orgánico';
+    const timestamp = haySesion ? Number(session.timestamp) : NaN;
+    const timestampValido = !!timestamp && !isNaN(timestamp);
+    const diffHours = timestampValido ? (now - timestamp) / (1000 * 60 * 60) : null;
+    const sesionActiva = esDeQR && !session.caducada && timestampValido && diffHours <= sessionHours;
+
+    // Una sesión QR vigente siempre se conserva. Reabrir el mismo QR o
+    // escanear otro no renueva las 24 horas, el código ni el intento de juego.
+    if (sesionActiva) {
         return {
             estado: ESTADO_ACCESO.ACTIVA,
-            esNueva: true,
-            chofer: paramChofer.trim()
+            esNueva: false,
+            session: session,
+            qrReescaneado: qrNuevoValido
         };
     }
 
-    // 2. Sin QR nuevo: evaluar sesión previa en el dispositivo
-    if (!session || typeof session !== 'object') {
+    // Solo un QR nuevo puede iniciar otra sesión cuando no existe una vigente.
+    if (qrNuevoValido) {
+        return {
+            estado: ESTADO_ACCESO.ACTIVA,
+            esNueva: true,
+            chofer: choferNuevo
+        };
+    }
+
+    if (!haySesion) {
         return {
             estado: ESTADO_ACCESO.SIN_ACCESO,
             motivo: 'sin_sesion'
         };
     }
 
-    // Solo sesiones originadas por un QR de vehículo otorgan acceso
-    const esDeQR = session.origen === 'qr' && session.chofer && session.chofer !== 'orgánico';
     if (!esDeQR) {
         return {
             estado: ESTADO_ACCESO.SIN_ACCESO,
@@ -5923,34 +5940,17 @@ function evaluarEstadoAcceso({ session, paramChofer, now = Date.now(), sessionHo
         };
     }
 
-    if (session.caducada) {
-        return {
-            estado: ESTADO_ACCESO.VENCIDA,
-            motivo: 'marcada_caducada'
-        };
-    }
-
-    const timestamp = Number(session.timestamp);
-    if (!timestamp || isNaN(timestamp)) {
+    if (!timestampValido) {
         return {
             estado: ESTADO_ACCESO.SIN_ACCESO,
             motivo: 'timestamp_invalido'
         };
     }
 
-    const diffHours = (now - timestamp) / (1000 * 60 * 60);
-    if (diffHours > sessionHours) {
-        return {
-            estado: ESTADO_ACCESO.VENCIDA,
-            motivo: 'tiempo_excedido',
-            diffHours: diffHours
-        };
-    }
-
     return {
-        estado: ESTADO_ACCESO.ACTIVA,
-        esNueva: false,
-        session: session
+        estado: ESTADO_ACCESO.VENCIDA,
+        motivo: session.caducada ? 'marcada_caducada' : 'tiempo_excedido',
+        diffHours: diffHours
     };
 }
 
@@ -6111,9 +6111,13 @@ document.addEventListener('DOMContentLoaded', () => {
             juegoJugado: false
         };
         try { localStorage.setItem(CONFIG_PILOTO.SESSION_KEY, JSON.stringify(session)); } catch(e) {}
-        window.history.replaceState({}, document.title, window.location.pathname);
     } else {
         session = evaluacion.session;
+    }
+
+    // Quitar el identificador de la barra tanto al crear como al reabrir una sesión.
+    if (paramChofer) {
+        try { window.history.replaceState({}, document.title, window.location.pathname); } catch(e) {}
     }
 
     if (paramDesde && session) {
@@ -6702,9 +6706,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Registrar inmediatamente que el intento de juego de esta sesión fue consumido
-        registrarIntentoJuego(ses);
-
         modal.style.display = 'flex';
 
         taps = 0;
@@ -6797,6 +6798,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const card = document.getElementById('card-' + index);
         if (!card) return;
         if (taps >= 3 || card.classList.contains('flipped')) return;
+
+        // Abrir y cerrar el modal por accidente no consume el intento.
+        // Se consume al elegir la primera tarjeta y persiste al recargar.
+        if (taps === 0) {
+            if (!puedeJugarSesion(window.encaviSession)) return;
+            registrarIntentoJuego(window.encaviSession);
+        }
 
         const back = document.getElementById('back-' + index);
         if (back && sequence[taps]) {

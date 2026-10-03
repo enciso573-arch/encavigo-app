@@ -94,7 +94,7 @@ const {
 } = Core;
 
 let passedTests = 0;
-let totalTests = 12;
+let totalTests = 14;
 
 function test(num, description, fn) {
     try {
@@ -176,6 +176,53 @@ test(3, 'Recarga durante sesión activa', () => {
     assert.strictEqual(res.esNueva, false, 'No debe ser nueva');
     assert.strictEqual(res.session.code, 'ENC-ORIGINAL', 'Debe conservar el código original');
     assert.strictEqual(res.session.timestamp, now - 3600000, 'Debe conservar el timestamp original');
+});
+
+// ----------------------------------------------------------------------------
+// CASO 13: Reabrir un QR durante una sesión activa no la renueva
+// ----------------------------------------------------------------------------
+test(13, 'Reabrir QR conserva la sesión activa', () => {
+    const now = Date.now();
+    const sesionActiva = {
+        timestamp: now - 3600000,
+        code: 'ENC-CONSERVAR',
+        chofer: 'V-102',
+        origen: 'qr',
+        juegoJugado: true
+    };
+    const res = evaluarEstadoAcceso({
+        session: sesionActiva,
+        paramChofer: 'V-999',
+        now: now
+    });
+    assert.strictEqual(res.estado, ESTADO_ACCESO.ACTIVA, 'Debe mantenerse ACTIVA');
+    assert.strictEqual(res.esNueva, false, 'No debe crear una sesión nueva');
+    assert.strictEqual(res.session.code, 'ENC-CONSERVAR', 'Debe conservar el código');
+    assert.strictEqual(res.session.timestamp, now - 3600000, 'Debe conservar el inicio de las 24 horas');
+    assert.strictEqual(res.session.chofer, 'V-102', 'Debe conservar la atribución original');
+    assert.strictEqual(res.session.juegoJugado, true, 'Debe conservar el intento consumido');
+});
+
+// ----------------------------------------------------------------------------
+// CASO 14: Un QR nuevo sí reemplaza una sesión vencida
+// ----------------------------------------------------------------------------
+test(14, 'QR nuevo reemplaza una sesión vencida', () => {
+    const now = Date.now();
+    const sesionVencida = {
+        timestamp: now - (25 * 3600000),
+        code: 'ENC-VENCIDA',
+        chofer: 'V-102',
+        origen: 'qr',
+        juegoJugado: true
+    };
+    const res = evaluarEstadoAcceso({
+        session: sesionVencida,
+        paramChofer: 'V-999',
+        now: now
+    });
+    assert.strictEqual(res.estado, ESTADO_ACCESO.ACTIVA, 'El QR debe permitir una nueva sesión');
+    assert.strictEqual(res.esNueva, true, 'Debe indicar que la sesión es nueva');
+    assert.strictEqual(res.chofer, 'V-999', 'Debe atribuir el nuevo vehículo');
 });
 
 // ----------------------------------------------------------------------------
@@ -297,6 +344,8 @@ test(8, 'Viaje gratis desactivado durante el piloto', () => {
     assert.ok(!indexHtml.includes('JUEGA Y GANA TU VIAJE GRATIS'), 'No debe aparecer "JUEGA Y GANA TU VIAJE GRATIS" en HTML');
     assert.ok(!indexHtml.includes('puedes ganarte el viaje gratis'), 'No debe aparecer en el splash');
     assert.ok(indexHtml.includes('ESCANEA, JUEGA Y DESCUBRE PROMOCIONES EN TU RUTA'), 'Debe contener la invitación correcta');
+    const negociosHtml = fs.readFileSync(path.join(__dirname, 'negocios', 'index.html'), 'utf8');
+    assert.ok(!negociosHtml.includes('JUEGA Y GANA TU VIAJE GRATIS'), 'La página comercial tampoco debe anunciar un premio desactivado');
 });
 
 // ----------------------------------------------------------------------------

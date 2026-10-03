@@ -1,8 +1,11 @@
 # EncaviGO — Especificación maestra de producto
 
-**Versión:** 1.0  
-**Fecha:** 2 de octubre de 2026  
-**Carpeta principal:** `C:\Users\Enciso\Desktop\EncaviGO`  
+**Versión:** 1.0
+
+**Fecha:** 2 de octubre de 2026
+
+**Carpeta principal:** `C:\Users\Enciso\Desktop\EncaviGO`
+
 **Repositorio:** `https://github.com/enciso573-arch/encavigo-app` (`main`)
 
 ## Propósito de este documento
