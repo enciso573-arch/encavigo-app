@@ -5653,7 +5653,7 @@
     <h1 style="color: white; font-size: 24px; margin-bottom: 15px;">¡Bienvenido!</h1>
     
     <p style="color: #94A3B8; font-size: 16px; line-height: 1.5; max-width: 300px; margin-bottom: 40px;">
-        Descubre cupones y promociones dinámicas cerca de ti. Las mejores ofertas cambian todos los días.<br><br><strong>Y antes de empezar, juega una vez: puedes ganarte el viaje gratis.</strong>
+        Descubre cupones y promociones dinámicas cerca de ti. Las mejores ofertas cambian todos los días.<br><br><strong>Y antes de empezar, juega una vez: descubre promociones en tu ruta.</strong>
     </p>
     
     <button onclick="cerrarSplash()" style="background: #F97316; color: white; border: none; padding: 15px 30px; border-radius: 30px; font-size: 18px; font-weight: bold; box-shadow: 0 4px 15px rgba(249,115,22,0.4); cursor: pointer;">
@@ -5675,11 +5675,11 @@ function cerrarSplash() {
 <div class="app-container">
 
 <div id="scratchBanner" class="scratch-banner" onclick="openGame()" style="font-weight: 900; letter-spacing: 1px; text-transform: uppercase;">
-    🎟️ JUEGA Y GANA TU VIAJE GRATIS
+    🎟️ ESCANEA, JUEGA Y DESCUBRE PROMOCIONES EN TU RUTA
 </div>
 
 <div id="gameModal" class="game-modal">
-    <div class="game-title" id="gameTitle">Elige 3 tarjetas <br><span style="font-size: 14px; font-weight: normal; color: #9CA3AF;">Tienes 3 intentos</span></div>
+    <div class="game-title" id="gameTitle">Elige 3 tarjetas <br><span style="font-size: 14px; font-weight: normal; color: #9CA3AF;">Descubre una promoción de tu ruta</span></div>
     
     <div class="cards-grid" id="cardsGrid">
         <div class="flip-card" id="card-0" onclick="flipCard(0)"><div class="flip-card-inner" id="inner-0"><div class="flip-card-front"></div><div class="flip-card-back" id="back-0"></div></div></div>
@@ -5693,7 +5693,7 @@ function cerrarSplash() {
     <div class="game-result" id="gameResult">
         <h2 id="resultTitle" style="margin: 0 0 10px 0; font-size: 26px;"></h2>
         <p id="resultMsg" style="margin: 0; font-size: 15px; color: #D1D5DB; padding: 0 20px;"></p>
-        <button class="btn-close-game" onclick="closeGame()">¡Canjear Cupón!</button>
+        <button class="btn-close-game" onclick="closeGame()">Ver en el catálogo</button>
     </div>
 </div>
 
@@ -5867,82 +5867,263 @@ function cerrarSplash() {
   const db = firebase.firestore();
 </script>
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    const SESSION_HOURS = 24;
-    const SESSION_KEY = 'encavigo_session';
-    const urlParams = new URLSearchParams(window.location.search);
-    const paramChofer = urlParams.get('chofer');
-    const paramDesde  = urlParams.get('desde');   /* calcomania de afuera del negocio */
-    let session = null;
-    try { session = JSON.parse(localStorage.getItem(SESSION_KEY)); } catch(e) {}
-    
-    const now = Date.now();
-    if (paramChofer) session = null; 
-    
-    if (!session) {
-        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-        let uniqueCode = 'ENC-';
-        for(let i=0; i<4; i++) uniqueCode += chars.charAt(Math.floor(Math.random() * chars.length));
-        
-        /* origen: 'qr' = subio a un vehiculo y escaneo el acrilico.
-                   'libre' = llego al sitio por su cuenta.
-           El de origen libre puede ver todo, pero no reclamar. */
-        session = { timestamp: now, code: uniqueCode,
-                    chofer: paramChofer || 'orgánico',
-                    origen: paramChofer ? 'qr' : (paramDesde ? 'calcomania' : 'libre'),
-                    desde:  paramDesde || null };
-        localStorage.setItem(SESSION_KEY, JSON.stringify(session));
-        if(paramChofer) window.history.replaceState({}, document.title, window.location.pathname);
-    } else {
-        const diffHours = (now - session.timestamp) / (1000 * 60 * 60);
-        if (diffHours > SESSION_HOURS) {
-            document.body.innerHTML = `
-                <div style="height: 100dvh; width: 100vw; background: #000; color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; font-family: sans-serif;">
-                    <div style="font-size: 50px; margin-bottom: 20px;">🔒</div>
-                    <h1 style="font-size: 24px; font-weight: 900; margin-bottom: 10px;">Sesión Expirada</h1>
-                    <p style="color: #94A3B8; line-height: 1.5;">Tu código promocional ha caducado. Sube a un vehículo afiliado a EncaviGO y escanea un código QR nuevo para desbloquear las ofertas de hoy.</p>
-                </div>
-            `;
-            /* NO se borra la sesion. Borrarla era el error: al refrescar
-               ya no habia nada guardado, el codigo de abajo creaba una
-               sesion nueva y el limite de 24 horas no servia de nada.
-               Se deja marcada como caducada; solo un QR nuevo la
-               reemplaza, porque escanear entra con ?chofer= y eso
-               limpia la sesion mas arriba. */
-            session.caducada = true;
-            try { localStorage.setItem(SESSION_KEY, JSON.stringify(session)); } catch(e) {}
-            return;
+// ============================================================================
+// CONFIGURACIÓN PILOTO Y FUNCIONES DE CONTROL (Fase 1)
+// ============================================================================
+const CONFIG_PILOTO = {
+    // Control maestro del viaje gratis.
+    // Durante el piloto permanece desactivado (false), probabilidad efectiva 0%.
+    // Para reactivarlo en el futuro cuando se definan presupuesto y adjudicación:
+    // cambiar VIAJE_GRATIS_HABILITADO a true.
+    VIAJE_GRATIS_HABILITADO: false,
+    SESSION_HOURS: 24,
+    SESSION_KEY: 'encavigo_session'
+};
+
+const ESTADO_ACCESO = {
+    ACTIVA: 'ACTIVA',
+    SIN_ACCESO: 'SIN_ACCESO',
+    VENCIDA: 'VENCIDA'
+};
+
+function escapeHTML(str) {
+    if (str == null) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+function evaluarEstadoAcceso({ session, paramChofer, now = Date.now(), sessionHours = 24 }) {
+    // 1. QR nuevo escaneado en vehículo
+    if (paramChofer && typeof paramChofer === 'string' && paramChofer.trim() !== '' && paramChofer.trim() !== 'orgánico') {
+        return {
+            estado: ESTADO_ACCESO.ACTIVA,
+            esNueva: true,
+            chofer: paramChofer.trim()
+        };
+    }
+
+    // 2. Sin QR nuevo: evaluar sesión previa en el dispositivo
+    if (!session || typeof session !== 'object') {
+        return {
+            estado: ESTADO_ACCESO.SIN_ACCESO,
+            motivo: 'sin_sesion'
+        };
+    }
+
+    // Solo sesiones originadas por un QR de vehículo otorgan acceso
+    const esDeQR = session.origen === 'qr' && session.chofer && session.chofer !== 'orgánico';
+    if (!esDeQR) {
+        return {
+            estado: ESTADO_ACCESO.SIN_ACCESO,
+            motivo: 'origen_no_qr'
+        };
+    }
+
+    if (session.caducada) {
+        return {
+            estado: ESTADO_ACCESO.VENCIDA,
+            motivo: 'marcada_caducada'
+        };
+    }
+
+    const timestamp = Number(session.timestamp);
+    if (!timestamp || isNaN(timestamp)) {
+        return {
+            estado: ESTADO_ACCESO.SIN_ACCESO,
+            motivo: 'timestamp_invalido'
+        };
+    }
+
+    const diffHours = (now - timestamp) / (1000 * 60 * 60);
+    if (diffHours > sessionHours) {
+        return {
+            estado: ESTADO_ACCESO.VENCIDA,
+            motivo: 'tiempo_excedido',
+            diffHours: diffHours
+        };
+    }
+
+    return {
+        estado: ESTADO_ACCESO.ACTIVA,
+        esNueva: false,
+        session: session
+    };
+}
+
+function puedeJugarSesion(session, storage = (typeof localStorage !== 'undefined' ? localStorage : null), now = Date.now()) {
+    if (!session || typeof session !== 'object' || !session.code) return false;
+    if (session.caducada || session.origen !== 'qr') return false;
+    if (session.juegoJugado === true) return false;
+    const ts = Number(session.timestamp);
+    if (!ts || isNaN(ts)) return false;
+    if ((now - ts) / (1000 * 60 * 60) > CONFIG_PILOTO.SESSION_HOURS) return false;
+    if (storage) {
+        try {
+            if (storage.getItem('encavigo_played_' + session.code) === 'true') return false;
+        } catch(e) {}
+    }
+    return true;
+}
+
+function registrarIntentoJuego(session, storage = (typeof localStorage !== 'undefined' ? localStorage : null)) {
+    if (!session || !session.code) return;
+    session.juegoJugado = true;
+    if (storage) {
+        try {
+            storage.setItem(CONFIG_PILOTO.SESSION_KEY, JSON.stringify(session));
+            storage.setItem('encavigo_played_' + session.code, 'true');
+        } catch(e) {}
+    }
+}
+
+function esCampanaVigente(camp, now = new Date()) {
+    if (!camp || typeof camp !== 'object') return false;
+    if (camp.active === false) return false;
+
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, '0');
+    const d = String(now.getDate()).padStart(2, '0');
+    const hoyStr = `${y}-${m}-${d}`;
+
+    const normalizar = (val) => {
+        if (!val) return null;
+        if (typeof val === 'string') {
+            const s = val.trim();
+            if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0, 10);
+            const dt = new Date(s);
+            if (!isNaN(dt.getTime())) {
+                return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;
+            }
+        }
+        if (typeof val.toDate === 'function') {
+            const dt = val.toDate();
+            return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;
+        }
+        if (val instanceof Date && !isNaN(val.getTime())) {
+            return `${val.getFullYear()}-${String(val.getMonth()+1).padStart(2,'0')}-${String(val.getDate()).padStart(2,'0')}`;
+        }
+        return null;
+    };
+
+    const inicioStr = normalizar(camp.startDate);
+    if (inicioStr && hoyStr < inicioStr) {
+        return false;
+    }
+
+    // endDate incluye todo el día indicado (hasta las 23:59:59 locales)
+    const finStr = normalizar(camp.endDate);
+    if (finStr && hoyStr > finStr) {
+        return false;
+    }
+
+    if (Array.isArray(camp.dias) && camp.dias.length > 0) {
+        const diaSemana = now.getDay();
+        const diasNum = camp.dias.map(Number);
+        if (diasNum.indexOf(diaSemana) === -1) {
+            return false;
         }
     }
 
-    /* La sesion vive dentro de este bloque, pero el cupon se quema
-       desde otro. Sin esto, quemarCupon nunca alcanzaba la sesion y
-       fallaba siempre con un "error de conexion". */
-    /* Si ya venia navegando y ahora llega por una calcomania, se
-       apunta de cual, sin borrarle la sesion. */
-    if (paramDesde && session && session.origen !== 'qr') {
-        session.origen = 'calcomania';
-        session.desde  = paramDesde;
-        try { localStorage.setItem(SESSION_KEY, JSON.stringify(session)); } catch(e) {}
+    return true;
+}
+
+function mostrarPantallaBloqueo(tipo) {
+    if (tipo === ESTADO_ACCESO.SIN_ACCESO) {
+        document.body.innerHTML = `
+            <div style="min-height: 100dvh; width: 100vw; background: #0B1220; color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                <div style="font-size: 52px; margin-bottom: 20px;">🚕</div>
+                <h1 style="font-size: 24px; font-weight: 900; margin-bottom: 12px; color: #FBF2E1;">Escanea el código en tu transporte</h1>
+                <p style="color: #94A3B8; line-height: 1.55; max-width: 340px; margin: 0 0 24px;">Para acceder a las promociones y al juego de EncaviGO, necesitas escanear el código QR ubicado dentro de un taxi o transporte afiliado durante tu viaje.</p>
+                <a href="/negocios/" style="color: #F97316; text-decoration: none; font-weight: 700; font-size: 14px; border: 1px solid rgba(249,115,22,0.4); padding: 12px 22px; border-radius: 20px; transition: all 0.2s ease;">¿Tienes un negocio? Conoce EncaviGO ➔</a>
+            </div>
+        `;
+    } else if (tipo === ESTADO_ACCESO.VENCIDA) {
+        document.body.innerHTML = `
+            <div style="min-height: 100dvh; width: 100vw; background: #0B1220; color: #FFF; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                <div style="font-size: 52px; margin-bottom: 20px;">🔒</div>
+                <h1 style="font-size: 24px; font-weight: 900; margin-bottom: 12px; color: #FBF2E1;">Sesión Vencida</h1>
+                <p style="color: #94A3B8; line-height: 1.55; max-width: 340px; margin: 0 0 24px;">Tu sesión de 24 horas ha terminado. Sube a un transporte afiliado a EncaviGO y escanea un código QR nuevo para iniciar otra sesión.</p>
+                <a href="/negocios/" style="color: #94A3B8; text-decoration: none; font-size: 13px;">EncaviGO · Puerto Vallarta y Bahía de Banderas</a>
+            </div>
+        `;
+    }
+}
+
+if (typeof window !== 'undefined') {
+    window.EncaviCore = {
+        CONFIG_PILOTO,
+        ESTADO_ACCESO,
+        escapeHTML,
+        evaluarEstadoAcceso,
+        puedeJugarSesion,
+        registrarIntentoJuego,
+        esCampanaVigente,
+        mostrarPantallaBloqueo
+    };
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const paramChofer = urlParams.get('chofer');
+    const paramDesde  = urlParams.get('desde');   /* calcomania de afuera del negocio */
+    let sessionGuardada = null;
+    try { sessionGuardada = JSON.parse(localStorage.getItem(CONFIG_PILOTO.SESSION_KEY)); } catch(e) {}
+    
+    const now = Date.now();
+    const evaluacion = evaluarEstadoAcceso({
+        session: sessionGuardada,
+        paramChofer: paramChofer,
+        now: now,
+        sessionHours: CONFIG_PILOTO.SESSION_HOURS
+    });
+
+    if (evaluacion.estado === ESTADO_ACCESO.SIN_ACCESO) {
+        window.encaviSession = null;
+        mostrarPantallaBloqueo(ESTADO_ACCESO.SIN_ACCESO);
+        return;
+    }
+
+    if (evaluacion.estado === ESTADO_ACCESO.VENCIDA) {
+        if (sessionGuardada) {
+            sessionGuardada.caducada = true;
+            try { localStorage.setItem(CONFIG_PILOTO.SESSION_KEY, JSON.stringify(sessionGuardada)); } catch(e) {}
+        }
+        window.encaviSession = sessionGuardada;
+        mostrarPantallaBloqueo(ESTADO_ACCESO.VENCIDA);
+        return;
+    }
+
+    let session = null;
+    if (evaluacion.esNueva) {
+        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+        let uniqueCode = 'ENC-';
+        for(let i=0; i<4; i++) uniqueCode += chars.charAt(Math.floor(Math.random() * chars.length));
+        session = {
+            timestamp: now,
+            code: uniqueCode,
+            chofer: evaluacion.chofer,
+            origen: 'qr',
+            desde: paramDesde || null,
+            juegoJugado: false
+        };
+        try { localStorage.setItem(CONFIG_PILOTO.SESSION_KEY, JSON.stringify(session)); } catch(e) {}
+        window.history.replaceState({}, document.title, window.location.pathname);
+    } else {
+        session = evaluacion.session;
+    }
+
+    if (paramDesde && session) {
+        session.desde = paramDesde;
+        try { localStorage.setItem(CONFIG_PILOTO.SESSION_KEY, JSON.stringify(session)); } catch(e) {}
     }
 
     window.encaviSession = session;
 
-    /* ── El codigo del vehiculo se comprueba contra el registro ──
-       Se hace despues de abrir la sesion, no antes, para que la app
-       no se quede en blanco esperando a la base. Si resulta que el
-       acrilico esta dado de baja, se corta aqui mismo y se borra la
-       sesion, asi que ese QR muere en el momento en que lo das de
-       baja en el panel.
-       Un codigo que todavia no esta en el registro sigue sirviendo:
-       no queremos tumbar vehiculos que ya andan trabajando. El panel
-       te los marca aparte para que los regularices. */
-    /* ── La calcomania de afuera del negocio ──
-       Se cuenta una sola vez por celular y por dia, con el mismo
-       candado de nombre fijo que usan los clicks: el registro se
-       llama codigo + celular + fecha, y si ya existe, Firestore lo
-       rechaza y no se vuelve a contar. Asi el numero que le enseñas
-       al negocio es gente distinta, no el mismo curioso diez veces. */
+    /* ── La calcomania de afuera del negocio ── */
     (function contarCalcomania() {
         const cod = paramDesde;
         if (!cod) return;
@@ -5965,16 +6146,15 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }).catch(function () { /* repetido hoy, o codigo sin registrar */ });
 
-        /* La direccion se limpia para que no quede guardada en favoritos
-           con la marca de la calcomania pegada. */
         try { window.history.replaceState({}, document.title, window.location.pathname); } catch(e) {}
     })();
 
-    /* ¿A este vehículo todavía le queda el viaje gratis de hoy?
-       Se consulta al entrar, para que el juego ya sepa la respuesta
-       cuando el pasajero lo abra. El dato vive en la base, no en el
-       teléfono: borrar datos de navegación no lo revive. */
+    /* ¿A este vehículo todavía le queda el viaje gratis de hoy? */
     (function revisarPremioDelDia() {
+        if (!CONFIG_PILOTO.VIAJE_GRATIS_HABILITADO) {
+            window.egPremioLibre = false;
+            return;
+        }
         const cod = session.chofer;
         if (!cod || cod === 'orgánico') { window.egPremioLibre = false; return; }
         const hoy = new Date().toISOString().slice(0, 10);
@@ -6386,14 +6566,12 @@ document.addEventListener('DOMContentLoaded', () => {
         renderDeck(finalDeck);
     }
 
-    /* ¿Esta promoción sale hoy?
-       El negocio contrata tres por semana y cada una corre sus días.
-       Sin días marcados sale todos los días, para que ninguna
-       promoción vieja desaparezca por este cambio. */
-    window.egSaleHoy = function (camp) {
-        const d = camp && camp.dias;
-        if (!Array.isArray(d) || d.length === 0) return true;
-        return d.map(Number).indexOf(new Date().getDay()) !== -1;
+    /* ¿Esta promoción está vigente hoy?
+       Aplica active !== false, startDate, endDate (incluyendo todo el día indicado)
+       y los días de la semana contratados (camp.dias).
+       Campañas sin fechas o sin días se conservan como vigentes para compatibilidad. */
+    window.egSaleHoy = function (camp, now = new Date()) {
+        return esCampanaVigente(camp, now);
     };
 
     db.collection('campaigns').where('active', '==', true).get().then(snapshot => {
@@ -6503,101 +6681,135 @@ document.addEventListener('DOMContentLoaded', () => {
     const logoImg = '<img src="logo_jackpot.jpg" style="width:50px; height:50px; border-radius:50%; vertical-align:middle; object-fit:cover; box-shadow:0 2px 8px rgba(0,0,0,0.15); margin: 0 5px;">';
 
     function initGame() {
-        const today = new Date().toDateString();
-        const lastPlayed = localStorage.getItem('encavigo_played');
-        if (lastPlayed !== today) {
-            document.getElementById('scratchBanner').style.display = 'block';
+        const banner = document.getElementById('scratchBanner');
+        if (!banner) return; // Previene error de consola si la pantalla está bloqueada
+
+        if (!puedeJugarSesion(window.encaviSession)) {
+            banner.style.display = 'none';
+            return;
         }
+        banner.style.display = 'block';
     }
 
     function openGame() {
-        document.getElementById('gameModal').style.display = 'flex';
-        document.getElementById('scratchBanner').style.display = 'none';
-        
-        const ses    = window.encaviSession || {};
-        const chofer = ses.chofer || 'orgánico';
+        const banner = document.getElementById('scratchBanner');
+        const modal  = document.getElementById('gameModal');
+        if (!modal) return;
+        if (banner) banner.style.display = 'none';
 
-        /* ── Quién puede ganarse el viaje ──
-           Dos candados, y ninguno vive en el teléfono:
+        const ses = window.encaviSession;
+        if (!puedeJugarSesion(ses)) {
+            return;
+        }
 
-           1) Sin QR de vehículo no hay viaje gratis. Quien llega
-              escribiendo la dirección no tiene chofer a quién
-              mostrarle la pantalla, así que no hay premio que dar.
-              Esto solo cierra el borrar datos y volver a jugar: para
-              intentarlo hay que estar arriba de un carro afiliado.
+        // Registrar inmediatamente que el intento de juego de esta sesión fue consumido
+        registrarIntentoJuego(ses);
 
-           2) Un premio por vehículo y por día, anotado en la base.
-              Aunque alguien borre sus datos veinte veces en el mismo
-              carro, ese carro ya no puede volver a dar viaje hoy.
-              Así el costo tuyo queda acotado a carros, no a teléfonos. */
-        const puedeGanarViaje = (chofer !== 'orgánico') && (window.egPremioLibre !== false);
+        modal.style.display = 'flex';
 
-        const chance = Math.random();
-        isJackpot = puedeGanarViaje && (chance <= 0.01);
+        taps = 0;
+        selectedCards = [];
+        isJackpot = false;
 
-        if (isJackpot) {
+        // Resetear estado visual de las 6 tarjetas
+        for (let i = 0; i < 6; i++) {
+            const card = document.getElementById('card-' + i);
+            const inner = document.getElementById('inner-' + i);
+            const back = document.getElementById('back-' + i);
+            if (card) card.classList.remove('flipped', 'fade-out');
+            if (inner) inner.classList.remove('merge-animate');
+            if (back) back.innerHTML = '';
+        }
+
+        const gameTitle = document.getElementById('gameTitle');
+        if (gameTitle) {
+            gameTitle.style.display = 'block';
+            gameTitle.innerHTML = 'Elige 3 tarjetas <br><span style="font-size: 14px; font-weight: normal; color: #9CA3AF;">Descubre una promoción de tu ruta</span>';
+        }
+        const gameResult = document.getElementById('gameResult');
+        if (gameResult) {
+            gameResult.style.display = 'none';
+        }
+
+        /* ── Viaje gratis desactivado durante el piloto ──
+           Para reactivarlo en el futuro cuando se cuente con presupuesto:
+           cambiar VIAJE_GRATIS_HABILITADO a true en CONFIG_PILOTO. */
+        const chofer = (ses && ses.chofer) ? ses.chofer : 'orgánico';
+        const puedeGanarViaje = CONFIG_PILOTO.VIAJE_GRATIS_HABILITADO && (chofer !== 'orgánico') && (window.egPremioLibre !== false);
+
+        // Si el viaje gratis estuviera habilitado en el futuro:
+        if (puedeGanarViaje && Math.random() <= 0.01) {
+            isJackpot = true;
             window.egPremioLibre = false;
             const hoyP = new Date().toISOString().slice(0, 10);
             db.collection('premios').doc(chofer + '_' + hoyP).set({
                 chofer: chofer,
                 dev: window.encaviDevId || 'sin-id',
                 fecha: firebase.firestore.FieldValue.serverTimestamp()
-            }).catch(function () { /* ya se dio uno hoy en este carro */ });
+            }).catch(function () {});
 
             sequence = [logoImg, logoImg, logoImg];
-            winData = { title: '<span style="color: #10B981;">🎉 VIAJE GRATIS 🎉</span>', msg: 'Muéstrale esta pantalla a tu chofer ahora.' };
-        } else {
-            const activeCampaigns = (window.loadedCampaigns || []).slice();
-
-            /* Sin negocios cargados NO se inventa una categoría.
-               Antes salía "¡Cupón en Servicios!" y no había ningún
-               servicio detrás: un cupón que nadie iba a respetar. */
-            if (activeCampaigns.length === 0) {
-                sequence = [logoImg, '<div style="font-size:45px;">📍</div>', logoImg];
-                winData = {
-                    title: '<span style="color:#F97316;">Esta vez no salió</span>',
-                    msg: 'Todavía no hay negocios por aquí. Vuelve a escanear en tu próximo viaje: el juego se repite y las promociones van llegando.'
-                };
-                return;
-            }
-            
-            const winIndex = Math.floor(Math.random() * activeCampaigns.length);
-            const winCamp = activeCampaigns[winIndex];
-            
-            let loseIndex = Math.floor(Math.random() * activeCampaigns.length);
-            while(loseIndex === winIndex && activeCampaigns.length > 1) { loseIndex = Math.floor(Math.random() * activeCampaigns.length); }
-            const loseCamp = activeCampaigns[loseIndex];
-            
-            // Build the HTML for the card faces (Use their actual image from Firebase!)
-            /* El campo es "img", no "imgUrl": por eso nunca salía la
-               foto del negocio en las cartas y siempre caía al regalito. */
-            const getIconHTML = (camp) => {
-                if (camp.img) return `<img src="${camp.img}" style="width:100%; height:100%; object-fit:cover; border-radius:10px;">`;
-                return `<div style="font-size:45px;">${camp.fallbackIcon || '🎁'}</div>`;
+            winData = {
+                title: '<span style="color: #10B981;">🎉 VIAJE GRATIS 🎉</span>',
+                msg: 'Muéstrale esta pantalla a tu chofer ahora.'
             };
-
-            const winIconHTML = getIconHTML(winCamp);
-            let loseIconHTML = getIconHTML(loseCamp);
-            
-            if(Math.random() > 0.5) { loseIconHTML = logoImg; } // EncaviGO tease
-            
-            sequence = [winIconHTML, loseIconHTML, winIconHTML];
-            winData = { title: `<span style="color: #F97316;">¡Cupón en <br>${winCamp.title}!</span>`, msg: 'Cierra esta pantalla y baja a reclamarlo.' };
+            return;
         }
+
+        // Flujo del piloto: descubrir una promoción real entre las campañas cargadas
+        const activeCampaigns = (window.loadedCampaigns || []).filter(c => esCampanaVigente(c));
+
+        if (activeCampaigns.length === 0) {
+            // Estado honesto si no hay campañas disponibles
+            const iconSinPromos = '<div style="font-size:45px; display:flex; align-items:center; justify-content:center; width:100%; height:100%;">📍</div>';
+            sequence = [iconSinPromos, iconSinPromos, iconSinPromos];
+            winData = {
+                title: '<span style="color: #F97316;">Sin promociones disponibles</span>',
+                msg: 'En este momento no hay promociones activas en esta ruta. Consulta el catálogo más tarde o en tu próximo viaje.'
+            };
+            return;
+        }
+
+        // Selección de una campaña real
+        const winIndex = Math.floor(Math.random() * activeCampaigns.length);
+        const winCamp = activeCampaigns[winIndex];
+
+        const getIconHTML = (camp) => {
+            if (camp && camp.img) {
+                return `<img src="${camp.img}" alt="${escapeHTML((camp && camp.title) || '')}" style="width:100%; height:100%; object-fit:cover; border-radius:10px;">`;
+            }
+            const icon = (camp && camp.fallbackIcon) || '🎁';
+            return `<div style="font-size:45px; display:flex; align-items:center; justify-content:center; width:100%; height:100%;">${icon}</div>`;
+        };
+
+        const winIconHTML = getIconHTML(winCamp);
+        // Tres tarjetas iguales descubren esa promoción
+        sequence = [winIconHTML, winIconHTML, winIconHTML];
+
+        const nombreNegocio = (winCamp && winCamp.title) ? escapeHTML(winCamp.title) : 'un negocio local';
+        winData = {
+            title: `<span style="color: #F97316;">¡Descubriste una promoción!</span><br><span style="font-size: 20px; color: #FFF;">${nombreNegocio}</span>`,
+            msg: 'Esta oferta forma parte del catálogo disponible durante tu viaje. Puedes consultarla y activarla en el catálogo.'
+        };
     }
 
     function flipCard(index) {
         const card = document.getElementById('card-' + index);
-        // Prevent double clicking or clicking more than 3
+        if (!card) return;
         if (taps >= 3 || card.classList.contains('flipped')) return;
-        
-        // Reveal the pre-determined icon
-        document.getElementById('back-' + index).innerHTML = sequence[taps];
+
+        const back = document.getElementById('back-' + index);
+        if (back && sequence[taps]) {
+            back.innerHTML = sequence[taps];
+        }
         card.classList.add('flipped');
         selectedCards.push(index);
         taps++;
-        
-        document.getElementById('gameTitle').innerHTML = `Llevas ${taps} de 3 intentos`;
+
+        const gameTitle = document.getElementById('gameTitle');
+        if (gameTitle) {
+            gameTitle.innerHTML = `Llevas ${taps} de 3 intentos`;
+        }
 
         if (taps === 3) {
             setTimeout(triggerAnimation, 800);
@@ -6605,39 +6817,42 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function triggerAnimation() {
-        document.getElementById('gameTitle').style.display = 'none';
-        
-        // Fade out all unselected cards, and the 2nd selected card (the loser icon)
+        const gameTitle = document.getElementById('gameTitle');
+        if (gameTitle) gameTitle.style.display = 'none';
+
+        // Desvanecer las tarjetas no seleccionadas
         for (let i = 0; i < 6; i++) {
             const card = document.getElementById('card-' + i);
-            if (!selectedCards.includes(i) || (i === selectedCards[1] && !isJackpot)) {
+            if (card && !selectedCards.includes(i)) {
                 card.classList.add('fade-out');
             }
         }
 
-        // Animate the winning cards to the center
+        // Animar las 3 tarjetas seleccionadas hacia el centro
         setTimeout(() => {
-            const match1 = document.getElementById('inner-' + selectedCards[0]);
-            let match2 = document.getElementById('inner-' + selectedCards[2]);
-            if(isJackpot) { match2 = document.getElementById('inner-' + selectedCards[1]); const match3 = document.getElementById('inner-' + selectedCards[2]); match3.classList.add('merge-animate'); }
-            
-            // Remove them from normal flow and throw them to center
-            match1.classList.add('merge-animate');
-            match2.classList.add('merge-animate');
-            
-            // Show result text
+            selectedCards.forEach(idx => {
+                const inner = document.getElementById('inner-' + idx);
+                if (inner) inner.classList.add('merge-animate');
+            });
+
+            // Mostrar el resultado honesto
             setTimeout(() => {
-                document.getElementById('resultTitle').innerHTML = winData.title;
-                document.getElementById('resultMsg').innerHTML = winData.msg;
-                document.getElementById('gameResult').style.display = 'block';
-                localStorage.setItem('encavigo_played', new Date().toDateString());
+                const resTitle = document.getElementById('resultTitle');
+                const resMsg   = document.getElementById('resultMsg');
+                const resBox   = document.getElementById('gameResult');
+                if (resTitle) resTitle.innerHTML = winData.title;
+                if (resMsg)   resMsg.innerHTML = winData.msg;
+                if (resBox)   resBox.style.display = 'block';
+
+                registrarIntentoJuego(window.encaviSession);
             }, 800);
-            
+
         }, 500);
     }
 
     function closeGame() {
-        document.getElementById('gameModal').style.display = 'none';
+        const modal = document.getElementById('gameModal');
+        if (modal) modal.style.display = 'none';
     }
 
     window.addEventListener('DOMContentLoaded', initGame);
