@@ -2,10 +2,11 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const { initializeTestEnvironment, assertFails, assertSucceeds } = require('@firebase/rules-unit-testing');
-const { collection, doc, getDoc, setDoc, updateDoc, runTransaction, serverTimestamp } = require('firebase/firestore');
+const { collection, doc, getDoc, getDocFromServer, setDoc, updateDoc, runTransaction, serverTimestamp, Timestamp } = require('firebase/firestore');
 const { JSDOM } = require('jsdom');
 const { renderOpinionesSeguras, escaparTextoAdmin } = require('./admin-seguridad');
 const { boot } = require('./test_demo_integration');
+const { crearServicioSesiones } = require('./sesiones-servidor');
 
 const host = process.env.FIRESTORE_EMULATOR_HOST;
 assert.equal(host, '127.0.0.1:8787', 'Esta suite exige el emulador local en 8787');
@@ -15,7 +16,10 @@ async function seed(stock = 1) {
     await env.withSecurityRulesDisabled(async ctx => {
         const db = ctx.firestore();
         await setDoc(doc(db, 'campaigns/promo'), { active: true, stock, caja_id: 'CAJA-OK', clicks: 0 });
-        await setDoc(doc(db, 'codigos/V-001'), { telefono: 'dato-privado', escaneos: 0 });
+        await setDoc(doc(db, 'codigos/V-001'), { tipo:'vehiculo', estado:'activo', telefono: 'dato-privado', escaneos: 0 });
+        for (const [uid,code] of [['passenger','A'],['passengerB','B']]) {
+            await setDoc(doc(db,'sesiones/'+uid),{code,chofer:'V-001',issuedAt:Timestamp.now(),juegoJugado:false});
+        }
     });
 }
 function ticket(code) {
@@ -38,15 +42,24 @@ function redeem(db, code) {
     });
 }
 function adapter(db) {
+    const wrap = ref => ({ id:ref.id, raw:ref, get:async(options)=>{
+        const s = options && options.source === 'server' ? await getDocFromServer(ref) : await getDoc(ref);
+        return {exists:s.exists(),data:()=>s.data()};
+    } });
     return {
-        collection: name => ({ doc: id => id ? doc(db, name, id) : doc(collection(db, name)) }),
+        collection: name => ({ doc: id => wrap(id ? doc(db, name, id) : doc(collection(db, name))) }),
         runTransaction: fn => runTransaction(db, tx => fn({
-            get: async ref => { const s = await tx.get(ref); return { exists:s.exists(), data:()=>s.data() }; },
+            get: async ref => { const s = await tx.get(ref.raw); return { exists:s.exists(), data:()=>s.data() }; },
             // Objetos del VM se convierten a objetos del SDK, sin alterar los sentinels.
-            set: (ref, data) => tx.set(ref, {...data}),
-            update: (ref, data) => tx.update(ref, {...data})
+            set: (ref, data) => tx.set(ref.raw, {...data}),
+            update: (ref, data) => tx.update(ref.raw, {...data})
         }))
     };
+}
+function sessionService(uid, code = 'ENC-0123ABCD') {
+    return crearServicioSesiones({ identidad:async()=>uid,
+        db:adapter(env.authenticatedContext(uid).firestore()), marcaServidor:serverTimestamp,
+        codigoNuevo:()=>code });
 }
 async function client(db, code) {
     const app = await boot('?demo=1');
@@ -64,7 +77,7 @@ async function readPrivate(path) {
 }
 (async () => {
     env = await initializeTestEnvironment({ projectId:'demo-encavigo-audit', firestore:{ host:'127.0.0.1', port:8787, rules:fs.readFileSync('firestore.rules','utf8') } });
-    const publicDb = () => env.unauthenticatedContext().firestore();
+    const publicDb = (uid = 'passenger') => env.authenticatedContext(uid).firestore();
     await check('Cuenta normal sin permisos administrativos ni lectura de datos privados', async () => {
         await seed(); const db = env.authenticatedContext('visitor').firestore();
         await assertFails(updateDoc(doc(db,'campaigns/promo'),{stock:999}));
@@ -98,7 +111,7 @@ async function readPrivate(path) {
         assert.equal(await readPrivate('tickets/FALSO_A'),undefined);
     });
     await check('Dos clientes reales del HTML compiten por el último cupón: un solo éxito', async () => {
-        await seed(); const a = await client(publicDb(),'A'), b = await client(publicDb(),'B');
+        await seed(); const a = await client(publicDb(),'A'), b = await client(publicDb('passengerB'),'B');
         try {
             await Promise.all([a.w.quemarCupon('promo','Negocio'), b.w.quemarCupon('promo','Negocio')]);
             const winners = [a,b].filter(c => c.w.document.getElementById('successModal').style.display === 'flex');
@@ -159,5 +172,116 @@ async function readPrivate(path) {
             assert.equal(escaparTextoAdmin('<img src=x onerror="a">'), '&lt;img src=x onerror=&quot;a&quot;&gt;');
         } finally { dom.window.close(); }
     });
-    console.log(`Seguridad: ${passed}/10 pruebas pasadas en emulador.`);
+    await check('Primera sesión QR con fecha de servidor; acceso directo no crea sesión', async () => {
+        await seed(); const service = sessionService('nuevo');
+        assert.equal(await service.restaurarOIniciar(null),null);
+        const s = await service.restaurarOIniciar('V-001');
+        assert.equal(s.code,'ENC-0123ABCD'); assert.equal(s.chofer,'V-001');
+        assert.equal(s.caducada,false); assert.equal(s.verificada,true);
+        assert.ok(Math.abs(Date.now()-s.timestamp)<10000);
+    });
+    await check('Recarga y reescaneo conservan inicio, código, conductor e intento', async () => {
+        await seed(); const a = sessionService('nuevo'), b = sessionService('nuevo','ENC-FEDCBA98');
+        const first = await a.restaurarOIniciar('V-001'); await a.consumirJuego();
+        const direct = await b.restaurarOIniciar(null), rescanned = await b.restaurarOIniciar('OTRO');
+        assert.equal(direct.code,first.code); assert.equal(rescanned.timestamp,first.timestamp);
+        assert.equal(rescanned.chofer,'V-001'); assert.equal(rescanned.juegoJugado,true);
+    });
+    await check('Vehículo desconocido, inactivo, dado de baja o QR de caja no crean sesión', async () => {
+        await seed();
+        await env.withSecurityRulesDisabled(async ctx => {
+            const db=ctx.firestore();
+            await setDoc(doc(db,'codigos/INACTIVO'),{tipo:'vehiculo',estado:'baja'});
+            await setDoc(doc(db,'codigos/CAJA'),{tipo:'caja',estado:'activo'});
+            await setDoc(doc(db,'codigos/BAJA'),{tipo:'vehiculo',estado:'activo'});
+            await setDoc(doc(db,'bajas/BAJA'),{fecha:Timestamp.now()});
+        });
+        for (const code of ['INVENTADO','INACTIVO','CAJA','BAJA']) {
+            await assert.rejects(sessionService('nuevo').restaurarOIniciar(code));
+            assert.equal(await readPrivate('sesiones/nuevo'),undefined);
+        }
+    });
+    await check('Manipular fecha, código o chofer y leer sesiones ajenas se rechaza', async () => {
+        await seed(); const db=publicDb();
+        await assertFails(updateDoc(doc(db,'sesiones/passenger'),{issuedAt:serverTimestamp()}));
+        await assertFails(updateDoc(doc(db,'sesiones/passenger'),{code:'ENC-FFFFFFFF'}));
+        await assertFails(updateDoc(doc(db,'sesiones/passenger'),{chofer:'FALSO'}));
+        await assertFails(getDoc(doc(db,'sesiones/passengerB')));
+        await assertFails(setDoc(doc(db,'sesiones/visitor'),{code:'A',chofer:'V-001',issuedAt:serverTimestamp(),juegoJugado:false}));
+    });
+    await check('Sesión vencida niega canje; nuevo QR permite renovar con otro código', async () => {
+        await seed();
+        await env.withSecurityRulesDisabled(ctx=>updateDoc(doc(ctx.firestore(),'sesiones/passenger'),{
+            issuedAt:Timestamp.fromMillis(Date.now()-24*3600000-10000), juegoJugado:true
+        }));
+        await assertFails(redeem(publicDb(),'A'));
+        const service=sessionService('passenger');
+        assert.equal((await service.restaurarOIniciar(null)).caducada,true);
+        const fresh=await service.restaurarOIniciar('V-001');
+        assert.equal(fresh.caducada,false); assert.equal(fresh.juegoJugado,false);
+        assert.notEqual(fresh.code,'A');
+    });
+    await check('Un intento de juego entre dos pestañas y sin restablecimiento desde cliente', async () => {
+        await seed(); const a=sessionService('passenger'), b=sessionService('passenger');
+        const results=await Promise.allSettled([a.consumirJuego(),b.consumirJuego()]);
+        assert.equal(results.filter(r=>r.status==='fulfilled').length,1);
+        assert.equal((await a.restaurarOIniciar(null)).juegoJugado,true);
+        await assertFails(updateDoc(doc(publicDb(),'sesiones/passenger'),{juegoJugado:false}));
+    });
+    await check('Código reservado no se reasigna a otro pasajero ni deja una sesión parcial', async () => {
+        await seed(); await sessionService('nuevo').restaurarOIniciar('V-001');
+        await assert.rejects(sessionService('otro').restaurarOIniciar('V-001'));
+        assert.equal(await readPrivate('sesiones/otro'),undefined);
+    });
+    await check('Canje sin identidad, con código ajeno o vehículo dado de baja se rechaza', async () => {
+        await seed(3);
+        await assertFails(redeem(env.unauthenticatedContext().firestore(),'A'));
+        await assertFails(redeem(publicDb('passengerB'),'A'));
+        await env.withSecurityRulesDisabled(ctx=>setDoc(doc(ctx.firestore(),'bajas/V-001'),{fecha:Timestamp.now()}));
+        await assertFails(redeem(publicDb(),'A'));
+        await assert.rejects(sessionService('passenger').restaurarOIniciar(null));
+        assert.equal((await readPrivate('campaigns/promo')).stock,3);
+    });
+    await check('HTML ignora sesión local inventada y toma el código confirmado por servidor', async () => {
+        await seed(); const values=new Map();
+        values.set('encavigo_session',JSON.stringify({origen:'qr',code:'ENC-FALSO',chofer:'FALSO',timestamp:Date.now()}));
+        const store={getItem:k=>values.get(k)||null,setItem:(k,v)=>values.set(k,String(v)),removeItem:k=>values.delete(k)};
+        const service=sessionService('nuevo');
+        const direct=await boot('',store,service);
+        try { assert.equal(direct.w.encaviSession,null); }
+        finally { direct.close(); }
+        const qr=await boot('?chofer=V-001',store,service);
+        try {
+            assert.equal(qr.w.encaviSession.code,'ENC-0123ABCD');
+            assert.equal(qr.w.encaviSession.chofer,'V-001');
+            assert.equal(qr.w.encaviSession.verificada,true);
+            assert.equal(JSON.parse(store.getItem('encavigo_session')).code,'ENC-0123ABCD');
+        } finally { qr.close(); }
+    });
+    await check('HTML no voltea la tarjeta hasta confirmar el intento en servidor', async () => {
+        await seed(); const a=await boot('',undefined,sessionService('passenger'));
+        const b=await boot('',undefined,sessionService('passenger'));
+        try {
+            a.w.openGame(); b.w.openGame();
+            await Promise.all([a.w.flipCard(0),b.w.flipCard(0)]);
+            const flipped=[a,b].filter(x=>x.w.document.getElementById('card-0').classList.contains('flipped'));
+            assert.equal(flipped.length,1);
+        } finally { a.close(); b.close(); }
+    });
+    await check('Adelantar el reloj del cliente no permite renovar una sesión vigente', async () => {
+        await seed(); const db=adapter(publicDb());
+        const manipulated=crearServicioSesiones({identidad:async()=> 'passenger',db,marcaServidor:serverTimestamp,
+            codigoNuevo:()=> 'ENC-0123ABCD',reloj:()=>Date.now()+48*3600000});
+        await assert.rejects(manipulated.restaurarOIniciar('V-001'));
+        assert.equal((await readPrivate('sesiones/passenger')).code,'A');
+    });
+    await check('Si no hay verificación de red, no se restaura la sesión desde una copia local', async () => {
+        const service=crearServicioSesiones({identidad:async()=> 'passenger',db:{collection:()=>({doc:()=>({get:async options=>{
+            assert.equal(options.source,'server'); throw new Error('offline');
+        }})})},marcaServidor:serverTimestamp,codigoNuevo:()=> 'ENC-0123ABCD'});
+        const app=await boot('',undefined,service);
+        try { assert.equal(app.w.encaviSession,null); assert.ok(app.w.document.body.textContent.includes('No pudimos verificar')); }
+        finally { app.close(); }
+    });
+    console.log(`Seguridad: ${passed}/22 pruebas pasadas en emulador.`);
 })().catch(err=>{console.error(err);process.exitCode=1;}).finally(async()=>{if(env)await env.cleanup();});

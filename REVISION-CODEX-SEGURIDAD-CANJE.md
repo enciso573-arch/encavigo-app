@@ -46,3 +46,5 @@ Este bloque resuelve consistencia de inventario y permisos administrativos local
 Los contadores públicos aún pueden inflarse repitiendo incrementos. Las opiniones no están vinculadas por servidor a un canje autenticado. La comisión histórica, cobro y liquidación necesitan su propia implementación y prueba. No se autoriza presentar este avance como antifraude completo.
 
 Estado: **cambios locales probados; aplicación en Firebase y lanzamiento pendientes**.
+
+Actualización posterior: la validación de sesión, identidad, tiempo y vehículo se implementó y probó localmente en el bloque descrito en `REVISION-CODEX-SESIONES-SERVIDOR.md`. Sus condiciones de publicación y límites sustituyen el pendiente de sesiones indicado arriba.

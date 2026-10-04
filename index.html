@@ -5854,6 +5854,8 @@ function cerrarSplash() {
 <!-- FIREBASE SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="sesiones-servidor.js"></script>
 <script>
 function evaluarParametrosURL(searchStr) {
     if (!searchStr || typeof searchStr !== 'string') {
@@ -6329,7 +6331,7 @@ if (typeof window !== 'undefined') {
     };
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const rawSearch = (typeof window !== 'undefined' && window.location && window.location.search) ? window.location.search : '';
     const paramsEval = evaluarParametrosURL(rawSearch);
 
@@ -6340,13 +6342,31 @@ document.addEventListener('DOMContentLoaded', () => {
     try { demoSessionGuardada = JSON.parse(localStorage.getItem(CONFIG_PILOTO.DEMO_SESSION_KEY)); } catch(e) {}
 
     const now = Date.now();
-    const evaluacion = evaluarEstadoAcceso({
+    let evaluacion = evaluarEstadoAcceso({
         session: sessionGuardada,
         demoSession: demoSessionGuardada,
         searchStr: rawSearch,
         now: now,
         sessionHours: CONFIG_PILOTO.SESSION_HOURS
     });
+
+    if (paramsEval.valido && !paramsEval.esDemo) {
+        try {
+            if (!window.EncaviSesiones) window.EncaviSesiones = configurarSesionesFirebase(firebase);
+            const validada = await window.EncaviSesiones.restaurarOIniciar(paramsEval.chofer || null);
+            sessionGuardada = validada;
+            evaluacion = { estado: !validada ? ESTADO_ACCESO.SIN_ACCESO : validada.caducada ? ESTADO_ACCESO.VENCIDA : ESTADO_ACCESO.ACTIVA,
+                session:validada, esNueva:false };
+        } catch (error) {
+            window.encaviSession = null;
+            mostrarPantallaBloqueo(ESTADO_ACCESO.SIN_ACCESO);
+            const aviso = document.createElement('p');
+            aviso.textContent = 'No pudimos verificar tu sesión o el vehículo. Revisa tu conexión y escanea un QR vigente.';
+            aviso.style.cssText = 'position:fixed;bottom:18px;left:20px;right:20px;text-align:center;color:white;z-index:20001';
+            document.body.appendChild(aviso);
+            return;
+        }
+    }
 
     if (evaluacion.estado === ESTADO_ACCESO.SIN_ACCESO) {
         window.encaviSession = null;
@@ -6396,22 +6416,8 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         // ── PRODUCCIÓN (QR Real) ──
         window.__ENCAVI_ENTORNO__ = ENTORNOS.PRODUCCION;
-        if (evaluacion.esNueva) {
-            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-            let uniqueCode = 'ENC-';
-            for(let i=0; i<4; i++) uniqueCode += chars.charAt(Math.floor(Math.random() * chars.length));
-            session = {
-                timestamp: now,
-                code: uniqueCode,
-                chofer: evaluacion.chofer,
-                origen: 'qr',
-                desde: paramsEval.desde || null,
-                juegoJugado: false
-            };
-            try { localStorage.setItem(CONFIG_PILOTO.SESSION_KEY, JSON.stringify(session)); } catch(e) {}
-        } else {
-            session = evaluacion.session;
-        }
+        session = evaluacion.session;
+        try { localStorage.setItem(CONFIG_PILOTO.SESSION_KEY, JSON.stringify(session)); } catch(e) {}
 
         // Quitar el identificador de la barra tanto al crear como al reabrir una sesión.
         if (paramsEval.chofer) {
@@ -6425,6 +6431,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         window.encaviSession = session;
     }
+
+    initGame();
 
     /* ── La calcomania de afuera del negocio ── */
     (function contarCalcomania() {
@@ -7094,15 +7102,22 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    function flipCard(index) {
+    let juegoEnVerificacion = false;
+    async function flipCard(index) {
         const card = document.getElementById('card-' + index);
         if (!card) return;
-        if (taps >= 3 || card.classList.contains('flipped')) return;
+        if (juegoEnVerificacion || taps >= 3 || card.classList.contains('flipped')) return;
 
         // Abrir y cerrar el modal por accidente no consume el intento.
         // Se consume al elegir la primera tarjeta y persiste al recargar.
         if (taps === 0) {
             if (!puedeJugarSesion(window.encaviSession)) return;
+            if (window.__ENCAVI_ENTORNO__ !== ENTORNOS.DEMO) {
+                juegoEnVerificacion = true;
+                try { await window.EncaviSesiones.consumirJuego(); }
+                catch (error) { alert('No se pudo autorizar el intento. Actualiza la página y revisa tu conexión.'); return; }
+                finally { juegoEnVerificacion = false; }
+            }
             registrarIntentoJuego(window.encaviSession);
         }
 
@@ -7761,7 +7776,7 @@ document.addEventListener('DOMContentLoaded', () => {
     <h2 id="codigoNegocio" style="color:white;font-size:22px;margin:0 0 25px 0;"></h2>
     <div style="background:#1F2937;border:2px solid #F97316;border-radius:16px;padding:25px 40px;margin-bottom:10px;">
         <p style="color:#94A3B8;font-size:12px;margin:0 0 8px 0;letter-spacing:2px;">TU C&Oacute;DIGO</p>
-        <div id="codigoTexto" style="color:#F97316;font-size:36px;font-weight:900;font-family:monospace;letter-spacing:4px;"></div>
+        <div id="codigoTexto" style="color:#F97316;font-size:clamp(20px,6vw,32px);font-weight:900;font-family:monospace;letter-spacing:2px;"></div>
     </div>
     <p style="color:#64748B;font-size:12px;margin-bottom:30px;">V&aacute;lido por 24 hrs &middot; Uso &uacute;nico</p>
     <button id="btnEscanearCaja" style="background:#F97316;color:white;border:none;padding:16px 40px;border-radius:30px;font-size:18px;font-weight:bold;width:100%;max-width:320px;margin-bottom:12px;">Escanear en Caja</button>

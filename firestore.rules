@@ -1,12 +1,58 @@
 // Reglas preparadas localmente; publicar solo junto con el nuevo cliente.
 // Cuenta propietaria confirmada por el usuario. Otros usuarios autenticados no son administradores.
 // Canje: stock y ticket deben cambiar juntos; no se permite repetir un ticket.
-// Pendiente: sesiones emitidas por servidor, identidad del vehículo y antifraude de telemetría.
+// Sesiones: fecha validada con request.time e identidad de Firebase Auth. Pendiente: presencia física y abuso de identidades/telemetría.
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     function esAdmin() {
       return request.auth != null && request.auth.uid == 'ZS4cI7hnMXVPpCaQECFg208TLbL2';
+    }
+    function vehiculoValido(codigo) {
+      return exists(/databases/$(database)/documents/codigos/$(codigo))
+        && get(/databases/$(database)/documents/codigos/$(codigo)).data.tipo == 'vehiculo'
+        && get(/databases/$(database)/documents/codigos/$(codigo)).data.estado == 'activo'
+        && !exists(/databases/$(database)/documents/bajas/$(codigo));
+    }
+    function sesionValida(code, chofer) {
+      let s = get(/databases/$(database)/documents/sesiones/$(request.auth.uid)).data;
+      return request.auth != null && s.code == code && s.chofer == chofer
+        && s.issuedAt <= request.time && request.time < s.issuedAt + duration.value(24, 'h')
+        && vehiculoValido(chofer);
+    }
+    function nuevaSesionValida(uid) {
+      let d = request.resource.data;
+      return request.auth != null && request.auth.uid == uid
+        && d.keys().hasAll(['code','chofer','issuedAt','juegoJugado'])
+        && d.keys().hasOnly(['code','chofer','issuedAt','juegoJugado'])
+        && d.code is string && d.code.matches('ENC-[A-F0-9]{8}')
+        && d.chofer is string && d.chofer.matches('[A-Za-z0-9_-]{1,80}')
+        && d.issuedAt == request.time && d.juegoJugado == false && vehiculoValido(d.chofer)
+        && !exists(/databases/$(database)/documents/reservas_codigos/$(d.code))
+        && getAfter(/databases/$(database)/documents/reservas_codigos/$(d.code)).data.uid == uid
+        && getAfter(/databases/$(database)/documents/reservas_codigos/$(d.code)).data.issuedAt == request.time;
+    }
+    match /sesiones/{uid} {
+      allow get: if request.auth != null && request.auth.uid == uid
+        && (resource == null || vehiculoValido(resource.data.chofer));
+      allow list, delete: if false;
+      allow create: if nuevaSesionValida(uid);
+      allow update: if (
+        request.time >= resource.data.issuedAt + duration.value(24, 'h') && nuevaSesionValida(uid)
+      ) || (
+        request.auth != null && request.auth.uid == uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['juegoJugado'])
+        && resource.data.juegoJugado == false && request.resource.data.juegoJugado == true
+        && sesionValida(resource.data.code, resource.data.chofer)
+      );
+    }
+    match /reservas_codigos/{code} {
+      allow create: if request.auth != null
+        && request.resource.data.keys().hasOnly(['uid','issuedAt'])
+        && request.resource.data.uid == request.auth.uid && request.resource.data.issuedAt == request.time
+        && getAfter(/databases/$(database)/documents/sesiones/$(request.auth.uid)).data.code == code
+        && getAfter(/databases/$(database)/documents/sesiones/$(request.auth.uid)).data.issuedAt == request.time;
+      allow read, update, delete: if false;
     }
     function operacionNuevaValida(opId, campId) {
       let op = getAfter(/databases/$(database)/documents/operaciones_canje/$(opId)).data;
@@ -70,7 +116,9 @@ service cloud.firestore {
       allow create, delete: if esAdmin();
     }
     match /tickets/{id} {
-      allow create: if request.resource.data.keys().hasOnly(
+      allow create: if request.auth != null
+                    && sesionValida(request.resource.data.code, request.resource.data.chofer)
+                    && request.resource.data.keys().hasOnly(
                          ['camp_id','negocio','code','chofer','dev','status',
                           'lat','lng','acc','dist_m','revisar','fecha'])
                     && request.resource.data.camp_id is string

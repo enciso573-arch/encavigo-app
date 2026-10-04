@@ -12,10 +12,15 @@ function storage() {
     const values = new Map();
     return { getItem: k => values.get(k) ?? null, setItem: (k,v) => values.set(k,String(v)), removeItem: k => values.delete(k) };
 }
-async function boot(search = '?demo=1', shared = storage()) {
+async function boot(search = '?demo=1', shared = storage(), servicioVerificado = null) {
     const dom = new JSDOM(html, { url: 'https://encavigo.test/' + search, runScripts: 'outside-only' });
     const w = dom.window, calls = [], alerts = [], timers = [], ready = [];
     Object.defineProperty(w, 'localStorage', { value: shared });
+    // Doble explícito de verificación: los permisos reales se prueban en el emulador.
+    w.EncaviSesiones = servicioVerificado || { restaurarOIniciar: async () => {
+        try { const s = JSON.parse(shared.getItem('encavigo_session')); return s && s.origen === 'qr' ? s : null; }
+        catch { return null; }
+    }, consumirJuego: async () => {} };
     for (const target of [w.document,w]) {
         const add = target.addEventListener.bind(target);
         target.addEventListener = (type, fn, options) => type === 'DOMContentLoaded' ? ready.push(fn) : add(type,fn,options);
@@ -39,7 +44,7 @@ async function boot(search = '?demo=1', shared = storage()) {
     // Map UI is not exercised here; any unexpected dependency causes a failure.
     w.L = { divIcon: () => ({}) };
     scripts.forEach(s => vm.runInContext(s, dom.getInternalVMContext()));
-    ready.forEach(fn => fn());
+    await Promise.all(ready.map(fn => fn()));
     await flush();
     return { w, dom, calls, alerts, shared, db,
         timers: () => { while(timers.length) timers.shift()(); },
