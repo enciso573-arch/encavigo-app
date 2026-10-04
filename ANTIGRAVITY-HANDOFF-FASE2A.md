@@ -71,7 +71,7 @@ function puedeEscribirEnProduccion() {
 
 ## 4. Inventario Completo de Escrituras Protegidas
 
-Se auditó y protegió el inventario de 11 puntos de escritura en Firestore distribuidos en 8 colecciones:
+El inventario siguiente agrupa escrituras del flujo público en 11 colecciones; algunas colecciones tienen varias operaciones (por ejemplo, clicks y stock de campañas):
 
 | # | Colección | Operación | Función / Punto de Código | Protección Aplicada |
 |---|---|---|---|---|
@@ -204,3 +204,9 @@ RESULTADO FINAL: 44 de 44 pruebas pasadas.
 ## 10. Declaración de Diagnóstico Final
 
 Entorno DEMO aislado y aprobado para continuar pruebas
+
+## 11. Cierre de Codex — 2026-10-03
+
+La revisión final y sus límites están en `REVISION-CODEX-FASE2A.md`. Sustituye las descripciones históricas de los casos 30, 40, 41 y 42 del registro anterior: ahora ejecutan eventos DOM reales, dos contextos compartiendo almacenamiento, respuestas diferidas de opiniones y arranque con almacenamiento corrupto mediante `test_demo_integration.js`.
+
+Se corrigió el retorno de la promesa de `enviarOpinion`, el canje demo sin GPS ni cámara, el encabezado cubierto por el banner y la identificación explícita del comprobante como demostración. La validación final usa `npm test` (44/44). Se verificó visualmente el flujo en escritorio y viewport móvil de 390 × 844. No se publicó ni se modificó Firebase.

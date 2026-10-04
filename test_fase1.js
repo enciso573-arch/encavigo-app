@@ -207,6 +207,7 @@ const {
 } = Core;
 
 // ── EJECUTOR ASÍNCRONO SECUENCIAL ──
+const integration = require('./test_demo_integration');
 const testQueue = [];
 let passedTests = 0;
 
@@ -656,6 +657,7 @@ test(25, 'Banner visual de modo DEMO (#egDemoBanner) y botón reiniciarDemo', ()
     let prependCalled = false;
     let prependedElement = null;
     const docMock = {
+        querySelector: () => null,
         getElementById: (id) => (id === 'egDemoBanner' ? null : null),
         createElement: (tag) => ({ id: '', style: {}, innerHTML: '' }),
         body: {
@@ -756,56 +758,7 @@ test(29, 'Reinicio de DEMO real (reiniciarDemo) - Limpia datos demo pero conserv
 // BLOQUE 3: AUDITORÍA CODEX — EJECUCIÓN REAL DE ACCIONES Y FIREBASE
 // ============================================================================
 
-test(30, 'Cero operaciones de Firebase en DEMO ejecutando acciones reales', async () => {
-    const mockDb = new MockFirestore();
-    sandbox.window.db = mockDb;
-    sandbox.window.__ENCAVI_ENTORNO__ = ENTORNOS.DEMO;
-    sandbox.window.encaviSession = {
-        origen: 'demo',
-        code: 'DEMO-001',
-        chofer: 'DEMO',
-        juegoJugado: false
-    };
-    sandbox.window.loadedCampaigns = [...DEMO_CAMPAIGNS];
-
-    // 1. Escaneo de chofer
-    // En DEMO puedeEscribirEnProduccion() es false, por lo que el bloque de scan_log no ejecuta escrituras
-    assert.strictEqual(puedeEscribirEnProduccion(), false, 'puedeEscribirEnProduccion es FALSE en DEMO');
-
-    // 2. Clic en promoción (.track-click)
-    // El botón de clic no debe registrar en click_log ni en stats en DEMO
-    const devIdAntes = sandbox.localStorage.getItem('encavi_dev_id');
-    // Simular que el guardián de clic evalúa puedeEscribirEnProduccion()
-    if (puedeEscribirEnProduccion()) {
-        await mockDb.collection('click_log').doc('test').set({});
-    }
-
-    // 3. Encuesta de zona vacía (.vacio-chip)
-    if (puedeEscribirEnProduccion()) {
-        await mockDb.collection('interes').doc('test').set({});
-    }
-
-    // 4. Calcomanía
-    if (puedeEscribirEnProduccion()) {
-        await mockDb.collection('calco_log').doc('test').set({});
-    }
-
-    // 5. Canje de cupón
-    await quemarCupon('demo-fonda-rosa', 'Fonda Doña Rosa');
-
-    // 6. Envío de opinión
-    await enviarOpinion();
-
-    // 7. Premio de viaje gratis
-    assert.strictEqual(CONFIG_PILOTO.VIAJE_GRATIS_HABILITADO, false, 'Viaje gratis desactivado');
-    if (CONFIG_PILOTO.VIAJE_GRATIS_HABILITADO && puedeEscribirEnProduccion()) {
-        await mockDb.collection('premios').doc('test').set({});
-    }
-
-    // Aserción estricta de auditoría: 0 escrituras y 0 lecturas
-    assert.strictEqual(mockDb.writes.length, 0, 'Cero escrituras registradas en DEMO');
-    assert.strictEqual(mockDb.reads.length, 0, 'Cero lecturas registradas en DEMO');
-});
+test(30, 'Eventos DOM reales DEMO: catálogo, clic, juego, canje, opinión y encuesta sin Firebase', integration.isolation);
 
 test(31, 'Canje (quemarCupon) en DEMO simula éxito sin escrituras en Firestore', async () => {
     const mockDb = new MockFirestore();
@@ -1085,106 +1038,9 @@ test(39, 'Script de inicialización de Firebase evaluado en los 7 escenarios de 
     assert.strictEqual(r7.db, null, 'Fallo capturado: window.db permanece null sin quebrar la app');
 });
 
-test(40, 'Dos instancias/pestañas compartiendo almacenamiento conservan aislamiento concurrente', () => {
-    const sharedStorage = new MockStorage();
-
-    // Pestaña 1: Pasajero con sesión QR activa
-    const now = Date.now();
-    const sesionPestana1 = {
-        timestamp: now,
-        code: 'ENC-TAB1',
-        chofer: 'V-001',
-        origen: 'qr',
-        juegoJugado: false
-    };
-    sharedStorage.setItem(CONFIG_PILOTO.SESSION_KEY, JSON.stringify(sesionPestana1));
-
-    // Pestaña 2: Usuario abre modo DEMO en otra pestaña
-    const sesionPestana2 = {
-        timestamp: now,
-        code: 'DEMO-TAB2',
-        chofer: 'DEMO',
-        origen: 'demo',
-        juegoJugado: false
-    };
-    sharedStorage.setItem(CONFIG_PILOTO.DEMO_SESSION_KEY, JSON.stringify(sesionPestana2));
-
-    // Pestaña 1 juega en producción
-    registrarIntentoJuego(sesionPestana1, sharedStorage);
-
-    // Pestaña 2 juega en demo
-    registrarIntentoJuego(sesionPestana2, sharedStorage);
-
-    // Comprobar estado de la Pestaña 1
-    const p1Revisada = JSON.parse(sharedStorage.getItem(CONFIG_PILOTO.SESSION_KEY));
-    assert.strictEqual(p1Revisada.code, 'ENC-TAB1', 'Pestaña 1 conserva su código de producción');
-    assert.strictEqual(p1Revisada.juegoJugado, true, 'Pestaña 1 tiene su intento jugado registrado');
-    assert.strictEqual(sharedStorage.getItem('encavigo_played_ENC-TAB1'), 'true');
-
-    // Comprobar estado de la Pestaña 2
-    const p2Revisada = JSON.parse(sharedStorage.getItem(CONFIG_PILOTO.DEMO_SESSION_KEY));
-    assert.strictEqual(p2Revisada.code, 'DEMO-TAB2', 'Pestaña 2 conserva su código DEMO');
-    assert.strictEqual(sharedStorage.getItem(CONFIG_PILOTO.DEMO_PLAYED_KEY), 'true');
-});
-
-test(41, 'Recorrido completo: QR real -> DEMO -> Juego -> Reinicio DEMO -> Salida a / -> QR real intacto', () => {
-    const storage = new MockStorage();
-    const now = Date.now();
-    const sesionRealQR = {
-        timestamp: now - 1800000, // 30 minutos
-        code: 'ENC-JOURNEY',
-        chofer: 'V-777',
-        origen: 'qr',
-        juegoJugado: false
-    };
-    storage.setItem(CONFIG_PILOTO.SESSION_KEY, JSON.stringify(sesionRealQR));
-
-    // 1. Entra a DEMO
-    const evDemo = evaluarEstadoAcceso({ searchStr: '?demo=1', session: sesionRealQR, now });
-    assert.strictEqual(evDemo.estado, ESTADO_ACCESO.DEMO);
-    const demoSession = { origen: 'demo', code: 'DEMO-001', chofer: 'DEMO', timestamp: now, juegoJugado: false };
-    storage.setItem(CONFIG_PILOTO.DEMO_SESSION_KEY, JSON.stringify(demoSession));
-
-    // 2. Juega en DEMO
-    registrarIntentoJuego(demoSession, storage);
-    assert.strictEqual(storage.getItem(CONFIG_PILOTO.DEMO_PLAYED_KEY), 'true');
-
-    // 3. Reinicia DEMO
-    const origLoc = sandbox.window.location;
-    sandbox.localStorage = storage;
-    sandbox.window.location = { pathname: '/', href: '' };
-    reiniciarDemo();
-    assert.strictEqual(storage.getItem(CONFIG_PILOTO.DEMO_SESSION_KEY), null);
-    assert.strictEqual(storage.getItem(CONFIG_PILOTO.DEMO_PLAYED_KEY), null);
-
-    // 4. Sale de DEMO hacia /
-    const evSalida = evaluarEstadoAcceso({
-        searchStr: '',
-        session: JSON.parse(storage.getItem(CONFIG_PILOTO.SESSION_KEY)),
-        now: now + 5000
-    });
-    assert.strictEqual(evSalida.estado, ESTADO_ACCESO.ACTIVA);
-    assert.strictEqual(evSalida.session.code, 'ENC-JOURNEY', 'Código real original preservado');
-    assert.strictEqual(evSalida.session.chofer, 'V-777', 'Chofer original preservado');
-    assert.strictEqual(evSalida.session.juegoJugado, false, 'Intento de juego real sigue disponible');
-
-    sandbox.window.location = origLoc;
-});
-
-test(42, 'Manejo seguro de almacenamiento corrupto (JSON inválido en localStorage)', () => {
-    const storage = new MockStorage();
-    storage.setItem(CONFIG_PILOTO.SESSION_KEY, '{corrupt json...');
-    storage.setItem(CONFIG_PILOTO.DEMO_SESSION_KEY, 'invalid');
-
-    let parsedReal = null, parsedDemo = null;
-    assert.doesNotThrow(() => {
-        try { parsedReal = JSON.parse(storage.getItem(CONFIG_PILOTO.SESSION_KEY)); } catch(e) {}
-        try { parsedDemo = JSON.parse(storage.getItem(CONFIG_PILOTO.DEMO_SESSION_KEY)); } catch(e) {}
-    });
-
-    const ev = evaluarEstadoAcceso({ session: parsedReal, demoSession: parsedDemo, searchStr: '' });
-    assert.strictEqual(ev.estado, ESTADO_ACCESO.SIN_ACCESO, 'Ante JSON corrupto deniega acceso sin quebrar');
-});
+test(40, 'Dos contextos DOM y salida DEMO conservan sesión e intento QR reales', integration.transitions);
+test(41, 'Opinión con respuesta diferida exitosa o rechazada espera Firebase', integration.deferredOpinion);
+test(42, 'Arranque DOM con almacenamiento corrupto conserva aislamiento DEMO', integration.corruptStorage);
 
 test(43, 'Enlaces en negocios/index.html actualizados a /?demo=1 (sin chofer=DEMO)', () => {
     const negHtml = fs.readFileSync(path.join(__dirname, 'negocios', 'index.html'), 'utf8');

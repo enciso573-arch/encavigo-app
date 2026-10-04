@@ -6047,7 +6047,7 @@ function mostrarBannerDemo() {
     if (document.getElementById('egDemoBanner')) return;
     const banner = document.createElement('div');
     banner.id = 'egDemoBanner';
-    banner.style.cssText = 'position:fixed; top:0; left:0; right:0; z-index:10000; background:#EA580C; color:#FFFFFF; padding:8px 14px; display:flex; align-items:center; justify-content:space-between; font-size:12px; font-weight:700; box-shadow:0 2px 10px rgba(0,0,0,0.35); font-family:var(--font, -apple-system, sans-serif);';
+    banner.style.cssText = 'position:fixed; top:0; left:0; right:0; z-index:20000; background:#EA580C; color:#FFFFFF; padding:8px 14px; display:flex; align-items:center; justify-content:space-between; font-size:12px; font-weight:700; box-shadow:0 2px 10px rgba(0,0,0,0.35); font-family:var(--font, -apple-system, sans-serif);';
     banner.innerHTML = `
         <div style="display:flex; align-items:center; gap:8px;">
             <span style="font-size:15px;">🧪</span>
@@ -6059,6 +6059,10 @@ function mostrarBannerDemo() {
     `;
     if (document.body) {
         document.body.prepend(banner);
+        const cabecera = document.querySelector('.app-header');
+        const juego = document.getElementById('scratchBanner');
+        if (cabecera) cabecera.style.top = '60px';
+        if (juego) juego.style.top = '120px';
         const btn = document.getElementById('btnReiniciarDemo');
         if (btn) {
             btn.addEventListener('click', () => {
@@ -6828,6 +6832,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Reutilizar el renderizador real en las pruebas de eventos DOM.
+    window.EncaviCore.renderDeck = renderDeck;
+
     function shuffleArray(array) {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -6906,7 +6913,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let gpsRequested = false;
     document.body.addEventListener('click', () => {
-        if(!gpsRequested && 'geolocation' in navigator) {
+        if(window.__ENCAVI_ENTORNO__ !== ENTORNOS.DEMO && !gpsRequested && 'geolocation' in navigator) {
             gpsRequested = true;
             navigator.geolocation.watchPosition((position) => {
                 window.currentLat = position.coords.latitude;
@@ -7231,9 +7238,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         document.getElementById('codigoTexto').innerText = codigoMostrar;
-        document.getElementById('btnEscanearCaja').onclick = function() {
+        const botonCanje = document.getElementById('btnEscanearCaja');
+        const esDemo = window.__ENCAVI_ENTORNO__ === ENTORNOS.DEMO;
+        if (esDemo) botonCanje.textContent = 'Simular canje';
+        botonCanje.onclick = function() {
             document.getElementById('codigoModal').style.display = 'none';
-            abrirScanner(campId, cajaId, title);
+            if (esDemo) quemarCupon(campId, title);
+            else abrirScanner(campId, cajaId, title);
         };
     }
 
@@ -7401,6 +7412,13 @@ document.addEventListener('DOMContentLoaded', () => {
            tiene dos promos, el mismo codigo solo sirve una vez ahi. */
         const negocio = idNegocio(camp.caja_id) || campId;
 
+        // La demostración no requiere ubicación ni cámara del visitante.
+        if (window.__ENCAVI_ENTORNO__ === ENTORNOS.DEMO) {
+            if (isFinite(quedan) && quedan > 0) camp.stock = quedan - 1;
+            mostrarSuccess(title);
+            return;
+        }
+
         /* ── Ubicacion ── */
         const ubi = await leerUbicacion();
         let dist = null, revisar = null;
@@ -7418,17 +7436,6 @@ document.addEventListener('DOMContentLoaded', () => {
                            (dist < 1000 ? dist + ' metros' : (dist / 1000).toFixed(1) + ' km') + ' de ahí.');
                 return;
             }
-        }
-
-        const esDemo = (window.__ENCAVI_ENTORNO__ === ENTORNOS.DEMO) || (ses && ses.origen === 'demo');
-
-        if (esDemo) {
-            // Modo DEMO: simulación con datos locales de ejemplo, 0 llamadas a Firestore
-            if (isFinite(quedan) && quedan > 0) {
-                camp.stock = quedan - 1;
-            }
-            mostrarSuccess(title);
-            return;
         }
 
         // Modo Producción / Test:
@@ -7499,6 +7506,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function mostrarSuccess(title) {
+        const titulo = document.getElementById('successTitulo');
+        if (titulo) titulo.textContent = window.__ENCAVI_ENTORNO__ === ENTORNOS.DEMO
+            ? 'CANJE DE DEMOSTRACIÓN' : 'CUPÓN APROBADO';
         document.getElementById('successRestaurante').innerText = title;
         const timeStr = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) + ' hrs';
         document.getElementById('successTime').innerText = timeStr;
@@ -7565,7 +7575,7 @@ document.addEventListener('DOMContentLoaded', () => {
             : 'Vamos a hablar con el negocio. Gracias por avisarnos.';
 
         const ses = window.encaviSession;
-        const esDemo = (window.__ENCAVI_ENTORNO__ === ENTORNOS.DEMO) || (ses && ses.origen === 'demo');
+        const esDemo = window.__ENCAVI_ENTORNO__ === ENTORNOS.DEMO;
 
         if (esDemo) {
             // En DEMO simula agradecimiento visual sin enviar a Firestore
@@ -7581,7 +7591,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            targetDb.collection('opiniones').add({
+            return targetDb.collection('opiniones').add({
                 camp_id:    cupon.campId || null,
                 negocio:    cupon.negocio || null,
                 chofer:     (ses && ses.chofer) ? ses.chofer : 'desconocido',
@@ -7820,7 +7830,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <div id="successModal" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #10B981; z-index: 11000; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px;">
     <div style="font-size: 80px; margin-bottom: 10px;">✅</div>
-    <h1 style="color: white; font-size: 32px; margin-bottom: 10px;">CUPÓN APROBADO</h1>
+    <h1 id="successTitulo" style="color: white; font-size: 32px; margin-bottom: 10px;">CUPÓN APROBADO</h1>
     <h2 id="successRestaurante" style="color: rgba(255,255,255,0.9); font-size: 24px; margin-bottom: 30px;">Restaurante</h2>
     <div style="background: rgba(0,0,0,0.2); padding: 15px 30px; border-radius: 12px; color: white; font-size: 20px; font-weight: bold; font-family: monospace;" id="successTime">
         14:35 hrs

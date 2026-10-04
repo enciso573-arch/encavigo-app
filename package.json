@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "test": "node test_fase1.js"
+  },
   "dependencies": {
     "jsdom": "^30.0.1"
   }
