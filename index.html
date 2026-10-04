@@ -7384,8 +7384,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function quemarCupon(campId, title) {
-        window.__ultimoCupon = { campId: campId, negocio: title };
-
         const ses = window.encaviSession;
         if (!ses || !ses.code) {
             avisoQuema('Tu sesión expiró. Escanea de nuevo el código del vehículo.');
@@ -7415,6 +7413,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // La demostración no requiere ubicación ni cámara del visitante.
         if (window.__ENCAVI_ENTORNO__ === ENTORNOS.DEMO) {
             if (isFinite(quedan) && quedan > 0) camp.stock = quedan - 1;
+            window.__ultimoCupon = { campId: campId, negocio: title };
             mostrarSuccess(title);
             return;
         }
@@ -7466,42 +7465,42 @@ document.addEventListener('DOMContentLoaded', () => {
                 : new Date()
         };
 
+        let stockConfirmado;
         try {
-            await targetDb.collection('tickets').doc(idTicket).set(datos);
+            const operacionRef = targetDb.collection('operaciones_canje').doc();
+            stockConfirmado = await targetDb.runTransaction(async function (tx) {
+                const promoRef = targetDb.collection('campaigns').doc(campId);
+                const ticketRef = targetDb.collection('tickets').doc(idTicket);
+                const snapshot = await tx.get(promoRef);
+                const vigente = snapshot.exists ? snapshot.data() : null;
+                if (!vigente || !esCampanaVigente(vigente) || idNegocio(vigente.caja_id) !== negocio) {
+                    throw Object.assign(new Error('Promoción no disponible'), { code: 'promo-no-disponible' });
+                }
+                if (!Number.isInteger(vigente.stock) || vigente.stock <= 0) {
+                    throw Object.assign(new Error('Sin inventario'), { code: 'stock-agotado' });
+                }
+                // No leer el ticket: sus datos son privados. Las reglas niegan sobrescribirlo.
+                tx.set(ticketRef, datos);
+                // Referencia opaca: el catálogo público nunca expone el código del pasajero.
+                tx.set(operacionRef, { ticket_id:idTicket, camp_id:campId, fecha:datos.fecha });
+                tx.update(promoRef, { stock: vigente.stock - 1, ultima_operacion: operacionRef.id });
+                return vigente.stock - 1;
+            });
         } catch (error) {
             let aviso = 'No se pudo registrar tu cupón. Revisa tu conexión e inténtalo otra vez.';
-            if (error && (error.code === 'already-exists' || error.code === 'permission-denied')) {
-                aviso = 'Ya usaste tu cupón aquí.\n\nCada código se puede usar una sola vez por negocio.';
-                /* Puede ser que se hayan acabado los cupones mientras
-                   el cliente decidia. Se vuelve a leer para no darle
-                   un motivo equivocado. */
-                try {
-                    const fresco = await db.collection('campaigns').doc(campId).get();
-                    const s = fresco.exists ? parseInt(fresco.data().stock, 10) : null;
-                    if (isFinite(s) && s <= 0) {
-                        aviso = 'Esta promoción ya se agotó.\n\nEl negocio repone los cupones más adelante.';
-                    }
-                } catch (e) {}
-            } else {
-                console.error(error);
+            if (error && error.code === 'stock-agotado') {
+                aviso = 'Esta promoción ya se agotó.';
+            } else if (error && error.code === 'promo-no-disponible') {
+                aviso = 'Esta promoción ya no está disponible. Actualiza el catálogo.';
+            } else if (error && (error.code === 'already-exists' || error.code === 'permission-denied')) {
+                aviso = 'No se autorizó el canje. Puede que tu código ya se haya usado aquí o que la promoción haya cambiado.';
             }
             avisoQuema(aviso);
             return;
         }
 
-        try {
-            await targetDb.collection('campaigns').doc(campId).update({
-                stock: (typeof firebase !== 'undefined' && firebase.firestore && firebase.firestore.FieldValue)
-                    ? firebase.firestore.FieldValue.increment(-1)
-                    : (quedan - 1)
-            });
-            if (isFinite(quedan) && quedan > 0) {
-                camp.stock = quedan - 1;
-            }
-        } catch (e) {
-            console.error('stock:', e);
-        }
-
+        camp.stock = stockConfirmado;
+        window.__ultimoCupon = { campId: campId, negocio: title };
         mostrarSuccess(title);
     }
 

@@ -1,12 +1,31 @@
+// Reglas preparadas localmente; publicar solo junto con el nuevo cliente.
+// Cuenta propietaria confirmada por el usuario. Otros usuarios autenticados no son administradores.
+// Canje: stock y ticket deben cambiar juntos; no se permite repetir un ticket.
+// Pendiente: sesiones emitidas por servidor, identidad del vehículo y antifraude de telemetría.
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    // ─────────────────────────────────────────────────────────────
-    // ESTADISTICAS GLOBALES
-    // Cualquiera puede leer y sumar EXACTAMENTE 1 a "clicks".
-    // No puede tocar ningun otro campo, ni sumar mas de uno.
-    // ─────────────────────────────────────────────────────────────
+    function esAdmin() {
+      return request.auth != null && request.auth.uid == 'ZS4cI7hnMXVPpCaQECFg208TLbL2';
+    }
+    function operacionNuevaValida(opId, campId) {
+      let op = getAfter(/databases/$(database)/documents/operaciones_canje/$(opId)).data;
+      let t = getAfter(/databases/$(database)/documents/tickets/$(op.ticket_id)).data;
+      return !exists(/databases/$(database)/documents/operaciones_canje/$(opId))
+        && !exists(/databases/$(database)/documents/tickets/$(op.ticket_id))
+        && op.camp_id == campId && op.fecha == request.time
+        && t.camp_id == campId && t.status == 'quemado' && t.fecha == request.time;
+    }
+    // Índice privado: el identificador visible en campaigns no revela el código.
+    match /operaciones_canje/{id} {
+      allow create: if request.resource.data.keys().hasOnly(['ticket_id','camp_id','fecha'])
+        && request.resource.data.ticket_id is string && request.resource.data.camp_id is string
+        && request.resource.data.fecha == request.time
+        && operacionNuevaValida(id, request.resource.data.camp_id)
+        && getAfter(/databases/$(database)/documents/campaigns/$(request.resource.data.camp_id)).data.ultima_operacion == id;
+      allow read, delete: if esAdmin();
+      allow update: if false;
+    }
     match /stats/{doc} {
       allow read: if true;
 
@@ -14,20 +33,10 @@ service cloud.firestore {
                          .affectedKeys().hasOnly(['clicks'])
                     && request.resource.data.clicks == resource.data.clicks + 1;
 
-      /* Sin esta linea, poner el contador en cero desde el panel
-         era imposible: en Firestore escribir sobre un documento que
-         ya existe cuenta como "update", y la regla de arriba solo
-         deja sumar un click. La limpieza fallaba en silencio. */
-      allow update: if request.auth != null;
+      allow update: if esAdmin();
 
-      allow create, delete: if request.auth != null;
+      allow create, delete: if esAdmin();
     }
-
-    // ─────────────────────────────────────────────────────────────
-    // CHOFERES
-    // Igual que arriba: solo se puede sumar 1 a "clicks".
-    // Esto evita que alguien se infle su propio contador de pago.
-    // ─────────────────────────────────────────────────────────────
     match /choferes/{doc} {
       allow read: if true;
 
@@ -35,20 +44,10 @@ service cloud.firestore {
                          .affectedKeys().hasOnly(['clicks'])
                     && request.resource.data.clicks == resource.data.clicks + 1;
 
-      /* Tu, desde el panel, puedes corregir cualquier campo. */
-      allow update: if request.auth != null;
+      allow update: if esAdmin();
 
-      allow create, delete: if request.auth != null;
+      allow create, delete: if esAdmin();
     }
-
-    // ─────────────────────────────────────────────────────────────
-    // CAMPANAS (promociones)
-    // Leer: cualquiera.
-    // Escribir: SOLO dos movimientos permitidos —
-    //   a) sumar 1 a "clicks"
-    //   b) restar 1 a "stock", y nunca dejarlo en negativo
-    // Crear y borrar: solo tu, con sesion iniciada.
-    // ─────────────────────────────────────────────────────────────
     match /campaigns/{doc} {
       allow read: if true;
 
@@ -58,34 +57,18 @@ service cloud.firestore {
                       && request.resource.data.clicks == resource.data.clicks + 1
                     ) || (
                       request.resource.data.diff(resource.data)
-                        .affectedKeys().hasOnly(['stock'])
+                        .affectedKeys().hasOnly(['stock', 'ultima_operacion'])
+                      && resource.data.stock is int && resource.data.stock > 0
                       && request.resource.data.stock == resource.data.stock - 1
-                      && resource.data.stock > 0
+                      && request.resource.data.ultima_operacion is string
+                      && operacionNuevaValida(request.resource.data.ultima_operacion, doc)
                     ) || (
-                      /* Tu, desde el panel, puedes editar lo que sea.
-                         Sin esta linea el panel no podia guardar ningun
-                         cambio: la regla solo permitia sumar un click o
-                         restar una existencia, y nada mas. */
-                      request.auth != null
+
+                      esAdmin()
                     );
 
-      allow create, delete: if request.auth != null;
+      allow create, delete: if esAdmin();
     }
-
-    // ─────────────────────────────────────────────────────────────
-    // TICKETS (cupones quemados) — ESTO ES LO QUE SE COBRA
-    //
-    // El documento se llama: promocion + codigo del cliente.
-    // Crear: cualquiera, pero SOLO la primera vez. El segundo intento
-    // del mismo codigo en el mismo negocio cuenta como "update", y
-    // update aqui esta prohibido -> el cobro no se puede duplicar.
-    //
-    // Se exige que el nombre del documento coincida con los datos que
-    // trae dentro, para que nadie pueda crear un cupon "a mano" con
-    // otro nombre y saltarse el candado.
-    //
-    // Leerlos, corregirlos o borrarlos: solo tu, con sesion iniciada.
-    // ─────────────────────────────────────────────────────────────
     match /tickets/{id} {
       allow create: if request.resource.data.keys().hasOnly(
                          ['camp_id','negocio','code','chofer','dev','status',
@@ -96,31 +79,24 @@ service cloud.firestore {
                     && request.resource.data.dev     is string
                     && request.resource.data.status == 'quemado'
 
-                    /* El nombre del registro se arma con el NEGOCIO, no
-                       con la promocion. Asi, si un negocio tiene dos
-                       promos, el mismo codigo solo se puede quemar una
-                       vez en ese negocio y no se le cobra doble. */
                     && id == request.resource.data.negocio + '_' + request.resource.data.code
 
-                    /* Techo de inventario: no se pueden registrar mas
-                       cupones de los que el negocio autorizo. La promo
-                       tiene que existir, estar activa y quedarle stock.
-                       Sin esto, el numero de cupones no tenia limite. */
                     && exists(/databases/$(database)/documents/campaigns/$(request.resource.data.camp_id))
                     && get(/databases/$(database)/documents/campaigns/$(request.resource.data.camp_id)).data.active == true
                     && get(/databases/$(database)/documents/campaigns/$(request.resource.data.camp_id)).data.stock is int
-                    && get(/databases/$(database)/documents/campaigns/$(request.resource.data.camp_id)).data.stock > 0;
+                    && get(/databases/$(database)/documents/campaigns/$(request.resource.data.camp_id)).data.stock > 0
+                    && get(/databases/$(database)/documents/campaigns/$(request.resource.data.camp_id)).data.caja_id == request.resource.data.negocio
+                    && request.resource.data.chofer is string
+                    && request.resource.data.chofer.size() > 0
+                    && request.resource.data.code.size() > 0 && request.resource.data.code.size() <= 128
+                    && request.resource.data.dev.size() > 0 && request.resource.data.dev.size() <= 128
+                    && request.resource.data.fecha == request.time
+                    && getAfter(/databases/$(database)/documents/campaigns/$(request.resource.data.camp_id)).data.stock
+                       == get(/databases/$(database)/documents/campaigns/$(request.resource.data.camp_id)).data.stock - 1
+                    && getAfter(/databases/$(database)/documents/operaciones_canje/$(getAfter(/databases/$(database)/documents/campaigns/$(request.resource.data.camp_id)).data.ultima_operacion)).data.ticket_id == id;
 
-      allow read, update, delete: if request.auth != null;
+      allow read, update, delete: if esAdmin();
     }
-
-    // ─────────────────────────────────────────────────────────────
-    // OPINIONES Y QUEJAS DE LOS CLIENTES
-    // El pasajero deja su opinion despues de quemar el cupon.
-    // Crear: cualquiera, pero solo con los campos esperados, para
-    //        que nadie use la coleccion de bodega.
-    // Leer, cambiar o borrar: solo tu, con sesion iniciada.
-    // ─────────────────────────────────────────────────────────────
     match /opiniones/{doc} {
       allow create: if request.resource.data.keys().hasOnly(
                          ['camp_id','negocio','chofer','respetado',
@@ -129,151 +105,76 @@ service cloud.firestore {
                     && request.resource.data.estrellas is int
                     && request.resource.data.estrellas >= 0
                     && request.resource.data.estrellas <= 5
-                    && request.resource.data.comentario.size() <= 600;
+                    && request.resource.data.comentario is string
+                    && request.resource.data.comentario.size() <= 600
+                    && request.resource.data.camp_id is string
+                    && request.resource.data.negocio is string
+                    && request.resource.data.chofer is string
+                    && request.resource.data.atendida == false
+                    && request.resource.data.fecha == request.time;
 
-      allow read, update, delete: if request.auth != null;
+      allow read, update, delete: if esAdmin();
     }
-
-    // ─────────────────────────────────────────────────────────────
-    // CODIGOS (el libro de los QR fisicos)
-    // Cada acrilico y cada calcomania que sale a la calle queda
-    // anotado aqui, con dueno y estado.
-    // Leer: cualquiera, porque la app tiene que poder comprobar si un
-    //       codigo sigue vigente antes de abrir la sesion.
-    // Dar de alta, cambiar o dar de baja: solo tu, con sesion.
-    // ─────────────────────────────────────────────────────────────
     match /codigos/{codigo} {
-      /* CERRADO. Aqui viven los nombres y telefonos de choferes y
-         negocios. Antes estaba abierto a lectura porque la app tenia
-         que comprobar si un acrilico seguia vigente, pero en Firestore
-         no se puede abrir un solo campo: se abre el documento entero,
-         y con el los datos personales. Esa comprobacion se mudo a la
-         coleccion "bajas", que no trae nada de nadie. */
-      allow read: if request.auth != null;
 
-      /* Sumar 1 a "escaneos" sigue siendo publico: es lo que cuenta el
-         trabajo de cada acrilico. Solo ese campo y solo de uno en uno,
-         asi que nadie puede inflarlo ni tocar lo demas. Sumar no es
-         leer: quien suma no ve lo que hay dentro. */
+      allow read: if esAdmin();
+
       allow update: if request.resource.data.diff(resource.data)
                          .affectedKeys().hasOnly(['escaneos'])
                     && request.resource.data.escaneos == resource.data.escaneos + 1;
 
-      allow create, delete: if request.auth != null;
-      allow update: if request.auth != null;
+      allow create, delete: if esAdmin();
+      allow update: if esAdmin();
     }
-
-    // ─────────────────────────────────────────────────────────────
-    // BAJAS (la lista negra de acrilicos)
-    // Solo dice que un codigo dejo de servir. Ni nombres, ni
-    // telefonos, ni de quien era: nada mas el nombre del codigo.
-    // Leer: cualquiera, porque el telefono del pasajero tiene que
-    //       poder comprobarlo antes de abrir la sesion.
-    // Escribir: solo tu. Dar de baja es una decision tuya.
-    // ─────────────────────────────────────────────────────────────
     match /bajas/{codigo} {
       allow read: if true;
-      allow create, update, delete: if request.auth != null;
+      allow create, update, delete: if esAdmin();
     }
-
-    // ─────────────────────────────────────────────────────────────
-    // ESCANEOS DE CALCOMANIA (las de afuera del negocio)
-    // Cada registro se llama: codigo + celular + fecha, para que el
-    // mismo curioso no cuente dos veces el mismo dia.
-    // Crear: cualquiera, pero solo la primera vez.
-    // Leer: solo tu, con sesion iniciada.
-    // ─────────────────────────────────────────────────────────────
     match /calco_log/{id} {
       allow create: if request.resource.data.keys().hasOnly(['codigo','dev','fecha'])
                     && request.resource.data.codigo is string
                     && request.resource.data.dev is string;
-      allow read: if request.auth != null;
+      allow read: if esAdmin();
 
-      /* Cambiar un registro sigue prohibido para todos, incluida tu
-         sesion: ese candado es lo que impide inflar los contadores.
-         Borrarlo si puedes, para poder tirar los datos de prueba. */
       allow update: if false;
-      allow delete: if request.auth != null;
+      allow delete: if esAdmin();
     }
-
-    // ─────────────────────────────────────────────────────────────
-    // PREMIOS (el viaje gratis del minijuego)
-    // El registro se llama vehiculo + fecha, asi que cada carro puede
-    // dar UN viaje gratis al dia y no mas. Crear: cualquiera, pero
-    // solo la primera vez; el segundo intento del mismo carro el
-    // mismo dia cuenta como "update", y update aqui esta prohibido.
-    // Leer: cualquiera, porque el telefono tiene que saber si a ese
-    // carro todavia le queda el premio de hoy. No trae dato personal.
-    // Borrarlo, solo tu: sirve para reponer un premio si hizo falta.
-    // ─────────────────────────────────────────────────────────────
     match /premios/{id} {
-      allow create: if request.resource.data.keys().hasOnly(['chofer','dev','fecha'])
-                    && request.resource.data.chofer is string
-                    && request.resource.data.dev is string;
+      allow create: if false; // Premio desactivado también en servidor durante piloto.
       allow read: if true;
       allow update: if false;
-      allow delete: if request.auth != null;
+      allow delete: if esAdmin();
     }
-
-    // ─────────────────────────────────────────────────────────────
-    // INTERES (lo que pide la gente donde todavia no hay negocios)
-    // Cuando el pasajero abre la app y no hay promociones cerca, se
-    // le pregunta que giro le gustaria encontrar. Una respuesta por
-    // celular y por dia: el registro se llama celular + fecha.
-    // Crear: cualquiera, pero solo la primera vez del dia.
-    // Leer: solo tu, con sesion iniciada.
-    // ─────────────────────────────────────────────────────────────
     match /interes/{id} {
       allow create: if request.resource.data.keys().hasOnly(['giro','dev','fecha'])
                     && request.resource.data.giro is string
                     && request.resource.data.giro.size() <= 20
                     && request.resource.data.dev is string;
-      allow read: if request.auth != null;
+      allow read: if esAdmin();
       allow update: if false;
-      allow delete: if request.auth != null;
+      allow delete: if esAdmin();
     }
-
-    // ─────────────────────────────────────────────────────────────
-    // REGISTRO DE CLICKS (anti-inflado)
-    // Cada registro se llama: promo + celular + fecha.
-    // Crear: cualquiera, pero SOLO la primera vez.
-    // Si ese registro ya existe, el segundo intento cuenta como
-    // "update" y aqui update esta prohibido -> el click no se repite.
-    // Leer: solo tu, con sesion iniciada.
-    // ─────────────────────────────────────────────────────────────
     match /click_log/{id} {
-      allow create: if true;
-      allow read: if request.auth != null;
+      allow create: if request.resource.data.keys().hasAll(['camp_id','chofer','fecha'])
+                    && request.resource.data.keys().hasOnly(['camp_id','chofer','fecha'])
+                    && request.resource.data.camp_id is string
+                    && request.resource.data.chofer is string
+                    && request.resource.data.fecha == request.time;
+      allow read: if esAdmin();
 
-      /* Cambiar un registro sigue prohibido para todos, incluida tu
-         sesion: ese candado es lo que impide inflar los contadores.
-         Borrarlo si puedes, para poder tirar los datos de prueba. */
       allow update: if false;
-      allow delete: if request.auth != null;
+      allow delete: if esAdmin();
     }
-
-    // ─────────────────────────────────────────────────────────────
-    // REGISTRO DE ESCANEOS (anti-inflado)
-    // Cada registro se llama: chofer + celular + fecha.
-    // Crear: cualquiera, pero SOLO la primera vez.
-    // El segundo intento del mismo celular cuenta como "update",
-    // y update aqui esta prohibido -> el escaneo no se repite.
-    // Leer: solo tu, con sesion iniciada.
-    // ─────────────────────────────────────────────────────────────
     match /scan_log/{id} {
-      allow create: if true;
-      allow read: if request.auth != null;
+      allow create: if request.resource.data.keys().hasAll(['chofer','fecha'])
+                    && request.resource.data.keys().hasOnly(['chofer','fecha'])
+                    && request.resource.data.chofer is string
+                    && request.resource.data.fecha == request.time;
+      allow read: if esAdmin();
 
-      /* Cambiar un registro sigue prohibido para todos, incluida tu
-         sesion: ese candado es lo que impide inflar los contadores.
-         Borrarlo si puedes, para poder tirar los datos de prueba. */
       allow update: if false;
-      allow delete: if request.auth != null;
+      allow delete: if esAdmin();
     }
-
-    // ─────────────────────────────────────────────────────────────
-    // TODO LO DEMAS QUEDA CERRADO
-    // ─────────────────────────────────────────────────────────────
     match /{document=**} {
       allow read, write: if false;
     }

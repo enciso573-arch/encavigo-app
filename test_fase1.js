@@ -48,6 +48,8 @@ class MockFirestore {
         const self = this;
         return {
             doc: (docId) => ({
+                id: docId || 'operacion-mock',
+                collection: name, docId,
                 set: (data) => {
                     self.writes.push({ type: 'set', collection: name, docId, data });
                     if (self.shouldReject) return Promise.reject(new Error('permission-denied'));
@@ -76,6 +78,20 @@ class MockFirestore {
                 }
             })
         };
+    }
+    async runTransaction(fn) {
+        const pending = [];
+        const result = await fn({
+            get: async ref => {
+                this.reads.push({ type: 'get', collection: ref.collection, docId: ref.docId });
+                return { exists: true, data: () => this.campaign || { stock: 8, active: true, caja_id: 'CAJA-PROD-2' } };
+            },
+            set: (ref, data) => pending.push({ type: 'set', collection: ref.collection, docId: ref.docId, data }),
+            update: (ref, data) => pending.push({ type: 'update', collection: ref.collection, docId: ref.docId, data })
+        });
+        if (this.shouldReject) throw Object.assign(new Error('permission-denied'), { code: 'permission-denied' });
+        this.writes.push(...pending);
+        return result;
     }
     reset() {
         this.writes = [];
@@ -850,6 +866,7 @@ test(33, 'Canje en Producción con escritura rechazada no muestra éxito ni redu
 
 test(34, 'Canje en Producción con escritura permitida actualiza Firestore y muestra éxito', async () => {
     const mockDb = new MockFirestore(false);
+    mockDb.campaign = { stock: 5, active: true, caja_id: 'CAJA-OK' };
     sandbox.window.db = mockDb;
     sandbox.window.__ENCAVI_ENTORNO__ = ENTORNOS.PRODUCCION;
     sandbox.window.encaviSession = { origen: 'qr', code: 'ENC-REAL-OK', chofer: 'V-003' };

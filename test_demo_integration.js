@@ -127,5 +127,5 @@ async function deferredOpinion() {
         } finally { app.close(); }
     }
 }
-module.exports = { isolation, transitions, corruptStorage, deferredOpinion };
+module.exports = { boot, isolation, transitions, corruptStorage, deferredOpinion };
 

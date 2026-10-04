@@ -1,8 +1,14 @@
 {
   "scripts": {
-    "test": "node test_fase1.js"
+    "test": "node test_fase1.js",
+    "test:rules": "firebase emulators:exec --config firebase.emulator.json --project demo-encavigo-audit --only firestore \"node test_seguridad_firebase.js\""
   },
   "dependencies": {
     "jsdom": "^30.0.1"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^5.0.2",
+    "firebase": "^12.19.0",
+    "firebase-tools": "^15.32.1"
   }
 }

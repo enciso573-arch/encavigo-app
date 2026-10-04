@@ -447,6 +447,7 @@
 
 </div>
 </div>
+<script src="admin-seguridad.js"></script>
 <!-- FIREBASE SDK -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -1015,7 +1016,7 @@ function closeModal() {
        Todo sale de los cupones quemados en el periodo. Nada estimado,
        nada supuesto: si no hay cupon, no hay cobro.
     ═════════════════════════════════════════════════════════════ */
-    window.quemadosPorChofer = {};
+    window.quemadosPorChofer = Object.create(null);
 
     function tarjetaCobro(titulo, valor, nota, color) {
         return '<div style="background:#FFF; border:1px solid #E5E7EB; border-radius:16px; padding:20px;">' +
@@ -1046,12 +1047,12 @@ function closeModal() {
                 db.collection('opiniones').where('fecha', '>=', desde).where('fecha', '<=', hasta).get()
             ]);
 
-            const camps = {};
+            const camps = Object.create(null);
             snapCamp.forEach(d => { camps[d.id] = d.data(); });
 
-            const porNegocio = {}, porChofer = {}, revisar = [];
+            const porNegocio = Object.create(null), porChofer = Object.create(null), revisar = [];
             let totalCobrar = 0, totalPagar = 0, clientes = 0;
-            window.quemadosPorChofer = {};
+            window.quemadosPorChofer = Object.create(null);
 
             snapTk.forEach(d => {
                 const t = d.data();
@@ -1092,7 +1093,7 @@ function closeModal() {
             const filasN = Object.keys(porNegocio).sort((a, b) => porNegocio[b].n - porNegocio[a].n);
             document.getElementById('cobNegocios').innerHTML = filasN.length
                 ? filasN.map(k => '<tr>' +
-                    '<td style="padding:12px 10px; border-bottom:1px solid #F3F4F6;">' + k + '</td>' +
+                    '<td style="padding:12px 10px; border-bottom:1px solid #F3F4F6;">' + escaparTextoAdmin(k) + '</td>' +
                     '<td style="padding:12px 10px; text-align:right; border-bottom:1px solid #F3F4F6;">' + porNegocio[k].n + '</td>' +
                     '<td style="padding:12px 10px; text-align:right; border-bottom:1px solid #F3F4F6; color:#6B7280;">' + pesos(porNegocio[k].tarifa) + '</td>' +
                     '<td style="padding:12px 10px; text-align:right; border-bottom:1px solid #F3F4F6; font-weight:700;">' + pesos(porNegocio[k].n * porNegocio[k].tarifa) + '</td>' +
@@ -1103,7 +1104,7 @@ function closeModal() {
             const filasC = Object.keys(porChofer).sort((a, b) => porChofer[b].monto - porChofer[a].monto);
             document.getElementById('cobChoferes').innerHTML = filasC.length
                 ? filasC.map(k => '<tr>' +
-                    '<td style="padding:12px 10px; border-bottom:1px solid #F3F4F6;">' + k + '</td>' +
+                    '<td style="padding:12px 10px; border-bottom:1px solid #F3F4F6;">' + escaparTextoAdmin(k) + '</td>' +
                     '<td style="padding:12px 10px; text-align:right; border-bottom:1px solid #F3F4F6;">' + porChofer[k].n + '</td>' +
                     '<td style="padding:12px 10px; text-align:right; border-bottom:1px solid #F3F4F6; font-weight:700;">' + pesos(porChofer[k].monto) + '</td>' +
                   '</tr>').join('')
@@ -1116,25 +1117,16 @@ function closeModal() {
             document.getElementById('cobRevisionCaja').style.display = revisar.length ? 'block' : 'none';
             document.getElementById('cobRevision').innerHTML = revisar.map(r =>
                 '<div style="padding:10px 0; border-bottom:1px solid #FDE68A; font-size:14px; color:#78350F;">' +
-                '<strong>' + r.nombre + '</strong> · chofer ' + r.chofer +
-                ' · ' + (motivos[r.motivo] || r.motivo) +
-                (r.dist != null ? ' · a ' + r.dist + ' m' : '') +
+                '<strong>' + escaparTextoAdmin(r.nombre) + '</strong> · chofer ' + escaparTextoAdmin(r.chofer) +
+                ' · ' + escaparTextoAdmin(motivos[r.motivo] || r.motivo) +
+                (r.dist != null ? ' · a ' + escaparTextoAdmin(r.dist) + ' m' : '') +
                 (r.fecha ? ' · ' + r.fecha.toLocaleDateString('es-MX') : '') +
                 '</div>').join('');
 
             /* Opiniones */
             const ops = [];
             snapOp.forEach(d => ops.push(d.data()));
-            document.getElementById('cobOpiniones').innerHTML = ops.length
-                ? ops.map(o =>
-                    '<div style="padding:12px 0; border-bottom:1px solid #F3F4F6;">' +
-                    '<div style="font-size:14px;"><strong>' + (o.negocio || 'Negocio') + '</strong> · ' +
-                    '★'.repeat(o.estrellas || 0) + '☆'.repeat(Math.max(0, 5 - (o.estrellas || 0))) +
-                    (o.respetado === false ? ' <span style="color:#DC2626; font-weight:700;">NO respetaron el cupón</span>' : '') +
-                    '</div>' +
-                    (o.comentario ? '<div style="font-size:13px; color:#6B7280; margin-top:4px;">“' + o.comentario + '”</div>' : '') +
-                    '</div>').join('')
-                : '<p style="color:#9CA3AF; font-size:14px; margin:0;">Sin opiniones este mes.</p>';
+            renderOpinionesSeguras(document.getElementById('cobOpiniones'), ops);
 
         } catch (e) {
             console.error(e);
