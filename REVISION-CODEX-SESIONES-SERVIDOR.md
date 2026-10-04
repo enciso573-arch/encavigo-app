@@ -47,3 +47,5 @@ La vigencia de promociones por fechas/días y el GPS siguen comprobándose en el
 Referencias de diseño: [autenticación anónima](https://firebase.google.com/docs/auth/web/anonymous-auth) y [condiciones de reglas](https://firebase.google.com/docs/firestore/security/rules-conditions).
 
 Estado: **implementación y reglas locales comprobadas; activación en Firebase y publicación pendientes**.
+
+Revisión posterior de la consola: ver `PREPARACION-PILOTO-FIREBASE.md`. Se confirmó Spark, el UID administrador y la ausencia de altas de vehículos/promociones. El acceso anónimo sigue deshabilitado. Su activación debe ocurrir después de restringir los permisos administrativos, no con las reglas antiguas.
