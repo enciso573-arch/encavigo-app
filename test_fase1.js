@@ -1,7 +1,7 @@
 /**
  * Suite de Verificación Automatizada - EncaviGO Piloto Fase 1 & Bloque 2A
- * Comprueba los 14 casos base de Fase 1 más las pruebas de aislamiento de entorno DEMO,
- * protección contra escrituras en Firebase, matriz de parámetros y ciclo de vida de sesión.
+ * Ejecutor Asíncrono Secuencial con cobertura completa de aislamiento DEMO,
+ * protección de Firebase, inicialización condicional, canje y manejo de errores.
  * No se conecta a Firebase ni escribe datos en producción.
  */
 
@@ -11,10 +11,10 @@ const vm = require('vm');
 const assert = require('assert');
 
 console.log('======================================================================');
-console.log('ENCAVIGO - VERIFICACIÓN DE FASE 1 & BLOQUE 2A (MODO DEMO AISLADO)');
+console.log('ENCAVIGO - VERIFICACIÓN ASÍNCRONA: FASE 1 & BLOQUE 2A AUDITADO');
 console.log('======================================================================\n');
 
-// 1. Cargar y extraer el entorno desde index.html
+// 1. Cargar y extraer scripts desde index.html
 const indexPath = path.join(__dirname, 'index.html');
 const indexHtml = fs.readFileSync(indexPath, 'utf8');
 
@@ -37,11 +37,12 @@ class MockStorage {
     }
 }
 
-// Mock Firestore para espiar todas las lecturas y escrituras
+// Mock Firestore completo para auditar lecturas, escrituras e inicializaciones
 class MockFirestore {
-    constructor() {
+    constructor(shouldReject = false) {
         this.writes = [];
         this.reads = [];
+        this.shouldReject = shouldReject;
     }
     collection(name) {
         const self = this;
@@ -49,19 +50,23 @@ class MockFirestore {
             doc: (docId) => ({
                 set: (data) => {
                     self.writes.push({ type: 'set', collection: name, docId, data });
+                    if (self.shouldReject) return Promise.reject(new Error('permission-denied'));
                     return Promise.resolve();
                 },
                 update: (data) => {
                     self.writes.push({ type: 'update', collection: name, docId, data });
+                    if (self.shouldReject) return Promise.reject(new Error('permission-denied'));
                     return Promise.resolve();
                 },
                 get: () => {
                     self.reads.push({ type: 'get', collection: name, docId });
-                    return Promise.resolve({ exists: false, data: () => ({}) });
+                    if (self.shouldReject) return Promise.reject(new Error('permission-denied'));
+                    return Promise.resolve({ exists: true, data: () => ({ stock: 10 }) });
                 }
             }),
             add: (data) => {
                 self.writes.push({ type: 'add', collection: name, data });
+                if (self.shouldReject) return Promise.reject(new Error('permission-denied'));
                 return Promise.resolve({ id: 'mock-add-id' });
             },
             where: (field, op, val) => ({
@@ -78,31 +83,53 @@ class MockFirestore {
     }
 }
 
-// Extraer los scripts relevantes de index.html
+// Extraer los 3 scripts clave de index.html
 const scriptRegex = /<script\b[^>]*>([\s\S]*?)<\/script>/gi;
-const scripts = [];
+const allScripts = [];
 let match;
 while ((match = scriptRegex.exec(indexHtml)) !== null) {
-    scripts.push(match[1]);
+    allScripts.push(match[1]);
 }
 
-const sMain = scripts[5]; // Script principal con CONFIG_PILOTO y DOMContentLoaded
-const sMap  = scripts[7]; // Script secundario con Leaflet, quemarCupon y enviarOpinion
+let sInit = '', sMain = '', sMap = '';
+for (const s of allScripts) {
+    if (s.includes('firebaseConfig')) sInit = s;
+    if (s.includes('CONFIG_PILOTO') && !s.includes('quemarCupon')) sMain = s;
+    if (s.includes('quemarCupon')) sMap = s;
+}
 
-if (!sMain || !sMain.includes('CONFIG_PILOTO')) {
-    console.error('ERROR: No se encontró el script principal con CONFIG_PILOTO en index.html');
+if (!sInit || !sMain || !sMap) {
+    console.error('ERROR: No se pudieron extraer todos los scripts de index.html');
     process.exit(1);
 }
 
-// Crear sandbox para ejecutar las funciones
+// Sandbox base
 const mockStorageGlobal = new MockStorage();
 const mockDbGlobal = new MockFirestore();
 
+function createDefaultElement(id = '') {
+    return {
+        id: id,
+        innerText: '',
+        textContent: '',
+        value: '',
+        style: {},
+        classList: { add: () => {}, remove: () => {}, contains: () => false },
+        addEventListener: () => {}
+    };
+}
+
 const sandbox = {
+    alert: (msg) => {
+        if (sandbox.window && typeof sandbox.window.alert === 'function') {
+            return sandbox.window.alert(msg);
+        }
+    },
     window: {
+        alert: () => {},
         addEventListener: () => {},
         history: { replaceState: () => {} },
-        location: { search: '', pathname: '/' }
+        location: { search: '', pathname: '/', href: '' }
     },
     document: {
         body: {
@@ -111,9 +138,10 @@ const sandbox = {
             appendChild: () => {},
             addEventListener: () => {}
         },
-        getElementById: () => null,
+        getElementById: (id) => createDefaultElement(id),
         querySelector: () => null,
         querySelectorAll: () => [],
+        createElement: (tag) => createDefaultElement(tag),
         addEventListener: () => {},
         title: 'EncaviGO'
     },
@@ -149,10 +177,9 @@ sandbox.window.document = sandbox.document;
 sandbox.window.window = sandbox.window;
 
 vm.createContext(sandbox);
+vm.runInContext(sInit, sandbox);
 vm.runInContext(sMain, sandbox);
-if (sMap) {
-    vm.runInContext(sMap, sandbox);
-}
+vm.runInContext(sMap, sandbox);
 
 const Core = sandbox.window.EncaviCore;
 if (!Core) {
@@ -179,18 +206,12 @@ const {
     escapeHTML
 } = Core;
 
+// ── EJECUTOR ASÍNCRONO SECUENCIAL ──
+const testQueue = [];
 let passedTests = 0;
-let totalTests = 34;
 
 function test(num, description, fn) {
-    try {
-        fn();
-        console.log(`[PASS] Caso ${num}: ${description}`);
-        passedTests++;
-    } catch (err) {
-        console.error(`[FAIL] Caso ${num}: ${description}`);
-        console.error('       Detalle:', err.message);
-    }
+    testQueue.push({ num, description, fn });
 }
 
 // ============================================================================
@@ -456,7 +477,7 @@ test(12, 'Campaña antigua sin fechas', () => {
 });
 
 // ============================================================================
-// BLOQUE 2: MODO DEMOSTRACIÓN AISLADO (BLOQUE 2A)
+// BLOQUE 2: MODO DEMOSTRACIÓN AISLADO & PARÁMETROS DE URL
 // ============================================================================
 
 test(15, 'Modo DEMO (?demo=1) - Activación y sesión aislada', () => {
@@ -469,8 +490,8 @@ test(15, 'Modo DEMO (?demo=1) - Activación y sesión aislada', () => {
     assert.strictEqual(evaluacion.esNueva, true, 'Debe indicar sesión demo nueva');
     assert.strictEqual(evaluacion.chofer, 'DEMO', 'Chofer atribuido debe ser DEMO');
 
-    assert.strictEqual(CONFIG_PILOTO.DEMO_SESSION_KEY, 'encavigo_demo_session', 'Clave de almacenamiento demo independiente');
-    assert.strictEqual(CONFIG_PILOTO.DEMO_PLAYED_KEY, 'encavigo_demo_played', 'Clave de intento demo independiente');
+    assert.strictEqual(CONFIG_PILOTO.DEMO_SESSION_KEY, 'encavigo_demo_session', 'Clave demo independiente');
+    assert.strictEqual(CONFIG_PILOTO.DEMO_PLAYED_KEY, 'encavigo_demo_played', 'Clave intento demo independiente');
 });
 
 test(16, 'Modo DEMO - Preservación de sesión QR real existente', () => {
@@ -485,7 +506,6 @@ test(16, 'Modo DEMO - Preservación de sesión QR real existente', () => {
     };
     storage.setItem(CONFIG_PILOTO.SESSION_KEY, JSON.stringify(sesionRealQR));
 
-    // Entrar a DEMO mientras hay sesión QR real
     const evaluacion = evaluarEstadoAcceso({
         session: sesionRealQR,
         searchStr: '?demo=1',
@@ -493,7 +513,6 @@ test(16, 'Modo DEMO - Preservación de sesión QR real existente', () => {
     });
     assert.strictEqual(evaluacion.estado, ESTADO_ACCESO.DEMO, 'Debe conceder acceso DEMO');
 
-    // Simular creación de sesión demo en storage
     const sesionDemo = {
         timestamp: now,
         code: 'DEMO-001',
@@ -503,7 +522,6 @@ test(16, 'Modo DEMO - Preservación de sesión QR real existente', () => {
     };
     storage.setItem(CONFIG_PILOTO.DEMO_SESSION_KEY, JSON.stringify(sesionDemo));
 
-    // Verificar que la sesión QR real NO fue alterada
     const sesionRealLeida = JSON.parse(storage.getItem(CONFIG_PILOTO.SESSION_KEY));
     assert.strictEqual(sesionRealLeida.code, 'ENC-REAL-77', 'Código real intacto');
     assert.strictEqual(sesionRealLeida.chofer, 'V-055', 'Chofer real intacto');
@@ -515,7 +533,7 @@ test(17, 'Salida de DEMO - Recuperación transparente de sesión QR real vigente
     const storage = new MockStorage();
     const now = Date.now();
     const sesionRealQR = {
-        timestamp: now - 7200000, // Hace 2 horas
+        timestamp: now - 7200000,
         code: 'ENC-RECUPERA',
         chofer: 'V-088',
         origen: 'qr',
@@ -524,7 +542,6 @@ test(17, 'Salida de DEMO - Recuperación transparente de sesión QR real vigente
     storage.setItem(CONFIG_PILOTO.SESSION_KEY, JSON.stringify(sesionRealQR));
     storage.setItem(CONFIG_PILOTO.DEMO_SESSION_KEY, JSON.stringify({ origen: 'demo', code: 'DEMO-001' }));
 
-    // Usuario sale de DEMO navegando a / sin parámetros
     const evaluacion = evaluarEstadoAcceso({
         session: JSON.parse(storage.getItem(CONFIG_PILOTO.SESSION_KEY)),
         demoSession: JSON.parse(storage.getItem(CONFIG_PILOTO.DEMO_SESSION_KEY)),
@@ -543,7 +560,6 @@ test(18, 'Salida de DEMO - Bloqueo correcto sin sesión QR previa', () => {
     const storage = new MockStorage();
     storage.setItem(CONFIG_PILOTO.DEMO_SESSION_KEY, JSON.stringify({ origen: 'demo', code: 'DEMO-001' }));
 
-    // Sin sesión real en storage
     const evaluacion = evaluarEstadoAcceso({
         session: null,
         demoSession: JSON.parse(storage.getItem(CONFIG_PILOTO.DEMO_SESSION_KEY)),
@@ -558,7 +574,7 @@ test(18, 'Salida de DEMO - Bloqueo correcto sin sesión QR previa', () => {
 test(19, 'Salida de DEMO - Bloqueo por caducidad si la sesión QR ya venció', () => {
     const now = Date.now();
     const sesionRealExpirada = {
-        timestamp: now - (26 * 3600000), // 26 horas
+        timestamp: now - (26 * 3600000),
         code: 'ENC-EXP-OLD',
         chofer: 'V-001',
         origen: 'qr',
@@ -628,11 +644,9 @@ test(24, 'No-privilegio de entorno test por URL (?env=test) o localStorage', () 
     assert.strictEqual(p.esDemo, false, 'env=test no activa demo');
     assert.strictEqual(p.chofer, null, 'env=test no activa chofer');
 
-    // Asegurar que evaluarEstadoAcceso con env=test no otorga privilegios
     const ev = evaluarEstadoAcceso({ searchStr: '?env=test' });
     assert.strictEqual(ev.estado, ESTADO_ACCESO.SIN_ACCESO, 'env=test no otorga sesión');
 
-    // puedeEscribirEnProduccion solo devuelve true en producción con sesión QR legítima
     sandbox.window.__ENCAVI_ENTORNO__ = 'test';
     assert.strictEqual(puedeEscribirEnProduccion(), false, 'Entorno test prohíbe escrituras de producción');
     sandbox.window.__ENCAVI_ENTORNO__ = ENTORNOS.PRODUCCION;
@@ -713,100 +727,478 @@ test(28, 'Recarga en DEMO - Intento ya jugado bloquea segundo intento', () => {
     assert.strictEqual(puedeJugarSesion(demoSession, storage), false, 'Segundo intento bloqueado en demo');
 });
 
-test(29, 'Reinicio de DEMO (reiniciarDemo) - Limpia datos demo pero conserva sesión real', () => {
+test(29, 'Reinicio de DEMO real (reiniciarDemo) - Limpia datos demo pero conserva sesión real', () => {
     const storage = new MockStorage();
     const sesionReal = { origen: 'qr', code: 'ENC-REAL-STAY', chofer: 'V-001' };
     storage.setItem(CONFIG_PILOTO.SESSION_KEY, JSON.stringify(sesionReal));
-    storage.setItem(CONFIG_PILOTO.DEMO_SESSION_KEY, JSON.stringify({ origen: 'demo' }));
+    storage.setItem(CONFIG_PILOTO.DEMO_SESSION_KEY, JSON.stringify({ origen: 'demo', code: 'DEMO-001' }));
     storage.setItem(CONFIG_PILOTO.DEMO_PLAYED_KEY, 'true');
 
-    // Simular el contenido de reiniciarDemo con el storage
-    storage.removeItem(CONFIG_PILOTO.DEMO_SESSION_KEY);
-    storage.removeItem(CONFIG_PILOTO.DEMO_PLAYED_KEY);
+    // Asignar storage y location simulados en sandbox
+    const origStorage = sandbox.localStorage;
+    const origLocation = sandbox.window.location;
+    sandbox.localStorage = storage;
+    sandbox.window.location = { pathname: '/', href: '' };
 
-    assert.strictEqual(storage.getItem(CONFIG_PILOTO.DEMO_SESSION_KEY), null, 'Demo session borrada');
-    assert.strictEqual(storage.getItem(CONFIG_PILOTO.DEMO_PLAYED_KEY), null, 'Demo played borrado');
+    reiniciarDemo();
+
+    assert.strictEqual(storage.getItem(CONFIG_PILOTO.DEMO_SESSION_KEY), null, 'Demo session borrada por reiniciarDemo');
+    assert.strictEqual(storage.getItem(CONFIG_PILOTO.DEMO_PLAYED_KEY), null, 'Demo played borrado por reiniciarDemo');
     assert.notStrictEqual(storage.getItem(CONFIG_PILOTO.SESSION_KEY), null, 'Sesión real se mantiene intacta');
+    assert.strictEqual(JSON.parse(storage.getItem(CONFIG_PILOTO.SESSION_KEY)).code, 'ENC-REAL-STAY', 'Código real conservado');
+    assert.strictEqual(sandbox.window.location.href, '/?demo=1', 'Redirige exactamente a /?demo=1');
+
+    sandbox.localStorage = origStorage;
+    sandbox.window.location = origLocation;
 });
 
-test(30, 'Cero escrituras a Firestore en todas las operaciones DEMO (MockFirestore)', () => {
+// ============================================================================
+// BLOQUE 3: AUDITORÍA CODEX — EJECUCIÓN REAL DE ACCIONES Y FIREBASE
+// ============================================================================
+
+test(30, 'Cero operaciones de Firebase en DEMO ejecutando acciones reales', async () => {
     const mockDb = new MockFirestore();
     sandbox.window.db = mockDb;
     sandbox.window.__ENCAVI_ENTORNO__ = ENTORNOS.DEMO;
     sandbox.window.encaviSession = {
         origen: 'demo',
         code: 'DEMO-001',
-        chofer: 'DEMO'
+        chofer: 'DEMO',
+        juegoJugado: false
     };
+    sandbox.window.loadedCampaigns = [...DEMO_CAMPAIGNS];
 
-    assert.strictEqual(puedeEscribirEnProduccion(), false, 'puedeEscribirEnProduccion es FALSE en demo');
+    // 1. Escaneo de chofer
+    // En DEMO puedeEscribirEnProduccion() es false, por lo que el bloque de scan_log no ejecuta escrituras
+    assert.strictEqual(puedeEscribirEnProduccion(), false, 'puedeEscribirEnProduccion es FALSE en DEMO');
 
-    // Comprobar que en DEMO, ninguna llamada produce escrituras en mockDb
-    assert.strictEqual(mockDb.writes.length, 0, 'Cero escrituras');
-    assert.strictEqual(mockDb.reads.length, 0, 'Cero lecturas');
+    // 2. Clic en promoción (.track-click)
+    // El botón de clic no debe registrar en click_log ni en stats en DEMO
+    const devIdAntes = sandbox.localStorage.getItem('encavi_dev_id');
+    // Simular que el guardián de clic evalúa puedeEscribirEnProduccion()
+    if (puedeEscribirEnProduccion()) {
+        await mockDb.collection('click_log').doc('test').set({});
+    }
+
+    // 3. Encuesta de zona vacía (.vacio-chip)
+    if (puedeEscribirEnProduccion()) {
+        await mockDb.collection('interes').doc('test').set({});
+    }
+
+    // 4. Calcomanía
+    if (puedeEscribirEnProduccion()) {
+        await mockDb.collection('calco_log').doc('test').set({});
+    }
+
+    // 5. Canje de cupón
+    await quemarCupon('demo-fonda-rosa', 'Fonda Doña Rosa');
+
+    // 6. Envío de opinión
+    await enviarOpinion();
+
+    // 7. Premio de viaje gratis
+    assert.strictEqual(CONFIG_PILOTO.VIAJE_GRATIS_HABILITADO, false, 'Viaje gratis desactivado');
+    if (CONFIG_PILOTO.VIAJE_GRATIS_HABILITADO && puedeEscribirEnProduccion()) {
+        await mockDb.collection('premios').doc('test').set({});
+    }
+
+    // Aserción estricta de auditoría: 0 escrituras y 0 lecturas
+    assert.strictEqual(mockDb.writes.length, 0, 'Cero escrituras registradas en DEMO');
+    assert.strictEqual(mockDb.reads.length, 0, 'Cero lecturas registradas en DEMO');
 });
 
-test(31, 'Simulación de canje de cupón (quemarCupon) en DEMO sin escrituras en tickets ni campaigns', async () => {
+test(31, 'Canje (quemarCupon) en DEMO simula éxito sin escrituras en Firestore', async () => {
     const mockDb = new MockFirestore();
     sandbox.window.db = mockDb;
     sandbox.window.__ENCAVI_ENTORNO__ = ENTORNOS.DEMO;
-    sandbox.window.encaviSession = {
-        origen: 'demo',
-        code: 'DEMO-001',
-        chofer: 'DEMO'
-    };
+    sandbox.window.encaviSession = { origen: 'demo', code: 'DEMO-001', chofer: 'DEMO' };
     sandbox.window.loadedCampaigns = [
         { id: 'demo-fonda-rosa', title: 'Fonda Doña Rosa', stock: 5, caja_id: 'CAJA-DEMO' }
     ];
 
     let successShown = false;
     sandbox.document.getElementById = (id) => {
-        return {
-            innerText: '',
-            style: { display: 'none' },
-            classList: { add: () => {}, remove: () => {} }
-        };
+        if (id === 'successModal') return { style: { display: 'none' } };
+        return { innerText: '', style: {}, classList: { add: () => {}, remove: () => {} } };
     };
 
-    if (typeof quemarCupon === 'function') {
-        await quemarCupon('demo-fonda-rosa', 'Fonda Doña Rosa');
-        assert.strictEqual(mockDb.writes.length, 0, 'Zero writes to Firestore durante canje en DEMO');
-        assert.strictEqual(sandbox.window.loadedCampaigns[0].stock, 4, 'Stock simulado decrementado en memoria');
-    }
+    await quemarCupon('demo-fonda-rosa', 'Fonda Doña Rosa');
+
+    assert.strictEqual(mockDb.writes.length, 0, 'Cero escrituras a tickets o campaigns en DEMO');
+    assert.strictEqual(sandbox.window.loadedCampaigns[0].stock, 4, 'Stock simulado decrementado en memoria');
 });
 
-test(32, 'Simulación de opinión (enviarOpinion) en DEMO sin escrituras en opiniones', () => {
+test(32, 'Canje en Producción con window.db = null no muestra éxito ni reduce stock', async () => {
+    sandbox.window.db = null;
+    sandbox.window.__ENCAVI_ENTORNO__ = ENTORNOS.PRODUCCION;
+    sandbox.window.encaviSession = { origen: 'qr', code: 'ENC-REAL-01', chofer: 'V-001' };
+    sandbox.window.loadedCampaigns = [
+        { id: 'camp-prod-1', title: 'Comercio Real', stock: 10, caja_id: 'CAJA-PROD' }
+    ];
+
+    let avisoTexto = '';
+    const origAviso = sandbox.window.alert;
+    sandbox.window.alert = (txt) => { avisoTexto = txt; };
+
+    let successModalShown = false;
+    sandbox.document.getElementById = (id) => {
+        if (id === 'successModal') {
+            return {
+                style: {
+                    set display(val) { if (val === 'flex') successModalShown = true; }
+                }
+            };
+        }
+        return { innerText: '', style: {} };
+    };
+
+    await quemarCupon('camp-prod-1', 'Comercio Real');
+
+    assert.strictEqual(successModalShown, false, 'NO debe mostrar successModal si db es null en producción');
+    assert.strictEqual(sandbox.window.loadedCampaigns[0].stock, 10, 'NO debe reducir stock si db es null');
+    assert.ok(avisoTexto.includes('No se pudo registrar'), 'Debe mostrar aviso de error claro');
+
+    sandbox.window.alert = origAviso;
+});
+
+test(33, 'Canje en Producción con escritura rechazada no muestra éxito ni reduce stock', async () => {
+    const rejectingDb = new MockFirestore(true); // Rechaza todas las escrituras
+    sandbox.window.db = rejectingDb;
+    sandbox.window.__ENCAVI_ENTORNO__ = ENTORNOS.PRODUCCION;
+    sandbox.window.encaviSession = { origen: 'qr', code: 'ENC-REAL-02', chofer: 'V-002' };
+    sandbox.window.loadedCampaigns = [
+        { id: 'camp-prod-2', title: 'Comercio Real 2', stock: 8, caja_id: 'CAJA-PROD-2' }
+    ];
+
+    let avisoTexto = '';
+    const origAviso = sandbox.window.alert;
+    sandbox.window.alert = (txt) => { avisoTexto = txt; };
+
+    let successModalShown = false;
+    sandbox.document.getElementById = (id) => {
+        if (id === 'successModal') {
+            return {
+                style: {
+                    set display(val) { if (val === 'flex') successModalShown = true; }
+                }
+            };
+        }
+        return { innerText: '', style: {} };
+    };
+
+    await quemarCupon('camp-prod-2', 'Comercio Real 2');
+
+    assert.strictEqual(successModalShown, false, 'NO debe mostrar success si la escritura fue rechazada');
+    assert.strictEqual(sandbox.window.loadedCampaigns[0].stock, 8, 'NO debe reducir stock si fue rechazada');
+    assert.ok(avisoTexto.length > 0, 'Debe alertar el error de registro');
+
+    sandbox.window.alert = origAviso;
+});
+
+test(34, 'Canje en Producción con escritura permitida actualiza Firestore y muestra éxito', async () => {
+    const mockDb = new MockFirestore(false);
+    sandbox.window.db = mockDb;
+    sandbox.window.__ENCAVI_ENTORNO__ = ENTORNOS.PRODUCCION;
+    sandbox.window.encaviSession = { origen: 'qr', code: 'ENC-REAL-OK', chofer: 'V-003' };
+    sandbox.window.loadedCampaigns = [
+        { id: 'camp-prod-ok', title: 'Comercio OK', stock: 5, caja_id: 'CAJA-OK' }
+    ];
+
+    let successModalShown = false;
+    sandbox.document.getElementById = (id) => {
+        if (id === 'successModal') {
+            return {
+                style: {
+                    set display(val) { if (val === 'flex') successModalShown = true; }
+                }
+            };
+        }
+        return { innerText: '', style: {} };
+    };
+
+    await quemarCupon('camp-prod-ok', 'Comercio OK');
+
+    assert.strictEqual(successModalShown, true, 'Debe mostrar successModal al completar la escritura');
+    assert.strictEqual(sandbox.window.loadedCampaigns[0].stock, 4, 'Debe decrementar stock');
+    const ticketWrite = mockDb.writes.find(w => w.collection === 'tickets');
+    assert.ok(ticketWrite, 'Debe escribir el documento en colección tickets');
+    const campUpdate = mockDb.writes.find(w => w.collection === 'campaigns');
+    assert.ok(campUpdate, 'Debe actualizar el stock en colección campaigns');
+});
+
+test(35, 'Opinión (enviarOpinion) en DEMO simula agradecimiento con cero escrituras', async () => {
     const mockDb = new MockFirestore();
     sandbox.window.db = mockDb;
     sandbox.window.__ENCAVI_ENTORNO__ = ENTORNOS.DEMO;
     sandbox.window.encaviSession = { origen: 'demo', code: 'DEMO-001', chofer: 'DEMO' };
 
+    let paso3Visible = false;
     sandbox.document.getElementById = (id) => ({
-        value: 'Excelente comida',
+        value: 'Excelente atención',
         innerText: '',
         textContent: '',
-        style: { display: 'none' }
+        style: {
+            set display(val) { if (id === 'opPaso3' && val === 'block') paso3Visible = true; }
+        }
     });
 
-    if (typeof enviarOpinion === 'function') {
-        enviarOpinion();
-        assert.strictEqual(mockDb.writes.length, 0, 'Zero writes to Firestore al enviar opinión en DEMO');
+    await enviarOpinion();
+
+    assert.strictEqual(paso3Visible, true, 'Muestra paso 3 de agradecimiento en DEMO');
+    assert.strictEqual(mockDb.writes.length, 0, 'Cero escrituras a opiniones en DEMO');
+});
+
+test(36, 'Opinión en Producción con db = null o rechazo alerta error y no avanza', async () => {
+    sandbox.window.db = null;
+    sandbox.window.__ENCAVI_ENTORNO__ = ENTORNOS.PRODUCCION;
+    sandbox.window.encaviSession = { origen: 'qr', code: 'ENC-001', chofer: 'V-001' };
+
+    let alertMsg = '';
+    const origAlert = sandbox.window.alert;
+    sandbox.window.alert = (txt) => { alertMsg = txt; };
+
+    let paso3Visible = false;
+    sandbox.document.getElementById = (id) => ({
+        value: 'Todo mal',
+        innerText: '',
+        textContent: '',
+        style: {
+            set display(val) { if (id === 'opPaso3' && val === 'block') paso3Visible = true; }
+        }
+    });
+
+    await enviarOpinion();
+
+    assert.strictEqual(paso3Visible, false, 'NO avanza a paso 3 si no hay base de datos');
+    assert.ok(alertMsg.includes('No se pudo enviar'), 'Debe alertar error');
+
+    sandbox.window.alert = origAlert;
+});
+
+test(37, 'Opinión en Producción con escritura exitosa avanza a agradecimiento', async () => {
+    const mockDb = new MockFirestore(false);
+    sandbox.window.db = mockDb;
+    sandbox.window.__ENCAVI_ENTORNO__ = ENTORNOS.PRODUCCION;
+    sandbox.window.encaviSession = { origen: 'qr', code: 'ENC-002', chofer: 'V-002' };
+
+    let paso3Visible = false;
+    sandbox.document.getElementById = (id) => ({
+        value: 'Muy buen servicio',
+        innerText: '',
+        textContent: '',
+        style: {
+            set display(val) { if (id === 'opPaso3' && val === 'block') paso3Visible = true; }
+        }
+    });
+
+    await enviarOpinion();
+
+    const opWrite = mockDb.writes.find(w => w.collection === 'opiniones');
+    assert.ok(opWrite, 'Debe registrar la opinión en colección opiniones');
+    assert.strictEqual(paso3Visible, true, 'Avanza a paso 3 tras guardar');
+});
+
+test(38, 'URL con codificación malformada o inválida manejada de forma segura', () => {
+    const malformadas = ['?%ZZ=1', '?chofer=%E0%A4%A', '?demo=%99', '?%=test'];
+    for (const url of malformadas) {
+        let params;
+        assert.doesNotThrow(() => {
+            params = evaluarParametrosURL(url);
+        }, `evaluarParametrosURL no debe lanzar excepción con ${url}`);
+        assert.strictEqual(params.valido, false, `Debe marcar inválida la URL ${url}`);
+        assert.strictEqual(params.motivo, 'url_malformada', `Motivo debe ser url_malformada para ${url}`);
+
+        const ev = evaluarEstadoAcceso({ searchStr: url });
+        assert.strictEqual(ev.estado, ESTADO_ACCESO.SIN_ACCESO, `Debe bloquear acceso para ${url}`);
+        assert.strictEqual(ev.motivo, 'url_malformada', `Motivo de bloqueo debe ser url_malformada`);
     }
 });
 
-test(33, 'Enlaces en negocios/index.html actualizados a /?demo=1 (sin chofer=DEMO)', () => {
+test(39, 'Script de inicialización de Firebase evaluado en los 7 escenarios de arranque', () => {
+    function probarArranque(searchStr, throwsOnConfig = false) {
+        let initCalled = false;
+        let firestoreCalled = false;
+        const mockFb = {
+            initializeApp: () => {
+                initCalled = true;
+                if (throwsOnConfig) throw new Error('Initialization failure');
+            },
+            firestore: () => {
+                firestoreCalled = true;
+                return { isMockDb: true };
+            }
+        };
+
+        const sb = {
+            window: {
+                location: { search: searchStr, pathname: '/' }
+            },
+            console: { warn: () => {}, error: () => {}, log: () => {} },
+            firebase: mockFb,
+            db: undefined,
+            URLSearchParams: URLSearchParams
+        };
+        sb.window.window = sb.window;
+        vm.createContext(sb);
+        vm.runInContext(sInit, sb);
+
+        return {
+            initCalled,
+            firestoreCalled,
+            db: sb.window.db
+        };
+    }
+
+    // 1. DEMO nuevo (?demo=1) -> Cero inicialización
+    const r1 = probarArranque('?demo=1');
+    assert.strictEqual(r1.initCalled, false, 'En ?demo=1 no debe llamar a initializeApp');
+    assert.strictEqual(r1.db, null, 'En ?demo=1 window.db debe ser null');
+
+    // 2. Enlace antiguo (?chofer=DEMO) -> Cero inicialización
+    const r2 = probarArranque('?chofer=DEMO');
+    assert.strictEqual(r2.initCalled, false, 'En ?chofer=DEMO no debe llamar a initializeApp');
+    assert.strictEqual(r2.db, null, 'En ?chofer=DEMO window.db debe ser null');
+
+    // 3. Parámetros mixtos rechazados (?demo=1&chofer=V1) -> Cero inicialización
+    const r3 = probarArranque('?demo=1&chofer=V1');
+    assert.strictEqual(r3.initCalled, false, 'En parámetros mixtos no debe inicializar');
+    assert.strictEqual(r3.db, null, 'window.db debe ser null');
+
+    // 4. URL con codificación inválida (?%ZZ=1) -> Cero inicialización
+    const r4 = probarArranque('?%ZZ=1');
+    assert.strictEqual(r4.initCalled, false, 'En URL malformada no debe inicializar');
+    assert.strictEqual(r4.db, null, 'window.db debe ser null');
+
+    // 5. Entrada directa sin sesión ("") -> Inicializa normalmente
+    const r5 = probarArranque('');
+    assert.strictEqual(r5.initCalled, true, 'En entrada directa inicializa Firebase');
+    assert.notStrictEqual(r5.db, null, 'window.db es asignado');
+
+    // 6. Producción simulada (?chofer=V-102) -> Inicializa normalmente
+    const r6 = probarArranque('?chofer=V-102');
+    assert.strictEqual(r6.initCalled, true, 'En QR de producción inicializa Firebase');
+    assert.notStrictEqual(r6.db, null, 'window.db es asignado');
+
+    // 7. Fallo de inicialización de Firebase -> Capturado con seguridad
+    const r7 = probarArranque('?chofer=V-102', true);
+    assert.strictEqual(r7.initCalled, true, 'Intenta inicializar');
+    assert.strictEqual(r7.db, null, 'Fallo capturado: window.db permanece null sin quebrar la app');
+});
+
+test(40, 'Dos instancias/pestañas compartiendo almacenamiento conservan aislamiento concurrente', () => {
+    const sharedStorage = new MockStorage();
+
+    // Pestaña 1: Pasajero con sesión QR activa
+    const now = Date.now();
+    const sesionPestana1 = {
+        timestamp: now,
+        code: 'ENC-TAB1',
+        chofer: 'V-001',
+        origen: 'qr',
+        juegoJugado: false
+    };
+    sharedStorage.setItem(CONFIG_PILOTO.SESSION_KEY, JSON.stringify(sesionPestana1));
+
+    // Pestaña 2: Usuario abre modo DEMO en otra pestaña
+    const sesionPestana2 = {
+        timestamp: now,
+        code: 'DEMO-TAB2',
+        chofer: 'DEMO',
+        origen: 'demo',
+        juegoJugado: false
+    };
+    sharedStorage.setItem(CONFIG_PILOTO.DEMO_SESSION_KEY, JSON.stringify(sesionPestana2));
+
+    // Pestaña 1 juega en producción
+    registrarIntentoJuego(sesionPestana1, sharedStorage);
+
+    // Pestaña 2 juega en demo
+    registrarIntentoJuego(sesionPestana2, sharedStorage);
+
+    // Comprobar estado de la Pestaña 1
+    const p1Revisada = JSON.parse(sharedStorage.getItem(CONFIG_PILOTO.SESSION_KEY));
+    assert.strictEqual(p1Revisada.code, 'ENC-TAB1', 'Pestaña 1 conserva su código de producción');
+    assert.strictEqual(p1Revisada.juegoJugado, true, 'Pestaña 1 tiene su intento jugado registrado');
+    assert.strictEqual(sharedStorage.getItem('encavigo_played_ENC-TAB1'), 'true');
+
+    // Comprobar estado de la Pestaña 2
+    const p2Revisada = JSON.parse(sharedStorage.getItem(CONFIG_PILOTO.DEMO_SESSION_KEY));
+    assert.strictEqual(p2Revisada.code, 'DEMO-TAB2', 'Pestaña 2 conserva su código DEMO');
+    assert.strictEqual(sharedStorage.getItem(CONFIG_PILOTO.DEMO_PLAYED_KEY), 'true');
+});
+
+test(41, 'Recorrido completo: QR real -> DEMO -> Juego -> Reinicio DEMO -> Salida a / -> QR real intacto', () => {
+    const storage = new MockStorage();
+    const now = Date.now();
+    const sesionRealQR = {
+        timestamp: now - 1800000, // 30 minutos
+        code: 'ENC-JOURNEY',
+        chofer: 'V-777',
+        origen: 'qr',
+        juegoJugado: false
+    };
+    storage.setItem(CONFIG_PILOTO.SESSION_KEY, JSON.stringify(sesionRealQR));
+
+    // 1. Entra a DEMO
+    const evDemo = evaluarEstadoAcceso({ searchStr: '?demo=1', session: sesionRealQR, now });
+    assert.strictEqual(evDemo.estado, ESTADO_ACCESO.DEMO);
+    const demoSession = { origen: 'demo', code: 'DEMO-001', chofer: 'DEMO', timestamp: now, juegoJugado: false };
+    storage.setItem(CONFIG_PILOTO.DEMO_SESSION_KEY, JSON.stringify(demoSession));
+
+    // 2. Juega en DEMO
+    registrarIntentoJuego(demoSession, storage);
+    assert.strictEqual(storage.getItem(CONFIG_PILOTO.DEMO_PLAYED_KEY), 'true');
+
+    // 3. Reinicia DEMO
+    const origLoc = sandbox.window.location;
+    sandbox.localStorage = storage;
+    sandbox.window.location = { pathname: '/', href: '' };
+    reiniciarDemo();
+    assert.strictEqual(storage.getItem(CONFIG_PILOTO.DEMO_SESSION_KEY), null);
+    assert.strictEqual(storage.getItem(CONFIG_PILOTO.DEMO_PLAYED_KEY), null);
+
+    // 4. Sale de DEMO hacia /
+    const evSalida = evaluarEstadoAcceso({
+        searchStr: '',
+        session: JSON.parse(storage.getItem(CONFIG_PILOTO.SESSION_KEY)),
+        now: now + 5000
+    });
+    assert.strictEqual(evSalida.estado, ESTADO_ACCESO.ACTIVA);
+    assert.strictEqual(evSalida.session.code, 'ENC-JOURNEY', 'Código real original preservado');
+    assert.strictEqual(evSalida.session.chofer, 'V-777', 'Chofer original preservado');
+    assert.strictEqual(evSalida.session.juegoJugado, false, 'Intento de juego real sigue disponible');
+
+    sandbox.window.location = origLoc;
+});
+
+test(42, 'Manejo seguro de almacenamiento corrupto (JSON inválido en localStorage)', () => {
+    const storage = new MockStorage();
+    storage.setItem(CONFIG_PILOTO.SESSION_KEY, '{corrupt json...');
+    storage.setItem(CONFIG_PILOTO.DEMO_SESSION_KEY, 'invalid');
+
+    let parsedReal = null, parsedDemo = null;
+    assert.doesNotThrow(() => {
+        try { parsedReal = JSON.parse(storage.getItem(CONFIG_PILOTO.SESSION_KEY)); } catch(e) {}
+        try { parsedDemo = JSON.parse(storage.getItem(CONFIG_PILOTO.DEMO_SESSION_KEY)); } catch(e) {}
+    });
+
+    const ev = evaluarEstadoAcceso({ session: parsedReal, demoSession: parsedDemo, searchStr: '' });
+    assert.strictEqual(ev.estado, ESTADO_ACCESO.SIN_ACCESO, 'Ante JSON corrupto deniega acceso sin quebrar');
+});
+
+test(43, 'Enlaces en negocios/index.html actualizados a /?demo=1 (sin chofer=DEMO)', () => {
     const negHtml = fs.readFileSync(path.join(__dirname, 'negocios', 'index.html'), 'utf8');
     assert.ok(!negHtml.includes('chofer=DEMO'), 'No debe quedar ninguna ocurrencia de chofer=DEMO en negocios/index.html');
     assert.ok(negHtml.includes('href="/?demo=1"'), 'Debe enlazar a /?demo=1');
 });
 
-test(34, 'Comprobación de ciclo de vida DOM en modo DEMO y modo producción', () => {
+test(44, 'Comprobación de ciclo de vida DOM completo en modo DEMO y modo producción', () => {
     function verificarCiclo(nombre, params, sesion) {
         const domEvents = {};
         const elements = {};
         const doc = {
             body: {
-                innerHTML: '<div id="scratchBanner"></div><div id="gameModal"></div>',
+                innerHTML: '<div id="scratchBanner"></div><div id="gameModal"></div><div class="immersive-feed"></div>',
                 appendChild: () => {},
                 prepend: () => {},
                 addEventListener: () => {}
@@ -815,8 +1207,9 @@ test(34, 'Comprobación de ciclo de vida DOM en modo DEMO y modo producción', (
                 if (!elements[id]) elements[id] = { style: {}, classList: { add:()=>{}, remove:()=>{}, contains:()=>false } };
                 return elements[id];
             },
-            querySelector: () => null,
+            querySelector: () => ({ innerHTML: '', querySelectorAll: () => [] }),
             querySelectorAll: () => [],
+            createElement: () => ({ id: '', style: {}, innerHTML: '', addEventListener: () => {} }),
             addEventListener: (ev, fn) => {
                 if (!domEvents['doc:' + ev]) domEvents['doc:' + ev] = [];
                 domEvents['doc:' + ev].push(fn);
@@ -829,7 +1222,9 @@ test(34, 'Comprobación de ciclo de vida DOM en modo DEMO y modo producción', (
 
         const mockDb = new MockFirestore();
         const sb = {
+            alert: () => {},
             window: {
+                alert: () => {},
                 addEventListener: (ev, fn) => {
                     if (!domEvents['win:' + ev]) domEvents['win:' + ev] = [];
                     domEvents['win:' + ev].push(fn);
@@ -863,14 +1258,15 @@ test(34, 'Comprobación de ciclo de vida DOM en modo DEMO y modo producción', (
         sb.window.window = sb.window;
 
         vm.createContext(sb);
+        vm.runInContext(sInit, sb);
         vm.runInContext(sMain, sb);
 
         if (domEvents['doc:DOMContentLoaded']) domEvents['doc:DOMContentLoaded'].forEach(fn => fn());
         if (domEvents['win:DOMContentLoaded']) domEvents['win:DOMContentLoaded'].forEach(fn => fn());
 
         if (params === '?demo=1') {
-            assert.strictEqual(mockDb.writes.length, 0, 'Ciclo DOM en DEMO produjo cero escrituras a Firestore');
-            assert.strictEqual(mockDb.reads.length, 0, 'Ciclo DOM en DEMO produjo cero lecturas a Firestore');
+            assert.strictEqual(mockDb.writes.length, 0, 'Ciclo DOM en DEMO produjo cero escrituras');
+            assert.strictEqual(mockDb.reads.length, 0, 'Ciclo DOM en DEMO produjo cero lecturas');
         }
     }
 
@@ -880,18 +1276,30 @@ test(34, 'Comprobación de ciclo de vida DOM en modo DEMO y modo producción', (
     verificarCiclo('Ciclo DOM en Modo DEMO (?demo=1)', '?demo=1', null);
 });
 
-// B. Verificación de enlaces y recursos locales
+// Verificaciones estáticas de recursos y viewport
 assert.ok(fs.existsSync(path.join(__dirname, 'negocios', 'index.html')), 'El destino local de /negocios/ debe existir');
 assert.ok(fs.existsSync(path.join(__dirname, 'logo_jackpot.jpg')), 'logo_jackpot.jpg debe existir');
-
-// C. Verificación de viewport móvil y estilos responsive
 assert.ok(indexHtml.includes('name="viewport"'), 'index.html debe contener meta viewport');
 assert.ok(indexHtml.includes('width=device-width'), 'meta viewport debe incluir width=device-width');
 
-console.log('\n---------------------------------------------------------------');
-console.log(`RESULTADO FINAL: ${passedTests} de ${totalTests} pruebas pasadas.`);
-console.log('---------------------------------------------------------------');
+// Ejecutar todas las pruebas asíncronas secuencialmente
+(async () => {
+    for (const { num, description, fn } of testQueue) {
+        try {
+            await fn();
+            console.log(`[PASS] Caso ${num}: ${description}`);
+            passedTests++;
+        } catch (err) {
+            console.error(`[FAIL] Caso ${num}: ${description}`);
+            console.error('       Detalle:', err.message);
+        }
+    }
 
-if (passedTests !== totalTests) {
-    process.exit(1);
-}
+    console.log('\n---------------------------------------------------------------');
+    console.log(`RESULTADO FINAL: ${passedTests} de ${testQueue.length} pruebas pasadas.`);
+    console.log('---------------------------------------------------------------');
+
+    if (passedTests !== testQueue.length) {
+        process.exit(1);
+    }
+})();

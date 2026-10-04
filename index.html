@@ -88,7 +88,7 @@
 
 
 
-      
+
 
 
 
@@ -3194,7 +3194,7 @@
 
 
 
-    
+
 
 
 
@@ -4782,7 +4782,7 @@
 
 
 
-      
+
 
 
 
@@ -5086,7 +5086,7 @@
 
 
 
-  
+
     /* IMMERSIVE SWIPE FEED */
     html, body {
         height: 100%;
@@ -5124,7 +5124,7 @@
         scroll-behavior: smooth;
         -webkit-overflow-scrolling: touch;
     }
-    
+
     /* Hide scrollbar for immersive feel */
     .immersive-feed::-webkit-scrollbar { display: none; }
     .immersive-feed { -ms-overflow-style: none; scrollbar-width: none; }
@@ -5139,7 +5139,7 @@
         flex-direction: column;
         justify-content: flex-end;
     }
-    
+
     .card-bg {
         position: absolute;
         top: 0; left: 0; width: 100%; height: 100%;
@@ -5147,15 +5147,15 @@
         background-position: center;
         z-index: 1;
     }
-    
+
     .card-overlay {
         position: absolute;
         top: 0; left: 0; width: 100%; height: 100%;
         background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 40%, rgba(0,0,0,0.1) 100%);
         z-index: 2;
     }
-    
-    .card-ui { padding-bottom: 80px !important; 
+
+    .card-ui { padding-bottom: 80px !important;
         position: relative;
         z-index: 3;
         padding: 24px;
@@ -5164,7 +5164,7 @@
         flex-direction: column;
         gap: 12px;
     }
-    
+
     .card-badge {
         display: inline-flex;
         align-items: center;
@@ -5179,7 +5179,7 @@
         align-self: flex-start;
         border: 1px solid rgba(255,255,255,0.2);
     }
-    
+
     .card-headline {
         font-size: 32px;
         font-weight: 900;
@@ -5189,7 +5189,7 @@
         letter-spacing: -0.5px;
         text-shadow: 0 4px 12px rgba(0,0,0,0.5);
     }
-    
+
     .card-body {
         font-size: 15px;
         color: rgba(255,255,255,0.85);
@@ -5241,10 +5241,10 @@
         40% { transform: translateY(-10px); }
         60% { transform: translateY(-5px); }
     }
-    
+
     /* Hide the old bottom nav / empty state since we are fullscreen */
     .feed-empty, .map-alert, .map-btn, .dist-chip { display: none !important; }
-    
+
     /* BOTTOM SHEET MODAL (TikTok Comments Style) */
     .sheet-backdrop {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -5255,7 +5255,7 @@
         transition: opacity 0.3s ease;
     }
     .sheet-backdrop.active { opacity: 1; pointer-events: auto; }
-    
+
     .bottom-sheet {
         position: fixed; bottom: 0; left: 0; width: 100%;
         height: 75vh;
@@ -5268,7 +5268,7 @@
         box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
     }
     .bottom-sheet.active { transform: translateY(0); }
-    
+
     .sheet-header {
         padding: 16px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05);
         position: relative;
@@ -5284,12 +5284,12 @@
         border-radius: 50%; display: flex; align-items: center; justify-content: center;
         color: #FFF; font-weight: bold; font-size: 14px;
     }
-    
+
     .sheet-content {
         flex: 1; overflow-y: auto; padding: 16px;
         display: flex; flex-direction: column; gap: 16px;
     }
-    
+
     /* MINI CARD FOR NEARBY PROMOS */
     .mini-card {
         background: linear-gradient(145deg, #1E293B, #0F172A);
@@ -5301,7 +5301,7 @@
     .mini-card-info { flex: 1; padding: 12px; display: flex; flex-direction: column; justify-content: center; }
     .mini-title { font-size: 14px; font-weight: bold; color: #FFF; margin: 0 0 4px 0; }
     .mini-desc { font-size: 11px; color: #94A3B8; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-    
+
     /* RADAR NOTIFICATION (Dynamic Island Style) */
     .radar-notif {
         position: fixed; top: 80px; left: 50%; transform: translateX(-50%) translateY(-150%);
@@ -5315,13 +5315,13 @@
     .radar-notif.show { transform: translateX(-50%) translateY(0); }
     .radar-icon { font-size: 18px; animation: pulse 2s infinite; }
     .radar-text { font-size: 13px; font-weight: 700; color: #FFF; }
-    
+
     @keyframes pulse {
         0% { transform: scale(1); }
         50% { transform: scale(1.2); }
         100% { transform: scale(1); }
     }
-    
+
     /* SIDE ACTION BUTTONS (TikTok Style) */
     .side-actions {
         position: fixed;
@@ -5343,7 +5343,7 @@
         transition: transform 0.2s;
     }
     .action-btn:active { transform: scale(0.9); }
-    
+
     .action-icon {
         width: 48px; height: 48px;
         background: rgba(0, 0, 0, 0.4);
@@ -5355,9 +5355,9 @@
         box-shadow: 0 8px 16px rgba(0,0,0,0.4);
         position: relative;
     }
-    
+
     .action-icon svg { stroke: #FFF; }
-    
+
     .action-badge {
         position: absolute;
         top: -4px; right: -4px;
@@ -5372,16 +5372,16 @@
         border: 2px solid #000;
         box-shadow: 0 2px 4px rgba(0,0,0,0.3);
     }
-    
+
     .action-label {
         font-size: 11px;
         font-weight: 800;
         letter-spacing: 0.5px;
     }
-    
+
     /* Overwrite old radar if any CSS was left */
     .radar-notif { display: none !important; }
-    
+
     /* BOTTOM NAVIGATION BAR */
     .bottom-nav {
         position: fixed; bottom: 0; left: 0; right: 0;
@@ -5403,14 +5403,14 @@
     .nav-item.active { color: #F97316; }
     .nav-item svg { stroke: currentColor; transition: transform 0.2s; }
     .nav-item.active svg { transform: scale(1.1); stroke-width: 2.5; }
-    
+
     .nav-badge {
         position: absolute; top: 10px; right: calc(50% - 20px);
         background: #E50914; color: #FFF; font-size: 9px; font-weight: 900;
         padding: 2px 5px; border-radius: 10px; border: 2px solid #0A1121;
         box-shadow: 0 2px 4px rgba(0,0,0,0.5);
     }
-    
+
     /* MOCKUP 2: PULL-UP DRAWER */
     .pullup-drawer {
         position: fixed; bottom: 0; left: 0; right: 0;
@@ -5442,38 +5442,38 @@
         background: #F97316; color: #FFF;
         font-size: 11px; padding: 2px 6px; border-radius: 10px;
     }
-    
-    
-    
+
+
+
 
 
     /* 6-Card Mini Game Styles */
     .scratch-banner { position: absolute; top: 60px; left: 20px; right: 20px; z-index: 100; background: linear-gradient(135deg, #F97316, #EAB308); color: white; padding: 15px; border-radius: 12px; text-align: center; font-weight: bold; font-size: 16px; box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4); cursor: pointer; animation: pulse 2s infinite; display: none; }
     @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
-    
+
     .game-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 1000; display: none; align-items: center; justify-content: center; flex-direction: column; overflow: hidden; }
     .game-title { color: white; font-weight: bold; margin-bottom: 30px; font-size: 22px; text-align: center; }
-    
+
     .cards-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; width: 320px; position: relative; }
-    
+
     .flip-card { background-color: transparent; width: 90px; height: 110px; perspective: 1000px; cursor: pointer; }
     .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s; transform-style: preserve-3d; }
     .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
-    
+
     .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-    
+
     .flip-card-front { background: linear-gradient(135deg, #CBD5E1, #94A3B8); color: #111827; font-size: 24px; font-weight: bold; border: 2px solid #E2E8F0; }
     .flip-card-front::after { content: '?'; color: rgba(255,255,255,0.5); font-size: 40px; }
-    
+
     .flip-card-back { background: white; transform: rotateY(180deg); font-size: 45px; border: 2px solid #F97316; }
-    
+
     /* Animation classes for merging */
     .fade-out { opacity: 0; transition: opacity 0.5s ease; pointer-events: none; }
     .merge-animate { position: absolute !important; z-index: 50; transition: all 1s ease-in-out !important; transform: rotateY(180deg) scale(1.5) translate(0, 0) !important; left: 50% !important; top: 50% !important; margin-left: -45px; margin-top: -55px; }
-    
+
     .game-result { display: none; text-align: center; margin-top: 150px; z-index: 100; animation: popIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
     @keyframes popIn { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-    
+
     .btn-close-game { margin-top: 25px; background: linear-gradient(135deg, #F97316, #EA580C); color: white; border: none; padding: 12px 30px; border-radius: 25px; font-weight: bold; font-size: 16px; cursor: pointer; box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4); }
 
 
@@ -5649,13 +5649,13 @@
         <svg class="mark splash-mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 378 227" aria-hidden="true" focusable="false"><path fill="currentColor" fill-rule="evenodd" d="M105.90,225.58C99.92,225.45 94.01,225.04 91.70,224.60C91.15,224.50 89.62,224.27 88.30,224.10C82.74,223.36 76.78,221.96 70.30,219.87C64.85,218.10 62.38,217.18 59.64,215.88C58.62,215.40 57.74,215.00 57.70,215.00C57.45,215.00 52.30,212.42 51.10,211.70C50.33,211.23 48.63,210.25 47.33,209.52C44.25,207.77 43.56,207.32 40.21,204.77C35.47,201.17 29.38,195.38 26.36,191.60C23.01,187.42 22.07,186.16 20.69,184.06C16.69,177.95 16.99,178.45 14.89,174.50C10.07,165.42 7.35,157.74 4.72,145.80C3.32,139.46 2.27,132.79 1.68,126.50C1.20,121.36 1.19,107.90 1.66,102.90C1.99,99.43 2.71,94.34 3.32,91.20C3.49,90.38 3.79,88.75 3.99,87.60C4.83,82.95 6.73,75.63 7.99,72.20C8.34,71.27 8.97,69.51 9.39,68.30C11.38,62.67 11.99,61.22 14.24,56.70C16.00,53.18 17.24,50.95 19.00,48.19C19.27,47.76 20.06,46.51 20.75,45.42C23.86,40.49 30.10,33.08 35.06,28.43C37.69,25.96 42.07,22.35 44.32,20.80C49.19,17.44 52.11,15.68 56.40,13.52C61.08,11.16 64.48,9.71 68.40,8.38C69.66,7.96 71.60,7.29 72.70,6.91C76.29,5.66 84.37,3.75 90.00,2.82C98.70,1.38 104.29,1.01 117.40,1.00C133.67,1.00 142.74,1.45 151.56,2.71C161.86,4.18 165.98,5.48 170.48,8.70C173.62,10.94 175.15,13.53 176.22,18.43C177.06,22.29 176.71,28.38 175.45,31.90C174.55,34.42 173.66,35.76 171.41,38.00C169.00,40.39 166.98,41.71 164.36,42.60C159.63,44.21 155.35,44.21 143.10,42.60C141.45,42.38 138.53,42.07 136.60,41.90C134.68,41.73 131.66,41.46 129.90,41.29C125.50,40.85 111.22,40.67 106.40,40.99C98.98,41.48 90.04,43.24 83.90,45.42C81.02,46.44 74.74,49.55 72.46,51.07C68.39,53.80 64.89,56.69 61.77,59.92C60.59,61.14 59.92,61.93 57.64,64.80C55.66,67.29 51.71,74.03 50.26,77.40C46.48,86.16 44.17,96.59 43.18,109.40C42.83,114.06 43.05,121.40 43.69,125.80C44.55,131.73 45.67,136.95 46.81,140.40C47.32,141.93 47.69,142.92 48.96,146.10C51.35,152.08 55.37,158.84 59.46,163.76C62.62,167.57 67.42,171.82 71.50,174.42C76.70,177.74 78.05,178.37 85.00,180.74C88.88,182.06 89.99,182.36 94.40,183.31C103.90,185.35 116.86,186.02 130.90,185.22C139.56,184.72 144.02,184.24 155.30,182.57C165.29,181.09 173.40,184.61 177.24,192.10C178.91,195.36 179.66,200.15 179.22,204.69C178.77,209.33 177.54,212.34 174.95,215.11C173.42,216.75 171.17,218.22 168.40,219.38C167.57,219.73 166.60,220.15 166.22,220.32C164.34,221.15 158.51,222.70 155.32,223.20C154.55,223.32 153.87,223.46 153.80,223.50C153.48,223.70 143.94,224.81 140.10,225.11C137.79,225.28 131.76,225.51 126.70,225.60C116.52,225.80 115.13,225.80 105.90,225.58ZM105.50,145.68C98.56,144.67 95.02,143.60 89.30,140.79C87.10,139.71 84.65,138.39 83.85,137.85C79.38,134.85 75.49,130.56 73.59,126.54C72.18,123.56 73.33,120.41 76.47,118.67C77.41,118.15 77.67,118.10 79.50,118.10C81.34,118.10 81.58,118.15 82.47,118.67C83.01,118.99 84.27,120.10 85.27,121.14C88.70,124.70 92.98,128.04 95.81,129.35C102.85,132.63 108.47,133.47 115.70,132.32C120.59,131.54 125.46,129.49 129.30,126.58C131.67,124.79 133.49,123.15 135.08,121.39C136.63,119.67 138.15,118.49 139.16,118.21C139.57,118.09 140.48,118.00 141.20,118.00C144.86,118.00 147.96,121.54 147.20,124.83C146.50,127.85 143.06,132.33 138.60,136.03C134.95,139.05 127.56,142.83 122.74,144.13C118.34,145.33 116.03,145.63 110.90,145.70C108.26,145.74 105.83,145.72 105.50,145.68ZM60.60,98.82C58.91,98.27 57.32,97.02 56.67,95.74C55.39,93.22 56.10,88.93 58.35,85.63C61.45,81.07 65.41,78.30 71.12,76.68C72.93,76.16 73.39,76.11 76.50,76.11C79.68,76.10 80.02,76.14 81.80,76.67C84.21,77.40 87.71,79.11 89.43,80.40C90.99,81.57 93.33,84.20 94.21,85.75C94.55,86.34 95.10,87.57 95.45,88.47C96.02,89.95 96.07,90.31 96.09,92.50C96.10,95.24 95.88,95.94 94.54,97.23C92.95,98.78 89.93,99.28 87.89,98.33C86.76,97.80 86.18,97.18 85.09,95.36C83.87,93.32 82.26,91.31 81.39,90.74C79.06,89.22 74.98,88.99 72.53,90.24C71.36,90.83 69.86,92.32 68.84,93.90C67.21,96.44 66.94,96.81 66.32,97.43C65.28,98.45 64.26,98.86 62.60,98.93C61.77,98.96 60.87,98.92 60.60,98.82ZM126.60,98.30C125.17,97.62 124.49,96.96 123.78,95.56C123.29,94.58 123.20,94.18 123.20,92.84C123.20,88.53 126.94,82.69 131.70,79.57C135.87,76.83 141.43,75.44 146.05,75.98C150.19,76.46 155.03,78.66 158.13,81.47C159.33,82.55 161.49,85.42 162.29,86.99C165.51,93.30 163.32,98.80 157.59,98.80C156.50,98.80 155.97,98.69 155.24,98.32C154.04,97.70 153.56,97.17 151.84,94.59C149.16,90.53 147.08,89.20 143.45,89.20C139.79,89.20 137.80,90.55 135.29,94.73C134.42,96.18 132.95,97.71 131.90,98.26C131.33,98.55 130.62,98.69 129.40,98.75C127.89,98.81 127.58,98.76 126.60,98.30Z"/><path fill="#F97316" fill-rule="evenodd" d="M286.00,225.87C277.94,225.35 273.45,224.75 266.00,223.21C263.44,222.67 261.99,222.31 257.60,221.08C253.70,219.99 247.16,217.83 245.30,217.01C244.09,216.48 242.56,215.81 241.90,215.54C240.09,214.78 235.66,212.58 234.30,211.77C233.64,211.37 232.33,210.60 231.40,210.05C224.89,206.22 215.22,197.79 208.37,190.00C205.41,186.63 201.59,181.30 199.49,177.60C198.96,176.67 198.23,175.41 197.88,174.80C196.85,173.05 192.63,164.48 191.76,162.40C187.95,153.19 185.66,144.44 184.42,134.40C182.80,121.26 182.68,110.48 184.02,99.30C184.62,94.32 186.42,85.56 187.79,81.00C188.13,79.84 188.64,78.14 188.92,77.20C189.63,74.82 191.06,70.58 191.76,68.80C193.50,64.39 195.50,59.80 196.47,57.96C198.18,54.74 198.89,53.46 199.23,52.97C199.43,52.68 199.60,52.36 199.60,52.25C199.60,52.15 199.86,51.67 200.17,51.18C202.53,47.51 203.73,45.76 205.49,43.42C206.59,41.95 207.68,40.51 207.90,40.21C208.79,39.01 213.29,34.10 216.40,30.93C222.06,25.15 226.94,21.17 232.90,17.47C237.17,14.81 238.17,14.24 241.00,12.87C242.48,12.15 244.02,11.40 244.40,11.20C244.78,11.00 245.59,10.64 246.18,10.41C246.78,10.17 247.64,9.81 248.10,9.60C248.55,9.39 250.14,8.82 251.61,8.33C253.09,7.85 254.53,7.35 254.80,7.24C255.07,7.13 256.11,6.79 257.10,6.49C258.09,6.19 259.57,5.74 260.40,5.48C265.78,3.84 273.32,2.36 280.60,1.52C289.82,0.45 304.06,0.62 313.70,1.90C320.76,2.83 330.01,4.86 335.20,6.61C341.02,8.56 344.64,10.15 351.10,13.56C354.39,15.30 354.74,15.51 359.65,18.74C365.02,22.28 368.06,24.63 369.60,26.43C373.07,30.49 374.41,34.01 374.43,39.08C374.45,43.71 373.60,46.28 370.44,51.20C369.25,53.05 367.14,55.22 364.91,56.87C362.88,58.39 362.21,58.73 359.93,59.44C357.98,60.04 357.77,60.07 354.30,60.07C351.01,60.08 350.52,60.03 348.60,59.53C345.97,58.84 344.44,58.24 341.90,56.91C339.20,55.49 334.09,52.65 333.10,52.03C332.32,51.53 326.09,48.40 325.89,48.40C325.83,48.40 325.09,48.09 324.24,47.72C319.03,45.40 314.25,44.07 306.88,42.88C299.66,41.71 287.64,42.11 280.00,43.78C274.59,44.96 270.56,46.36 264.40,49.21C261.56,50.52 261.23,50.71 258.50,52.54C252.69,56.42 247.69,61.15 243.67,66.58C243.22,67.20 242.62,67.97 242.35,68.30C241.41,69.43 237.96,75.27 236.91,77.50C236.50,78.38 235.86,79.73 235.49,80.50C234.80,81.96 234.18,83.57 232.71,87.80C231.94,90.01 231.58,91.35 230.50,96.10C230.35,96.76 229.99,99.05 229.69,101.20C229.17,105.04 229.16,105.23 229.26,113.10C229.36,120.10 229.43,121.58 229.87,124.90C231.16,134.62 232.01,138.03 235.01,145.50C236.68,149.64 237.74,151.70 239.95,155.09C243.04,159.83 244.89,162.11 248.79,166.01C252.65,169.88 254.27,171.21 257.80,173.43C261.17,175.55 262.15,176.11 264.80,177.40C272.92,181.37 281.24,183.25 294.90,184.22C299.77,184.57 306.50,184.15 313.00,183.08C316.79,182.46 318.38,182.08 322.50,180.78C331.86,177.83 334.45,176.61 334.99,174.92C335.24,174.12 335.56,167.98 335.80,159.00C335.91,155.09 336.07,151.54 336.17,151.10C337.40,145.45 339.78,141.66 343.64,139.19C347.50,136.71 353.59,135.52 360.09,135.98C366.88,136.46 370.84,138.26 374.05,142.35C375.86,144.64 376.80,147.36 377.22,151.50C377.49,154.16 377.48,180.06 377.21,186.56C376.85,194.84 375.48,198.85 371.67,202.67C370.40,203.94 368.54,205.31 364.93,207.62C362.97,208.88 355.92,212.49 352.50,214.00C348.36,215.82 347.46,216.20 347.32,216.20C347.24,216.20 346.62,216.46 345.94,216.78C343.87,217.74 338.98,219.40 335.90,220.20C335.57,220.29 333.91,220.76 332.20,221.25C330.50,221.75 328.69,222.22 328.20,222.29C327.71,222.37 326.81,222.56 326.20,222.71C322.62,223.60 312.89,224.96 307.00,225.40C300.45,225.87 289.80,226.12 286.00,225.87ZM281.94,153.00C279.64,152.59 276.86,150.65 275.50,148.50C274.81,147.42 274.13,145.73 273.78,144.24C273.62,143.58 273.54,134.69 273.49,114.90C273.42,83.36 273.43,82.93 274.59,80.15C275.22,78.65 276.98,76.33 278.14,75.47C280.10,74.03 282.07,73.51 284.98,73.65C287.58,73.77 289.61,74.42 292.64,76.11C293.77,76.74 295.15,77.51 295.70,77.81C298.72,79.47 300.09,80.24 301.90,81.30C303.00,81.95 304.57,82.85 305.40,83.31C307.87,84.67 309.37,85.56 310.26,86.16C310.72,86.48 311.84,87.20 312.75,87.77C313.66,88.34 315.10,89.24 315.95,89.77C316.80,90.30 318.28,91.23 319.23,91.82C320.18,92.41 321.21,93.05 321.53,93.23C322.85,93.99 326.40,96.17 327.76,97.05C328.56,97.57 329.25,98.00 329.30,98.00C329.49,98.00 334.62,101.14 336.79,102.58C338.05,103.42 339.59,104.57 340.22,105.15C342.49,107.25 343.77,110.91 343.20,113.73C343.07,114.37 342.60,115.67 342.16,116.60C341.06,118.90 339.04,120.89 335.32,123.32C328.78,127.58 326.68,128.90 324.20,130.30C323.26,130.83 322.19,131.46 321.80,131.71C321.42,131.95 319.98,132.80 318.60,133.61C317.23,134.41 314.84,135.89 313.30,136.90C310.41,138.79 309.97,139.06 306.35,141.22C302.33,143.61 301.86,143.90 300.28,144.88C299.41,145.42 297.84,146.42 296.80,147.10C293.39,149.32 288.58,151.97 287.01,152.50C285.29,153.07 283.37,153.26 281.94,153.00Z"/>
 </svg><br><span style="color: white;">Encavi</span><span style="color: #F97316;">GO</span>
     </div>
-    
+
     <h1 style="color: white; font-size: 24px; margin-bottom: 15px;">¡Bienvenido!</h1>
-    
+
     <p style="color: #94A3B8; font-size: 16px; line-height: 1.5; max-width: 300px; margin-bottom: 40px;">
         Descubre cupones y promociones dinámicas cerca de ti. Las mejores ofertas cambian todos los días.<br><br><strong>Y antes de empezar, juega una vez: descubre promociones en tu ruta.</strong>
     </p>
-    
+
     <button onclick="cerrarSplash()" style="background: #F97316; color: white; border: none; padding: 15px 30px; border-radius: 30px; font-size: 18px; font-weight: bold; box-shadow: 0 4px 15px rgba(249,115,22,0.4); cursor: pointer;">
         Comenzar a explorar ➔
     </button>
@@ -5680,7 +5680,7 @@ function cerrarSplash() {
 
 <div id="gameModal" class="game-modal">
     <div class="game-title" id="gameTitle">Elige 3 tarjetas <br><span style="font-size: 14px; font-weight: normal; color: #9CA3AF;">Descubre una promoción de tu ruta</span></div>
-    
+
     <div class="cards-grid" id="cardsGrid">
         <div class="flip-card" id="card-0" onclick="flipCard(0)"><div class="flip-card-inner" id="inner-0"><div class="flip-card-front"></div><div class="flip-card-back" id="back-0"></div></div></div>
         <div class="flip-card" id="card-1" onclick="flipCard(1)"><div class="flip-card-inner" id="inner-1"><div class="flip-card-front"></div><div class="flip-card-back" id="back-1"></div></div></div>
@@ -5689,7 +5689,7 @@ function cerrarSplash() {
         <div class="flip-card" id="card-4" onclick="flipCard(4)"><div class="flip-card-inner" id="inner-4"><div class="flip-card-front"></div><div class="flip-card-back" id="back-4"></div></div></div>
         <div class="flip-card" id="card-5" onclick="flipCard(5)"><div class="flip-card-inner" id="inner-5"><div class="flip-card-front"></div><div class="flip-card-back" id="back-5"></div></div></div>
     </div>
-    
+
     <div class="game-result" id="gameResult">
         <h2 id="resultTitle" style="margin: 0 0 10px 0; font-size: 26px;"></h2>
         <p id="resultMsg" style="margin: 0; font-size: 15px; color: #D1D5DB; padding: 0 20px;"></p>
@@ -5776,7 +5776,7 @@ function cerrarSplash() {
 <!-- CANALES TEMÃTICOS ========================== -->
 <!-- FEED ======================================= -->
 <main class="immersive-feed">
-<!-- 
+<!--
     ========================================================================
     🛑 ÁREA DE BASE DE DATOS (ZONA PARA AÑADIR/QUITAR PROMOCIONES) 🛑
     ========================================================================
@@ -5836,7 +5836,7 @@ function cerrarSplash() {
         <div style="font-weight:bold; font-size:18px;">Mapa de Promociones</div>
         <button class="map-close" onclick="closeMap()">&times;</button>
     </div>
-    
+
     <div id="map"></div>
     <button class="locate-btn" onclick="centerMapOnUser()">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg>
@@ -5855,6 +5855,74 @@ function cerrarSplash() {
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <script>
+function evaluarParametrosURL(searchStr) {
+    if (!searchStr || typeof searchStr !== 'string') {
+        return { valido: true, esDemo: false, chofer: null, desde: null, motivo: null };
+    }
+    const cleanSearch = searchStr.startsWith('?') ? searchStr.slice(1) : searchStr;
+    if (!cleanSearch) {
+        return { valido: true, esDemo: false, chofer: null, desde: null, motivo: null };
+    }
+
+    const pairs = cleanSearch.split('&');
+    const counts = {};
+    for (const pair of pairs) {
+        const parts = pair.split('=');
+        const rawKey = parts[0];
+        const rawVal = parts.slice(1).join('=');
+        if (rawKey) {
+            let key;
+            try {
+                key = decodeURIComponent(rawKey);
+                if (rawVal) decodeURIComponent(rawVal);
+            } catch (e) {
+                return { valido: false, esDemo: false, chofer: null, desde: null, motivo: 'url_malformada' };
+            }
+            counts[key] = (counts[key] || 0) + 1;
+            if (counts[key] > 1) {
+                return { valido: false, esDemo: false, chofer: null, desde: null, motivo: 'parametros_repetidos' };
+            }
+        }
+    }
+
+    let params;
+    try {
+        params = new URLSearchParams(cleanSearch);
+    } catch (e) {
+        return { valido: false, esDemo: false, chofer: null, desde: null, motivo: 'url_malformada' };
+    }
+
+    const hasDemo = params.has('demo');
+    const hasChofer = params.has('chofer');
+    const demoVal = params.get('demo');
+    const choferVal = params.get('chofer');
+    const desdeVal = params.get('desde');
+
+    if (hasDemo && hasChofer) {
+        return { valido: false, esDemo: false, chofer: null, desde: null, motivo: 'combinacion_ambigua_demo_chofer' };
+    }
+
+    if (hasChofer && choferVal && choferVal.trim().toUpperCase() === 'DEMO') {
+        return { valido: true, esDemo: true, chofer: null, desde: desdeVal, motivo: 'enlace_antiguo_demo' };
+    }
+
+    if (hasDemo) {
+        if (demoVal === '1') {
+            return { valido: true, esDemo: true, chofer: null, desde: desdeVal, motivo: 'demo_valido' };
+        } else {
+            return { valido: false, esDemo: false, chofer: null, desde: null, motivo: 'demo_invalido' };
+        }
+    }
+
+    return {
+        valido: true,
+        esDemo: false,
+        chofer: choferVal ? choferVal.trim() : null,
+        desde: desdeVal ? desdeVal.trim() : null,
+        motivo: null
+    };
+}
+
   const firebaseConfig = {
     apiKey: "AIzaSyBS87d1Dv9nx6Yg_dqq-E3x9GI4gpSA7ps",
     authDomain: "encavi-go.firebaseapp.com",
@@ -5863,21 +5931,14 @@ function cerrarSplash() {
     messagingSenderId: "1073579842188",
     appId: "1:1073579842188:web:0b415778424a7bce5639a9"
   };
-  // En MODO DEMOSTRACIÓN no se inicializa el cliente de Firebase ni se conecta a producción
+
   const _paramsIni = (typeof window !== 'undefined' && window.location && window.location.search)
       ? window.location.search
       : '';
-  const _isDemoUrl = (function(search) {
-      if (!search) return false;
-      var s = search.startsWith('?') ? search.slice(1) : search;
-      var p = new URLSearchParams(s);
-      if (p.get('demo') === '1') return true;
-      var c = p.get('chofer');
-      if (c && c.trim().toUpperCase() === 'DEMO') return true;
-      return false;
-  })(_paramsIni);
+  const _evalIni = evaluarParametrosURL(_paramsIni);
 
-  if (!_isDemoUrl && typeof firebase !== 'undefined' && firebase.initializeApp) {
+  // Solo se inicializa Firebase si los parámetros son válidos y NO es modo demo
+  if (_evalIni.valido && !_evalIni.esDemo && typeof firebase !== 'undefined' && firebase.initializeApp) {
       try {
           firebase.initializeApp(firebaseConfig);
           window.db = firebase.firestore();
@@ -6019,59 +6080,7 @@ function reiniciarDemo() {
     }
 }
 
-function evaluarParametrosURL(searchStr) {
-    if (!searchStr || typeof searchStr !== 'string') {
-        return { valido: true, esDemo: false, chofer: null, desde: null, motivo: null };
-    }
-    const cleanSearch = searchStr.startsWith('?') ? searchStr.slice(1) : searchStr;
-    if (!cleanSearch) {
-        return { valido: true, esDemo: false, chofer: null, desde: null, motivo: null };
-    }
-
-    const pairs = cleanSearch.split('&');
-    const counts = {};
-    for (const pair of pairs) {
-        const rawKey = pair.split('=')[0];
-        if (rawKey) {
-            const key = decodeURIComponent(rawKey);
-            counts[key] = (counts[key] || 0) + 1;
-            if (counts[key] > 1) {
-                return { valido: false, esDemo: false, chofer: null, desde: null, motivo: 'parametros_repetidos' };
-            }
-        }
-    }
-
-    const params = new URLSearchParams(cleanSearch);
-    const hasDemo = params.has('demo');
-    const hasChofer = params.has('chofer');
-    const demoVal = params.get('demo');
-    const choferVal = params.get('chofer');
-    const desdeVal = params.get('desde');
-
-    if (hasDemo && hasChofer) {
-        return { valido: false, esDemo: false, chofer: null, desde: null, motivo: 'combinacion_ambigua_demo_chofer' };
-    }
-
-    if (hasChofer && choferVal && choferVal.trim().toUpperCase() === 'DEMO') {
-        return { valido: true, esDemo: true, chofer: null, desde: desdeVal, motivo: 'enlace_antiguo_demo' };
-    }
-
-    if (hasDemo) {
-        if (demoVal === '1') {
-            return { valido: true, esDemo: true, chofer: null, desde: desdeVal, motivo: 'demo_valido' };
-        } else {
-            return { valido: false, esDemo: false, chofer: null, desde: null, motivo: 'demo_invalido' };
-        }
-    }
-
-    return {
-        valido: true,
-        esDemo: false,
-        chofer: choferVal ? choferVal.trim() : null,
-        desde: desdeVal ? desdeVal.trim() : null,
-        motivo: null
-    };
-}
+// evaluarParametrosURL se declara de forma unificada en el bloque de inicialización.
 
 function escapeHTML(str) {
     if (str == null) return '';
@@ -6319,7 +6328,7 @@ if (typeof window !== 'undefined') {
 document.addEventListener('DOMContentLoaded', () => {
     const rawSearch = (typeof window !== 'undefined' && window.location && window.location.search) ? window.location.search : '';
     const paramsEval = evaluarParametrosURL(rawSearch);
-    
+
     let sessionGuardada = null;
     try { sessionGuardada = JSON.parse(localStorage.getItem(CONFIG_PILOTO.SESSION_KEY)); } catch(e) {}
 
@@ -6531,20 +6540,20 @@ document.addEventListener('DOMContentLoaded', () => {
         cap.querySelector('#egSoloQRCerrar').addEventListener('click', cerrar);
         cap.addEventListener('click', e => { if (e.target === cap) cerrar(); });
     };
-    
+
     function haversine(lat1, lon1, lat2, lon2) {
-        const R = 6371; 
+        const R = 6371;
         const dLat = (lat2 - lat1) * Math.PI / 180;
         const dLon = (lon2 - lon1) * Math.PI / 180;
         const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
-        return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))); 
+        return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
     }
 
     const drawerBadge = document.querySelector('.pullup-badge');
     const drawerLabel = document.querySelector('.pullup-label');
     const sheetContent = document.querySelector('.sheet-content');
     window.loadedCampaigns = []; // Store them for radar
-    
+
     function actualizarRadar(userLat, userLng) {
         /* Salen TODOS los afiliados con ubicacion, ordenados del mas
            cercano al mas lejano. Los que estan dentro de 500 m se
@@ -6621,8 +6630,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // CARGAR CAMPAÑAS DINÁMICAS DESDE FIREBASE
     const mainFeed = document.querySelector('.immersive-feed');
-    
-    
+
+
     // ALGORITMO DE BARAJA INTELIGENTE (Max 15 Tarjetas)
     function renderDeck(deck) {
         if(!mainFeed) return;
@@ -6764,7 +6773,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const cajaId = e.target.getAttribute('data-cajaid');
                 const title = e.target.getAttribute('data-title');
                 let stock = parseInt(e.target.getAttribute('data-stock'));
-                
+
                 // ─────────────────────────────────────────────────────────
                 // CLICK UNICO: 1 celular = 1 click por promo por dia.
                 // Se guarda un registro con nombre fijo (promo + celular + fecha).
@@ -6808,12 +6817,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     alert('Lo sentimos, los cupones para esta promoción se han agotado por hoy.');
                     return;
                 }
-                
+
                 if (!cajaId || cajaId === 'undefined') {
                     alert('Este negocio aún no tiene activado el escáner QR en caja.');
                     return;
                 }
-                
+
                 mostrarCodigo(cid, cajaId, title);
             });
         });
@@ -6829,7 +6838,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function buildSmartDeck(userLat, userLng) {
         let allCamps = [...window.loadedCampaigns];
-        
+
         if (allCamps.length <= 15) {
             // Si hay menos de 15 en total, solo revuélvelas todas y muéstralas
             renderDeck(shuffleArray(allCamps));
@@ -6837,7 +6846,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         let finalDeck = [];
-        
+
         if (userLat && userLng) {
             // 1. Filtrar por cercanía (Los 10 más cercanos)
             allCamps.forEach(c => {
@@ -6848,17 +6857,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
             allCamps.sort((a, b) => a._dist - b._dist);
-            
+
             const closest = allCamps.slice(0, 10);
             const remaining = allCamps.slice(10);
             const randomFill = shuffleArray(remaining).slice(0, 5);
-            
+
             finalDeck = shuffleArray([...closest, ...randomFill]);
         } else {
             // Si no hay GPS, solo muestra 15 al azar
             finalDeck = shuffleArray(allCamps).slice(0, 15);
         }
-        
+
         renderDeck(finalDeck);
     }
 
@@ -6881,9 +6890,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!window.egSaleHoy(camp)) return;   /* hoy no le toca */
                 window.loadedCampaigns.push(camp);
             });
-            
+
             buildSmartDeck(null, null);
-            
+
             if ('geolocation' in navigator) {
                 navigator.geolocation.getCurrentPosition((pos) => {
                     window.egGpsAcc = pos.coords.accuracy;
@@ -6916,7 +6925,7 @@ document.addEventListener('DOMContentLoaded', () => {
            reglas se cerraron, esa escritura venia siendo rechazada en
            silencio. El escaneo real se cuenta abajo, una vez por
            celular, por chofer y por dia. */
-        
+
         if (puedeEscribirEnProduccion() && session && session.chofer !== 'orgánico') {
             if (!window.encaviDevId) {
                 var dv = null;
@@ -6954,7 +6963,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch(e) { console.error("Error Firebase:", e); }
 });
 
-    
+
 
 
     // 6-Card Mini Game Logic
@@ -7173,17 +7182,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const userIcon = L.divIcon({ className: 'custom-div-icon', html: "<div style='background:#3B82F6; width:15px; height:15px; border-radius:50%; border:2px solid white; box-shadow: 0 0 10px #3B82F6;'></div>", iconSize: [15, 15] });
 
     function openMap() {
-        
+
 
         document.getElementById('mapModal').style.display = 'flex';
-        
+
         if (!mapInstance) {
             mapInstance = L.map('map').setView([20.6534, -105.2253], 13);
             L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(mapInstance);
-            
+
             uMarker = L.marker([0, 0], {icon: userIcon}).bindPopup("Tu ubicación");
             plotCampaignsInicial();
         }
@@ -7194,7 +7203,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    
+
     let html5QrcodeScanner = null;
 
     function mostrarCodigo(campId, cajaId, title) {
@@ -7411,11 +7420,23 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        if (!puedeEscribirEnProduccion()) {
+        const esDemo = (window.__ENCAVI_ENTORNO__ === ENTORNOS.DEMO) || (ses && ses.origen === 'demo');
+
+        if (esDemo) {
+            // Modo DEMO: simulación con datos locales de ejemplo, 0 llamadas a Firestore
             if (isFinite(quedan) && quedan > 0) {
                 camp.stock = quedan - 1;
             }
             mostrarSuccess(title);
+            return;
+        }
+
+        // Modo Producción / Test:
+        // Si no hay base de datos o el guardián de producción no autoriza la escritura,
+        // detener el canje inmediatamente. NO mostrar éxito y NO reducir stock.
+        const targetDb = window.db || (typeof db !== 'undefined' ? db : null);
+        if (!targetDb || !puedeEscribirEnProduccion()) {
+            avisoQuema('No se pudo registrar tu cupón. Revisa tu conexión e inténtalo otra vez.');
             return;
         }
 
@@ -7433,11 +7454,13 @@ document.addEventListener('DOMContentLoaded', () => {
             acc:     ubi ? Math.round(ubi.acc) : null,
             dist_m:  dist,
             revisar: revisar,
-            fecha:   firebase.firestore.FieldValue.serverTimestamp()
+            fecha:   (typeof firebase !== 'undefined' && firebase.firestore && firebase.firestore.FieldValue)
+                ? firebase.firestore.FieldValue.serverTimestamp()
+                : new Date()
         };
 
         try {
-            await db.collection('tickets').doc(idTicket).set(datos);
+            await targetDb.collection('tickets').doc(idTicket).set(datos);
         } catch (error) {
             let aviso = 'No se pudo registrar tu cupón. Revisa tu conexión e inténtalo otra vez.';
             if (error && (error.code === 'already-exists' || error.code === 'permission-denied')) {
@@ -7460,12 +7483,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            await db.collection('campaigns').doc(campId).update({
-                stock: firebase.firestore.FieldValue.increment(-1)
+            await targetDb.collection('campaigns').doc(campId).update({
+                stock: (typeof firebase !== 'undefined' && firebase.firestore && firebase.firestore.FieldValue)
+                    ? firebase.firestore.FieldValue.increment(-1)
+                    : (quedan - 1)
             });
+            if (isFinite(quedan) && quedan > 0) {
+                camp.stock = quedan - 1;
+            }
         } catch (e) {
-            /* El cupon ya quedo registrado, que es lo que cuenta.
-               El inventario se corrige desde el panel si hace falta. */
             console.error('stock:', e);
         }
 
@@ -7537,21 +7563,43 @@ document.addEventListener('DOMContentLoaded', () => {
         cierre.textContent = opEstado.respetado
             ? 'Con esto ayudamos al negocio a mejorar para el siguiente cliente.'
             : 'Vamos a hablar con el negocio. Gracias por avisarnos.';
-        document.getElementById('opPaso2').style.display = 'none';
-        document.getElementById('opPaso3').style.display = 'block';
-        if (puedeEscribirEnProduccion()) {
-            try {
-                db.collection('opiniones').add({
-                    camp_id:    cupon.campId || null,
-                    negocio:    cupon.negocio || null,
-                    chofer:     (window.encaviSession && window.encaviSession.chofer) ? window.encaviSession.chofer : 'desconocido',
-                    respetado:  opEstado.respetado,
-                    estrellas:  opEstado.respetado ? opEstado.estrellas : 0,
-                    comentario: comentario,
-                    atendida:   false,
-                    fecha:      firebase.firestore.FieldValue.serverTimestamp()
-                }).catch(function(){});
-            } catch (e) {}
+
+        const ses = window.encaviSession;
+        const esDemo = (window.__ENCAVI_ENTORNO__ === ENTORNOS.DEMO) || (ses && ses.origen === 'demo');
+
+        if (esDemo) {
+            // En DEMO simula agradecimiento visual sin enviar a Firestore
+            document.getElementById('opPaso2').style.display = 'none';
+            document.getElementById('opPaso3').style.display = 'block';
+            return;
+        }
+
+        const targetDb = window.db || (typeof db !== 'undefined' ? db : null);
+        if (!targetDb || !puedeEscribirEnProduccion()) {
+            alert('No se pudo enviar tu opinión. Revisa tu conexión.');
+            return;
+        }
+
+        try {
+            targetDb.collection('opiniones').add({
+                camp_id:    cupon.campId || null,
+                negocio:    cupon.negocio || null,
+                chofer:     (ses && ses.chofer) ? ses.chofer : 'desconocido',
+                respetado:  opEstado.respetado,
+                estrellas:  opEstado.respetado ? opEstado.estrellas : 0,
+                comentario: comentario,
+                atendida:   false,
+                fecha:      (typeof firebase !== 'undefined' && firebase.firestore && firebase.firestore.FieldValue)
+                    ? firebase.firestore.FieldValue.serverTimestamp()
+                    : new Date()
+            }).then(function() {
+                document.getElementById('opPaso2').style.display = 'none';
+                document.getElementById('opPaso3').style.display = 'block';
+            }).catch(function(err) {
+                alert('No se pudo enviar tu opinión. Revisa tu conexión.');
+            });
+        } catch (e) {
+            alert('No se pudo enviar tu opinión. Revisa tu conexión.');
         }
     }
 

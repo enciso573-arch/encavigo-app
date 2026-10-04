@@ -1,24 +1,29 @@
-# EncaviGO — Informe de Implementación Bloque 2A
+# EncaviGO — Informe de Implementación Bloque 2A (Revisión Auditada)
 ## Entorno de Pruebas Aislado y Modo DEMO Seguro
 
-**Fecha:** 2026-10-03  
-**Proyecto:** EncaviGO  
-**Ruta:** `C:\Users\Enciso\Desktop\EncaviGO`  
-**Repositorio:** `https://github.com/enciso573-arch/encavigo-app`  
-**Rama de trabajo:** `antigravity/fase1-acceso-juego`  
-**Commit de partida:** `f72e968`  
-**Estado:** Verificado y aprobado localmente  
+**Fecha:** 2026-10-03
+**Proyecto:** EncaviGO
+**Ruta:** `C:\Users\Enciso\Desktop\EncaviGO`
+**Repositorio:** `https://github.com/enciso573-arch/encavigo-app`
+**Rama de trabajo:** `antigravity/fase1-acceso-juego`
+**Commit base:** `f72e968`
+**Commit inicial Bloque 2A:** `81db985`
+**Estado:** Verificado y aprobado localmente (44 de 44 pruebas asíncronas superadas)
 
 ---
 
-## 1. Resumen Ejecutivo
+## 1. Resumen Técnico
 
-En el Bloque 2A se implementó un aislamiento estricto e inquebrantable entre los entornos de **Producción**, **Demostración** y **Test**, garantizando que:
-1. La exploración y demostración del producto comercial mediante `?demo=1` o el enlace antiguo `?chofer=DEMO` no inicializa el cliente de Firebase, no realiza lecturas a Firestore y no envía ninguna escritura hacia la base de datos de producción.
-2. Las sesiones del Modo DEMO se gestionan en claves de almacenamiento completamente independientes (`encavigo_demo_session` y `encavigo_demo_played`), conservando intacta cualquier sesión QR real activa en el dispositivo.
-3. Se protegió centralmente la totalidad del inventario de escrituras (11 puntos en 8 colecciones) mediante la función guardián `puedeEscribirEnProduccion()`.
-4. Los enlaces comerciales en `negocios/index.html` fueron actualizados de `/?chofer=DEMO` a `/?demo=1`.
-5. Se amplió la suite automatizada `test_fase1.js` de 14 a 34 pruebas unitarias y de integración en memoria, cubriendo la matriz completa de abusos de parámetros, ciclo de vida DOM, simulación de canje y confirmando 0 escrituras hacia Firebase.
+En el Bloque 2A se implementó la separación técnica entre los entornos de **Producción**, **Demostración (DEMO)** y **Test**:
+
+1. **Aislamiento en DEMO:** El acceso mediante `?demo=1` o el enlace histórico `?chofer=DEMO` no inicializa el cliente de Firebase (`window.db = null`), no efectúa lecturas a Firestore y no envía escrituras a la base de datos de producción.
+2. **Aislamiento de almacenamiento:** Las sesiones de demostración operan en claves independientes (`encavigo_demo_session` y `encavigo_demo_played`). Las sesiones QR de producción (`encavigo_session` y `encavigo_played_<codigo>`) no se modifican, eliminan ni sobrescriben al interactuar con el modo DEMO.
+3. **Manejo diferenciado en canje y opinión:**
+   - En **DEMO**, el canje de cupón y el envío de opiniones simulan éxito visual local con datos de ejemplo en memoria, sin invocar servicios de red.
+   - En **Producción**, si Firebase no está disponible (`db = null`) o si la escritura en Firestore es rechazada por error de red o permisos, el flujo se detiene inmediatamente, emite un aviso de error claro al usuario, **no** muestra la pantalla de éxito y **no** descuenta stock de la campaña.
+4. **Manejo seguro de parámetros de URL:** `evaluarParametrosURL` captura posibles excepciones de decodificación (`URIError` ante secuencias percent-encoding inválidas como `?%ZZ=1`) retornando `valido: false, motivo: 'url_malformada'`, impidiendo el acceso sin interrumpir la ejecución.
+5. **Enlaces comerciales:** Se actualizaron las referencias en `negocios/index.html` de `/?chofer=DEMO` a `/?demo=1`.
+6. **Arnés de pruebas asíncrono:** `test_fase1.js` fue reestructurado como un ejecutor secuencial asíncrono que espera la resolución de cada prueba antes de registrar el resultado. En caso de aserción fallida, el proceso finaliza con código de salida 1. Se cubren 44 casos de prueba automatizados.
 
 ---
 
@@ -36,15 +41,15 @@ En el Bloque 2A se implementó un aislamiento estricto e inquebrantable entre lo
   * Si la sesión QR real sigue dentro de las 24 horas, se recupera con su código original, vehículo atribuido y estado de juego consumido.
   * Si la sesión QR real ya venció (> 24 h), se presenta la pantalla de sesión vencida.
   * Si el usuario nunca tuvo una sesión QR real previa, se presenta la pantalla que exige escanear el código QR en un transporte afiliado.
-* **Reinicio de DEMO (`reiniciarDemo()`):** Limpia exclusivamente `encavigo_demo_session` y `encavigo_demo_played`. Conserva intacta la sesión real en `encavigo_session`.
+* **Reinicio de DEMO (`reiniciarDemo()`):** Limpia exclusivamente `encavigo_demo_session` y `encavigo_demo_played`. Conserva intacta la sesión real en `encavigo_session` y redirige a `/?demo=1`.
 
 ---
 
 ## 3. Desactivación de Firebase en DEMO y Protección de Escrituras
 
 ### 3.1 Inicialización Condicional de Firebase
-Antes de ejecutar `firebase.initializeApp(firebaseConfig)` en `index.html`, se inspecciona la URL de acceso:
-* Si se detecta modo demostración (`?demo=1` o `?chofer=DEMO`), **no se inicializa el cliente de Firebase** y se establece `window.db = null`.
+Antes de ejecutar `firebase.initializeApp(firebaseConfig)` en `index.html`, el script de inicialización invoca `evaluarParametrosURL(window.location.search)`:
+* Si la URL corresponde a modo DEMO (`?demo=1`), enlace histórico (`?chofer=DEMO`), parámetros ambiguos o URL malformada, **no se ejecuta `firebase.initializeApp`** y se establece `window.db = null`.
 * No se crean listeners en tiempo real, consultas pendientes ni tareas en segundo plano que puedan disparar escrituras tras abandonar la pantalla.
 
 ### 3.2 Guardián Central de Escrituras (`puedeEscribirEnProduccion`)
@@ -66,21 +71,21 @@ function puedeEscribirEnProduccion() {
 
 ## 4. Inventario Completo de Escrituras Protegidas
 
-A continuación se detalla la protección aplicada en los 11 puntos de escritura en Firestore:
+Se auditó y protegió el inventario de 11 puntos de escritura en Firestore distribuidos en 8 colecciones:
 
 | # | Colección | Operación | Función / Punto de Código | Protección Aplicada |
 |---|---|---|---|---|
 | 1 | `calco_log` | `.set()` | `contarCalcomania` | Retorna de inmediato si `!puedeEscribirEnProduccion()`. |
 | 2 | `codigos` | `.update()` | `contarCalcomania` | No se ejecuta si no pasa el guardián de calcomanía. |
-| 3 | `interes` | `.set()` | Encuesta categoría vacía | Bloqueado con `if (puedeEscribirEnProduccion())`. |
+| 3 | `interes` | `.set()` | Encuesta categoría vacía (`.vacio-chip`) | Bloqueado con `if (puedeEscribirEnProduccion())`. |
 | 4 | `click_log` | `.set()` | Clic en reclamo (`.track-click`) | Bloqueado con `if (puedeEscribirEnProduccion())`. |
 | 5 | `stats` | `.update()` | Incremento de clicks globales | Bloqueado con `if (puedeEscribirEnProduccion())`. |
 | 6 | `choferes` | `.update()` | Clicks por chofer | Bloqueado con `if (puedeEscribirEnProduccion())`. |
 | 7 | `campaigns` | `.update()` | Clicks por campaña | Bloqueado con `if (puedeEscribirEnProduccion())`. |
-| 8 | `scan_log` | `.set()` | Registro de escaneo de chofer | Bloqueado con `if (puedeEscribirEnProduccion() ...)`. |
+| 8 | `scan_log` | `.set()` | Registro de escaneo de chofer | Bloqueado con `if (puedeEscribirEnProduccion())`. |
 | 9 | `premios` | `.set()` | Viaje gratis (`openGame`) | Bloqueado por `VIAJE_GRATIS_HABILITADO: false` y `puedeEscribirEnProduccion()`. |
-| 10 | `tickets` | `.set()` | Canje de cupón (`quemarCupon`) | En DEMO simula éxito visual y decrementa stock en memoria; 0 llamadas a Firestore. |
-| 11 | `opiniones` | `.add()` | Encuesta tras canje (`enviarOpinion`) | En DEMO muestra agradecimiento visual; 0 llamadas a Firestore. |
+| 10 | `tickets` | `.set()` | Canje de cupón (`quemarCupon`) | En DEMO simula éxito visual en memoria. En producción, si `!targetDb` o la escritura falla, detiene el flujo, emite alerta de error, no muestra éxito y no descuenta stock. |
+| 11 | `opiniones` | `.add()` | Encuesta tras canje (`enviarOpinion`) | En DEMO muestra agradecimiento visual en memoria. En producción, si `!targetDb` o la escritura falla, detiene el flujo, emite alerta y no avanza. |
 
 ---
 
@@ -92,13 +97,14 @@ La función `evaluarParametrosURL(searchStr)` analiza rigurosamente las cadenas 
 * `?demo=1&chofer=V-001` &rarr; Combinación ambigua. Rechazada con estado `SIN_ACCESO` (motivo: `combinacion_ambigua_demo_chofer`).
 * `?demo=1&demo=1` o `?chofer=V1&chofer=V2` &rarr; Parámetros repetidos. Rechazados con estado `SIN_ACCESO` (motivo: `parametros_repetidos`).
 * `?demo=0`, `?demo=false`, `?demo=otro`, `?demo=` &rarr; Parámetros DEMO inválidos. Rechazados con estado `SIN_ACCESO` (motivo: `demo_invalido`).
-* `?env=test` o claves en `localStorage` &rarr; Parámetros públicos sin efecto. El entorno de pruebas solo existe dentro del arnés local de ejecución simulada.
+* `%ZZ`, `%E0%A4%A` (secuencias UTF-8 truncadas o percent-encoding corrupto) &rarr; Capturado por bloque `try/catch`, retorna `valido: false, motivo: 'url_malformada'`.
+* `?env=test` o claves en `localStorage` &rarr; Parámetros públicos sin efecto de privilegios.
 
 ---
 
 ## 6. Campañas de Ejemplo para Demostración
 
-En modo DEMO se cargan 4 comercios locales simulados (`DEMO_CAMPAIGNS`), sin realizar peticiones a Firestore:
+En modo DEMO se cargan 4 comercios locales simulados (`DEMO_CAMPAIGNS`), sin peticiones a Firestore:
 1. **Fonda Doña Rosa** (Desayunos tradicionales · 15% OFF, stock: 20)
 2. **Tacos El Pastorcito** (Combo 5 tacos + agua · $85 MXN, stock: 15)
 3. **Café del Puerto** (Cafetería · 2x1 americano/capuccino, stock: 30)
@@ -114,14 +120,15 @@ Todas cuentan con coordenadas locales de Puerto Vallarta, categoría, badges y c
   * Fondo naranja `#EA580C`, texto blanco en negrita: `🧪 MODO DEMOSTRACIÓN · Datos de prueba`.
   * Botón interactivo: `Reiniciar Demo`.
 * **Botón Reiniciar Demo:**
-  * Invoca `reiniciarDemo()`, que limpia el almacenamiento local demo y refresca la vista.
+  * Invoca `reiniciarDemo()`, que limpia el almacenamiento local demo y redirige a `/?demo=1`.
   * No afecta la sesión real guardada.
 
 ---
 
 ## 8. Resultados de la Suite Automatizada (`test_fase1.js`)
 
-Se ejecutaron 34 pruebas automatizadas con salida limpia y 100% aprobadas:
+Se ejecutaron 44 pruebas automatizadas con el ejecutor asíncrono secuencial, resultando en 100% aprobadas:
+
 ```
 [PASS] Caso 1: Entrada directa sin sesión
 [PASS] Caso 2: Sesión QR nueva
@@ -151,14 +158,26 @@ Se ejecutaron 34 pruebas automatizadas con salida limpia y 100% aprobadas:
 [PASS] Caso 26: Carga de campañas DEMO (DEMO_CAMPAIGNS) locales sin lecturas a Firestore
 [PASS] Caso 27: Juego en DEMO - Simulación de rasca y registro en almacenamiento DEMO
 [PASS] Caso 28: Recarga en DEMO - Intento ya jugado bloquea segundo intento
-[PASS] Caso 29: Reinicio de DEMO (reiniciarDemo) - Limpia datos demo pero conserva sesión real
-[PASS] Caso 30: Cero escrituras a Firestore en todas las operaciones DEMO (MockFirestore)
-[PASS] Caso 31: Simulación de canje de cupón (quemarCupon) en DEMO sin escrituras en tickets ni campaigns
-[PASS] Caso 32: Simulación de opinión (enviarOpinion) en DEMO sin escrituras en opiniones
-[PASS] Caso 33: Enlaces en negocios/index.html actualizados a /?demo=1 (sin chofer=DEMO)
-[PASS] Caso 34: Comprobación de ciclo de vida DOM en modo DEMO y modo producción
+[PASS] Caso 29: Reinicio de DEMO real (reiniciarDemo) - Limpia datos demo pero conserva sesión real
+[PASS] Caso 30: Cero operaciones de Firebase en DEMO ejecutando acciones reales
+[PASS] Caso 31: Canje (quemarCupon) en DEMO simula éxito sin escrituras en Firestore
+[PASS] Caso 32: Canje en Producción con window.db = null no muestra éxito ni reduce stock
+[PASS] Caso 33: Canje en Producción con escritura rechazada no muestra éxito ni reduce stock
+[PASS] Caso 34: Canje en Producción con escritura permitida actualiza Firestore y muestra éxito
+[PASS] Caso 35: Opinión (enviarOpinion) en DEMO simula agradecimiento con cero escrituras
+[PASS] Caso 36: Opinión en Producción con db = null o rechazo alerta error y no avanza
+[PASS] Caso 37: Opinión en Producción con escritura exitosa avanza a agradecimiento
+[PASS] Caso 38: URL con codificación malformada o inválida manejada de forma segura
+[PASS] Caso 39: Script de inicialización de Firebase evaluado en los 7 escenarios de arranque
+[PASS] Caso 40: Dos instancias/pestañas compartiendo almacenamiento conservan aislamiento concurrente
+[PASS] Caso 41: Recorrido completo: QR real -> DEMO -> Juego -> Reinicio DEMO -> Salida a / -> QR real intacto
+[PASS] Caso 42: Manejo seguro de almacenamiento corrupto (JSON inválido en localStorage)
+[PASS] Caso 43: Enlaces en negocios/index.html actualizados a /?demo=1 (sin chofer=DEMO)
+[PASS] Caso 44: Comprobación de ciclo de vida DOM completo en modo DEMO y modo producción
 
-RESULTADO FINAL: 34 de 34 pruebas pasadas.
+---------------------------------------------------------------
+RESULTADO FINAL: 44 de 44 pruebas pasadas.
+---------------------------------------------------------------
 ```
 
 ---
@@ -166,22 +185,22 @@ RESULTADO FINAL: 34 de 34 pruebas pasadas.
 ## 9. Archivos Modificados
 
 1. `C:\Users\Enciso\Desktop\EncaviGO\index.html`:
-   * Inicialización condicional de Firebase.
-   * `ENTORNOS`, `CONFIG_PILOTO` con claves demo, `ESTADO_ACCESO.DEMO`.
-   * Campañas `DEMO_CAMPAIGNS`.
-   * Funciones `evaluarParametrosURL`, `puedeEscribirEnProduccion`, `mostrarBannerDemo`, `reiniciarDemo`.
-   * Modificación de flujo de entrada en `DOMContentLoaded`.
-   * Protección de los 11 puntos de escritura.
-   * Exposición de funciones en `window.EncaviCore`.
+   - Inicialización condicional de Firebase con evaluación de parámetros segura ante `URIError`.
+   - Distinción explícita de DEMO vs. fallos de producción en `quemarCupon` y `enviarOpinion`.
+   - Definición de constantes `ENTORNOS`, `CONFIG_PILOTO` (claves demo), `ESTADO_ACCESO.DEMO`.
+   - Campañas `DEMO_CAMPAIGNS`.
+   - Funciones `evaluarParametrosURL`, `puedeEscribirEnProduccion`, `mostrarBannerDemo`, `reiniciarDemo`.
+   - Protección en los 11 puntos de escritura.
+   - Exposición en `window.EncaviCore`.
 2. `C:\Users\Enciso\Desktop\EncaviGO\negocios\index.html`:
-   * Reemplazo de enlaces `/?chofer=DEMO` por `/?demo=1` en botón Hero (línea 639) y footer (línea 1111).
+   - Enlaces actualizados de `/?chofer=DEMO` a `/?demo=1`.
 3. `C:\Users\Enciso\Desktop\EncaviGO\test_fase1.js`:
-   * Ampliación del arnés a 34 pruebas automatizadas con `MockFirestore`.
+   - Ejecutor asíncrono secuencial con 44 pruebas completas y control de código de salida en fallo.
 4. `C:\Users\Enciso\Desktop\EncaviGO\ANTIGRAVITY-HANDOFF-FASE2A.md`:
-   * Este documento de entrega y auditoría técnica.
+   - Registro técnico del bloque auditado.
 
 ---
 
 ## 10. Declaración de Diagnóstico Final
 
-**Entorno DEMO aislado y aprobado para continuar pruebas**
+Entorno DEMO aislado y aprobado para continuar pruebas
