@@ -5863,28 +5863,215 @@ function cerrarSplash() {
     messagingSenderId: "1073579842188",
     appId: "1:1073579842188:web:0b415778424a7bce5639a9"
   };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
+  // En MODO DEMOSTRACIÓN no se inicializa el cliente de Firebase ni se conecta a producción
+  const _paramsIni = (typeof window !== 'undefined' && window.location && window.location.search)
+      ? window.location.search
+      : '';
+  const _isDemoUrl = (function(search) {
+      if (!search) return false;
+      var s = search.startsWith('?') ? search.slice(1) : search;
+      var p = new URLSearchParams(s);
+      if (p.get('demo') === '1') return true;
+      var c = p.get('chofer');
+      if (c && c.trim().toUpperCase() === 'DEMO') return true;
+      return false;
+  })(_paramsIni);
+
+  if (!_isDemoUrl && typeof firebase !== 'undefined' && firebase.initializeApp) {
+      try {
+          firebase.initializeApp(firebaseConfig);
+          window.db = firebase.firestore();
+      } catch (e) {
+          console.warn('Firebase no inicializado:', e);
+          window.db = null;
+      }
+  } else {
+      window.db = null;
+  }
+  var db = window.db;
 </script>
 <script>
 // ============================================================================
-// CONFIGURACIÓN PILOTO Y FUNCIONES DE CONTROL (Fase 1)
+// CONFIGURACIÓN PILOTO Y FUNCIONES DE CONTROL (Fase 1 & Fase 2A)
 // ============================================================================
+const ENTORNOS = {
+    PRODUCCION: 'production',
+    DEMO: 'demo',
+    TEST: 'test'
+};
+
 const CONFIG_PILOTO = {
-    // Control maestro del viaje gratis.
-    // Durante el piloto permanece desactivado (false), probabilidad efectiva 0%.
-    // Para reactivarlo en el futuro cuando se definan presupuesto y adjudicación:
-    // cambiar VIAJE_GRATIS_HABILITADO a true.
     VIAJE_GRATIS_HABILITADO: false,
     SESSION_HOURS: 24,
-    SESSION_KEY: 'encavigo_session'
+    SESSION_KEY: 'encavigo_session',
+    DEMO_SESSION_KEY: 'encavigo_demo_session',
+    DEMO_PLAYED_KEY: 'encavigo_demo_played'
 };
 
 const ESTADO_ACCESO = {
     ACTIVA: 'ACTIVA',
+    DEMO: 'DEMO',
     SIN_ACCESO: 'SIN_ACCESO',
     VENCIDA: 'VENCIDA'
 };
+
+const DEMO_CAMPAIGNS = [
+    {
+        id: 'demo-fonda-rosa',
+        title: 'Fonda Doña Rosa',
+        desc: '15% de descuento en desayunos tradicionales presentando este cupón.',
+        badge: 'DESAYUNOS · 15% OFF',
+        stock: 20,
+        caja_id: 'CAJA-DEMO-01',
+        active: true,
+        categoria: 'comida',
+        img: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&auto=format&fit=crop&q=80',
+        lat: '20.6534',
+        lng: '-105.2253'
+    },
+    {
+        id: 'demo-pastorcito',
+        title: 'Tacos El Pastorcito',
+        desc: 'Orden de 5 tacos al pastor + agua fresca por $85 MXN.',
+        badge: 'TACOS · COMBO $85',
+        stock: 15,
+        caja_id: 'CAJA-DEMO-02',
+        active: true,
+        categoria: 'comida',
+        img: 'https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?w=600&auto=format&fit=crop&q=80',
+        lat: '20.6480',
+        lng: '-105.2290'
+    },
+    {
+        id: 'demo-cafe-puerto',
+        title: 'Café del Puerto',
+        desc: '2x1 en café americano o capuccino de 8am a 12pm.',
+        badge: 'CAFETERÍA · 2x1',
+        stock: 30,
+        caja_id: 'CAJA-DEMO-03',
+        active: true,
+        categoria: 'cafeteria',
+        img: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=600&auto=format&fit=crop&q=80',
+        lat: '20.6601',
+        lng: '-105.2312'
+    },
+    {
+        id: 'demo-lavado-marino',
+        title: 'Autolavado Marino',
+        desc: 'Lavado exterior gratis en la compra de encerado premium.',
+        badge: 'SERVICIOS · LAVADO GRATIS',
+        stock: 10,
+        caja_id: 'CAJA-DEMO-04',
+        active: true,
+        categoria: 'servicios',
+        img: 'https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?w=600&auto=format&fit=crop&q=80',
+        lat: '20.6415',
+        lng: '-105.2180'
+    }
+];
+
+function puedeEscribirEnProduccion() {
+    if (typeof window === 'undefined') return false;
+    if (window.__ENCAVI_ENTORNO__ !== ENTORNOS.PRODUCCION) return false;
+    if (!window.encaviSession || typeof window.encaviSession !== 'object') return false;
+    if (window.encaviSession.origen !== 'qr') return false;
+    if (!window.encaviSession.chofer || window.encaviSession.chofer === 'orgánico' || String(window.encaviSession.chofer).toUpperCase() === 'DEMO') return false;
+    if (window.encaviSession.caducada) return false;
+    if (!window.db) return false;
+    return true;
+}
+
+function mostrarBannerDemo() {
+    if (typeof document === 'undefined') return;
+    if (document.getElementById('egDemoBanner')) return;
+    const banner = document.createElement('div');
+    banner.id = 'egDemoBanner';
+    banner.style.cssText = 'position:fixed; top:0; left:0; right:0; z-index:10000; background:#EA580C; color:#FFFFFF; padding:8px 14px; display:flex; align-items:center; justify-content:space-between; font-size:12px; font-weight:700; box-shadow:0 2px 10px rgba(0,0,0,0.35); font-family:var(--font, -apple-system, sans-serif);';
+    banner.innerHTML = `
+        <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:15px;">🧪</span>
+            <span>MODO DEMOSTRACIÓN · Datos de prueba</span>
+        </div>
+        <button id="btnReiniciarDemo" type="button" style="background:#FFFFFF; color:#C2410C; border:none; padding:4px 10px; border-radius:999px; font-size:11px; font-weight:800; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,0.2);">
+            Reiniciar Demo
+        </button>
+    `;
+    if (document.body) {
+        document.body.prepend(banner);
+        const btn = document.getElementById('btnReiniciarDemo');
+        if (btn) {
+            btn.addEventListener('click', () => {
+                reiniciarDemo();
+            });
+        }
+    }
+}
+
+function reiniciarDemo() {
+    try {
+        if (typeof localStorage !== 'undefined') {
+            localStorage.removeItem(CONFIG_PILOTO.DEMO_SESSION_KEY);
+            localStorage.removeItem(CONFIG_PILOTO.DEMO_PLAYED_KEY);
+        }
+    } catch(e) {}
+    if (typeof window !== 'undefined' && window.location) {
+        window.location.href = (window.location.pathname || '/') + '?demo=1';
+    }
+}
+
+function evaluarParametrosURL(searchStr) {
+    if (!searchStr || typeof searchStr !== 'string') {
+        return { valido: true, esDemo: false, chofer: null, desde: null, motivo: null };
+    }
+    const cleanSearch = searchStr.startsWith('?') ? searchStr.slice(1) : searchStr;
+    if (!cleanSearch) {
+        return { valido: true, esDemo: false, chofer: null, desde: null, motivo: null };
+    }
+
+    const pairs = cleanSearch.split('&');
+    const counts = {};
+    for (const pair of pairs) {
+        const rawKey = pair.split('=')[0];
+        if (rawKey) {
+            const key = decodeURIComponent(rawKey);
+            counts[key] = (counts[key] || 0) + 1;
+            if (counts[key] > 1) {
+                return { valido: false, esDemo: false, chofer: null, desde: null, motivo: 'parametros_repetidos' };
+            }
+        }
+    }
+
+    const params = new URLSearchParams(cleanSearch);
+    const hasDemo = params.has('demo');
+    const hasChofer = params.has('chofer');
+    const demoVal = params.get('demo');
+    const choferVal = params.get('chofer');
+    const desdeVal = params.get('desde');
+
+    if (hasDemo && hasChofer) {
+        return { valido: false, esDemo: false, chofer: null, desde: null, motivo: 'combinacion_ambigua_demo_chofer' };
+    }
+
+    if (hasChofer && choferVal && choferVal.trim().toUpperCase() === 'DEMO') {
+        return { valido: true, esDemo: true, chofer: null, desde: desdeVal, motivo: 'enlace_antiguo_demo' };
+    }
+
+    if (hasDemo) {
+        if (demoVal === '1') {
+            return { valido: true, esDemo: true, chofer: null, desde: desdeVal, motivo: 'demo_valido' };
+        } else {
+            return { valido: false, esDemo: false, chofer: null, desde: null, motivo: 'demo_invalido' };
+        }
+    }
+
+    return {
+        valido: true,
+        esDemo: false,
+        chofer: choferVal ? choferVal.trim() : null,
+        desde: desdeVal ? desdeVal.trim() : null,
+        motivo: null
+    };
+}
 
 function escapeHTML(str) {
     if (str == null) return '';
@@ -5896,33 +6083,86 @@ function escapeHTML(str) {
         .replace(/'/g, '&#039;');
 }
 
-function evaluarEstadoAcceso({ session, paramChofer, now = Date.now(), sessionHours = 24 }) {
-    const choferNuevo = (typeof paramChofer === 'string') ? paramChofer.trim() : '';
-    const qrNuevoValido = choferNuevo !== '' && choferNuevo !== 'orgánico';
+function evaluarEstadoAcceso({
+    session,
+    paramChofer,
+    searchStr,
+    demoSession,
+    now = Date.now(),
+    sessionHours = 24
+}) {
+    let paramsEval = null;
+    if (typeof searchStr === 'string') {
+        paramsEval = evaluarParametrosURL(searchStr);
+    } else if (typeof paramChofer === 'string' && paramChofer.startsWith('?')) {
+        paramsEval = evaluarParametrosURL(paramChofer);
+    } else if (paramChofer !== undefined) {
+        const cVal = (typeof paramChofer === 'string') ? paramChofer.trim() : '';
+        if (cVal.toUpperCase() === 'DEMO') {
+            paramsEval = { valido: true, esDemo: true, chofer: null, desde: null, motivo: 'enlace_antiguo_demo' };
+        } else {
+            paramsEval = { valido: true, esDemo: false, chofer: cVal || null, desde: null, motivo: null };
+        }
+    } else {
+        paramsEval = { valido: true, esDemo: false, chofer: null, desde: null, motivo: null };
+    }
+
+    if (!paramsEval.valido) {
+        return {
+            estado: ESTADO_ACCESO.SIN_ACCESO,
+            motivo: paramsEval.motivo || 'parametros_invalidos'
+        };
+    }
+
+    if (paramsEval.esDemo) {
+        const hayDemoSession = !!demoSession && typeof demoSession === 'object';
+        const demoTs = hayDemoSession ? Number(demoSession.timestamp) : NaN;
+        const demoTsValido = !!demoTs && !isNaN(demoTs);
+        const demoDiffHours = demoTsValido ? (now - demoTs) / (1000 * 60 * 60) : null;
+        const demoActiva = hayDemoSession && demoSession.origen === 'demo' && !demoSession.caducada && demoTsValido && demoDiffHours <= sessionHours;
+
+        if (demoActiva) {
+            return {
+                estado: ESTADO_ACCESO.DEMO,
+                esNueva: false,
+                session: demoSession,
+                entorno: ENTORNOS.DEMO
+            };
+        }
+
+        return {
+            estado: ESTADO_ACCESO.DEMO,
+            esNueva: true,
+            chofer: 'DEMO',
+            entorno: ENTORNOS.DEMO
+        };
+    }
+
+    const choferNuevo = paramsEval.chofer || '';
+    const qrNuevoValido = choferNuevo !== '' && choferNuevo !== 'orgánico' && choferNuevo.toUpperCase() !== 'DEMO';
     const haySesion = !!session && typeof session === 'object';
-    const esDeQR = haySesion && session.origen === 'qr' && session.chofer && session.chofer !== 'orgánico';
+    const esDeQR = haySesion && session.origen === 'qr' && session.chofer && session.chofer !== 'orgánico' && String(session.chofer).toUpperCase() !== 'DEMO';
     const timestamp = haySesion ? Number(session.timestamp) : NaN;
     const timestampValido = !!timestamp && !isNaN(timestamp);
     const diffHours = timestampValido ? (now - timestamp) / (1000 * 60 * 60) : null;
     const sesionActiva = esDeQR && !session.caducada && timestampValido && diffHours <= sessionHours;
 
-    // Una sesión QR vigente siempre se conserva. Reabrir el mismo QR o
-    // escanear otro no renueva las 24 horas, el código ni el intento de juego.
     if (sesionActiva) {
         return {
             estado: ESTADO_ACCESO.ACTIVA,
             esNueva: false,
             session: session,
-            qrReescaneado: qrNuevoValido
+            qrReescaneado: qrNuevoValido,
+            entorno: ENTORNOS.PRODUCCION
         };
     }
 
-    // Solo un QR nuevo puede iniciar otra sesión cuando no existe una vigente.
     if (qrNuevoValido) {
         return {
             estado: ESTADO_ACCESO.ACTIVA,
             esNueva: true,
-            chofer: choferNuevo
+            chofer: choferNuevo,
+            entorno: ENTORNOS.PRODUCCION
         };
     }
 
@@ -5956,14 +6196,16 @@ function evaluarEstadoAcceso({ session, paramChofer, now = Date.now(), sessionHo
 
 function puedeJugarSesion(session, storage = (typeof localStorage !== 'undefined' ? localStorage : null), now = Date.now()) {
     if (!session || typeof session !== 'object' || !session.code) return false;
-    if (session.caducada || session.origen !== 'qr') return false;
+    if (session.caducada) return false;
+    if (session.origen !== 'qr' && session.origen !== 'demo') return false;
     if (session.juegoJugado === true) return false;
     const ts = Number(session.timestamp);
     if (!ts || isNaN(ts)) return false;
     if ((now - ts) / (1000 * 60 * 60) > CONFIG_PILOTO.SESSION_HOURS) return false;
     if (storage) {
         try {
-            if (storage.getItem('encavigo_played_' + session.code) === 'true') return false;
+            const playedKey = session.origen === 'demo' ? CONFIG_PILOTO.DEMO_PLAYED_KEY : ('encavigo_played_' + session.code);
+            if (storage.getItem(playedKey) === 'true') return false;
         } catch(e) {}
     }
     return true;
@@ -5974,8 +6216,10 @@ function registrarIntentoJuego(session, storage = (typeof localStorage !== 'unde
     session.juegoJugado = true;
     if (storage) {
         try {
-            storage.setItem(CONFIG_PILOTO.SESSION_KEY, JSON.stringify(session));
-            storage.setItem('encavigo_played_' + session.code, 'true');
+            const sessionKey = session.origen === 'demo' ? CONFIG_PILOTO.DEMO_SESSION_KEY : CONFIG_PILOTO.SESSION_KEY;
+            const playedKey = session.origen === 'demo' ? CONFIG_PILOTO.DEMO_PLAYED_KEY : ('encavigo_played_' + session.code);
+            storage.setItem(sessionKey, JSON.stringify(session));
+            storage.setItem(playedKey, 'true');
         } catch(e) {}
     }
 }
@@ -6055,28 +6299,38 @@ function mostrarPantallaBloqueo(tipo) {
 
 if (typeof window !== 'undefined') {
     window.EncaviCore = {
+        ENTORNOS,
         CONFIG_PILOTO,
         ESTADO_ACCESO,
+        DEMO_CAMPAIGNS,
         escapeHTML,
+        evaluarParametrosURL,
         evaluarEstadoAcceso,
+        puedeEscribirEnProduccion,
         puedeJugarSesion,
         registrarIntentoJuego,
         esCampanaVigente,
-        mostrarPantallaBloqueo
+        mostrarPantallaBloqueo,
+        mostrarBannerDemo,
+        reiniciarDemo
     };
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const paramChofer = urlParams.get('chofer');
-    const paramDesde  = urlParams.get('desde');   /* calcomania de afuera del negocio */
+    const rawSearch = (typeof window !== 'undefined' && window.location && window.location.search) ? window.location.search : '';
+    const paramsEval = evaluarParametrosURL(rawSearch);
+    
     let sessionGuardada = null;
     try { sessionGuardada = JSON.parse(localStorage.getItem(CONFIG_PILOTO.SESSION_KEY)); } catch(e) {}
-    
+
+    let demoSessionGuardada = null;
+    try { demoSessionGuardada = JSON.parse(localStorage.getItem(CONFIG_PILOTO.DEMO_SESSION_KEY)); } catch(e) {}
+
     const now = Date.now();
     const evaluacion = evaluarEstadoAcceso({
         session: sessionGuardada,
-        paramChofer: paramChofer,
+        demoSession: demoSessionGuardada,
+        searchStr: rawSearch,
         now: now,
         sessionHours: CONFIG_PILOTO.SESSION_HOURS
     });
@@ -6097,40 +6351,73 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
+    // ── MODO DEMOSTRACIÓN ──
     let session = null;
-    if (evaluacion.esNueva) {
-        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-        let uniqueCode = 'ENC-';
-        for(let i=0; i<4; i++) uniqueCode += chars.charAt(Math.floor(Math.random() * chars.length));
-        session = {
-            timestamp: now,
-            code: uniqueCode,
-            chofer: evaluacion.chofer,
-            origen: 'qr',
-            desde: paramDesde || null,
-            juegoJugado: false
-        };
-        try { localStorage.setItem(CONFIG_PILOTO.SESSION_KEY, JSON.stringify(session)); } catch(e) {}
+    if (evaluacion.estado === ESTADO_ACCESO.DEMO) {
+        window.__ENCAVI_ENTORNO__ = ENTORNOS.DEMO;
+        let sessionDemo = null;
+        if (evaluacion.esNueva || !demoSessionGuardada) {
+            sessionDemo = {
+                timestamp: now,
+                code: 'DEMO-001',
+                chofer: 'DEMO',
+                origen: 'demo',
+                desde: null,
+                juegoJugado: false
+            };
+            try { localStorage.setItem(CONFIG_PILOTO.DEMO_SESSION_KEY, JSON.stringify(sessionDemo)); } catch(e) {}
+        } else {
+            sessionDemo = evaluacion.session;
+        }
+
+        session = sessionDemo;
+        window.encaviSession = sessionDemo;
+
+        try {
+            if (rawSearch && rawSearch !== '?demo=1') {
+                window.history.replaceState({}, document.title, window.location.pathname + '?demo=1');
+            }
+        } catch(e) {}
+
+        mostrarBannerDemo();
     } else {
-        session = evaluacion.session;
-    }
+        // ── PRODUCCIÓN (QR Real) ──
+        window.__ENCAVI_ENTORNO__ = ENTORNOS.PRODUCCION;
+        if (evaluacion.esNueva) {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let uniqueCode = 'ENC-';
+            for(let i=0; i<4; i++) uniqueCode += chars.charAt(Math.floor(Math.random() * chars.length));
+            session = {
+                timestamp: now,
+                code: uniqueCode,
+                chofer: evaluacion.chofer,
+                origen: 'qr',
+                desde: paramsEval.desde || null,
+                juegoJugado: false
+            };
+            try { localStorage.setItem(CONFIG_PILOTO.SESSION_KEY, JSON.stringify(session)); } catch(e) {}
+        } else {
+            session = evaluacion.session;
+        }
 
-    // Quitar el identificador de la barra tanto al crear como al reabrir una sesión.
-    if (paramChofer) {
-        try { window.history.replaceState({}, document.title, window.location.pathname); } catch(e) {}
-    }
+        // Quitar el identificador de la barra tanto al crear como al reabrir una sesión.
+        if (paramsEval.chofer) {
+            try { window.history.replaceState({}, document.title, window.location.pathname); } catch(e) {}
+        }
 
-    if (paramDesde && session) {
-        session.desde = paramDesde;
-        try { localStorage.setItem(CONFIG_PILOTO.SESSION_KEY, JSON.stringify(session)); } catch(e) {}
-    }
+        if (paramsEval.desde && session) {
+            session.desde = paramsEval.desde;
+            try { localStorage.setItem(CONFIG_PILOTO.SESSION_KEY, JSON.stringify(session)); } catch(e) {}
+        }
 
-    window.encaviSession = session;
+        window.encaviSession = session;
+    }
 
     /* ── La calcomania de afuera del negocio ── */
     (function contarCalcomania() {
-        const cod = paramDesde;
+        const cod = paramsEval.desde;
         if (!cod) return;
+        if (!puedeEscribirEnProduccion()) return;
 
         let dev = null;
         try { dev = localStorage.getItem('encavi_dev_id'); } catch(e) {}
@@ -6155,11 +6442,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /* ¿A este vehículo todavía le queda el viaje gratis de hoy? */
     (function revisarPremioDelDia() {
-        if (!CONFIG_PILOTO.VIAJE_GRATIS_HABILITADO) {
+        if (!CONFIG_PILOTO.VIAJE_GRATIS_HABILITADO || !puedeEscribirEnProduccion()) {
             window.egPremioLibre = false;
             return;
         }
-        const cod = session.chofer;
+        const cod = (session && session.chofer) ? session.chofer : null;
         if (!cod || cod === 'orgánico') { window.egPremioLibre = false; return; }
         const hoy = new Date().toISOString().slice(0, 10);
         db.collection('premios').doc(cod + '_' + hoy).get()
@@ -6168,7 +6455,8 @@ document.addEventListener('DOMContentLoaded', () => {
     })();
 
     (function comprobarCodigoDelVehiculo() {
-        const cod = session.chofer;
+        if (!puedeEscribirEnProduccion()) return;
+        const cod = (session && session.chofer) ? session.chofer : null;
         if (!cod || cod === 'orgánico') return;
 
         /* Se consulta la lista de bajas, no el libro de códigos.
@@ -6198,6 +6486,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.egSesionConQR = function () {
         const s = window.encaviSession;
         if (!s) return false;
+        if (s.origen === 'demo') return true;
         if (s.origen) return s.origen === 'qr';
         return !!(s.chofer && s.chofer !== 'orgánico');
     };
@@ -6426,10 +6715,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 const hoy = new Date().toISOString().slice(0, 10);
 
-                db.collection('interes').doc(dev + '_' + hoy).set({
-                  giro: giro, dev: dev,
-                  fecha: firebase.firestore.FieldValue.serverTimestamp()
-                }).catch(function () { /* ya contestó hoy */ });
+                if (puedeEscribirEnProduccion()) {
+                  db.collection('interes').doc(dev + '_' + hoy).set({
+                    giro: giro, dev: dev,
+                    fecha: firebase.firestore.FieldValue.serverTimestamp()
+                  }).catch(function () { /* ya contestó hoy */ });
+                }
 
                 setTimeout(function () {
                   const caja = document.getElementById('vacioEncuesta');
@@ -6494,22 +6785,23 @@ document.addEventListener('DOMContentLoaded', () => {
                     var hoy = new Date().toISOString().slice(0, 10);
                     var huella = (cid || 'sin-promo') + '_' + window.encaviDevId + '_' + hoy;
 
-                    db.collection('click_log').doc(huella).set({
-                        camp_id: cid || null,
-                        chofer: (session && session.chofer) ? session.chofer : 'orgánico',
-                        fecha: firebase.firestore.FieldValue.serverTimestamp()
-                    }).then(function () {
-                        // Primer click de este celular a esta promo hoy: SI cuenta.
-                        db.collection('stats').doc('global').update({ clicks: firebase.firestore.FieldValue.increment(1) });
-                        if (session && session.chofer !== 'orgánico') {
-                            db.collection('choferes').doc(session.chofer).update({ clicks: firebase.firestore.FieldValue.increment(1) });
-                        }
-                        if (cid) {
-                            db.collection('campaigns').doc(cid).update({ clicks: firebase.firestore.FieldValue.increment(1) });
-                        }
-                    }).catch(function () {
-                        // Click repetido del mismo celular: se ignora a proposito.
-                    });
+                    if (puedeEscribirEnProduccion()) {
+                        db.collection('click_log').doc(huella).set({
+                            camp_id: cid || null,
+                            chofer: (session && session.chofer) ? session.chofer : 'orgánico',
+                            fecha: firebase.firestore.FieldValue.serverTimestamp()
+                        }).then(function () {
+                            db.collection('stats').doc('global').update({ clicks: firebase.firestore.FieldValue.increment(1) });
+                            if (session && session.chofer !== 'orgánico') {
+                                db.collection('choferes').doc(session.chofer).update({ clicks: firebase.firestore.FieldValue.increment(1) });
+                            }
+                            if (cid) {
+                                db.collection('campaigns').doc(cid).update({ clicks: firebase.firestore.FieldValue.increment(1) });
+                            }
+                        }).catch(function () {
+                            // Click repetido del mismo celular: se ignora a proposito.
+                        });
+                    }
                 } catch(err) { console.error(err); }
 
                 if (stock <= 0) {
@@ -6578,28 +6870,29 @@ document.addEventListener('DOMContentLoaded', () => {
         return esCampanaVigente(camp, now);
     };
 
-    db.collection('campaigns').where('active', '==', true).get().then(snapshot => {
-        snapshot.forEach(doc => {
-            const camp = doc.data();
-            camp.id = doc.id;
-            if (!window.egSaleHoy(camp)) return;   /* hoy no le toca */
-            window.loadedCampaigns.push(camp);
-        });
-        
-        // Renderizar inicial (Al azar, 15 max)
+    if (window.__ENCAVI_ENTORNO__ === ENTORNOS.DEMO) {
+        window.loadedCampaigns = [...DEMO_CAMPAIGNS];
         buildSmartDeck(null, null);
-        
-        // Intentar obtener GPS de inmediato sin esperar clic
-        if ('geolocation' in navigator) {
-            navigator.geolocation.getCurrentPosition((pos) => {
-                // Si da permiso, reconstruimos la baraja usando el GPS!
-                window.egGpsAcc = pos.coords.accuracy;
-                buildSmartDeck(pos.coords.latitude, pos.coords.longitude);
-                actualizarRadar(pos.coords.latitude, pos.coords.longitude); // Actualizar burbuja inferior
-            }, (err) => console.log("GPS no autorizado de inicio"), { enableHighAccuracy: true });
-        }
-
-    }).catch(e => console.error("Error loading campaigns:", e));
+    } else if (window.db) {
+        window.db.collection('campaigns').where('active', '==', true).get().then(snapshot => {
+            snapshot.forEach(doc => {
+                const camp = doc.data();
+                camp.id = doc.id;
+                if (!window.egSaleHoy(camp)) return;   /* hoy no le toca */
+                window.loadedCampaigns.push(camp);
+            });
+            
+            buildSmartDeck(null, null);
+            
+            if ('geolocation' in navigator) {
+                navigator.geolocation.getCurrentPosition((pos) => {
+                    window.egGpsAcc = pos.coords.accuracy;
+                    buildSmartDeck(pos.coords.latitude, pos.coords.longitude);
+                    actualizarRadar(pos.coords.latitude, pos.coords.longitude);
+                }, (err) => console.log("GPS no autorizado de inicio"), { enableHighAccuracy: true });
+            }
+        }).catch(e => console.error("Error loading campaigns:", e));
+    }
 
 
     let gpsRequested = false;
@@ -6624,10 +6917,7 @@ document.addEventListener('DOMContentLoaded', () => {
            silencio. El escaneo real se cuenta abajo, una vez por
            celular, por chofer y por dia. */
         
-        if (session && session.chofer !== 'orgánico') {
-            /* Mismo candado que los clicks: un escaneo por celular,
-               por chofer, por dia. Antes subia cada vez que se abria
-               la app, asi que el mismo pasajero contaba de mas. */
+        if (puedeEscribirEnProduccion() && session && session.chofer !== 'orgánico') {
             if (!window.encaviDevId) {
                 var dv = null;
                 try { dv = localStorage.getItem('encavi_dev_id'); } catch(e) {}
@@ -6645,18 +6935,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 chofer: session.chofer,
                 fecha: firebase.firestore.FieldValue.serverTimestamp()
             }).then(() => {
-                /* Primera vez de este celular con este chofer hoy: si cuenta.
-                   Se suma tambien al registro de codigos, que es donde
-                   llevas el control del acrilico fisico. */
                 db.collection('codigos').doc(session.chofer).update({
                     escaneos: firebase.firestore.FieldValue.increment(1)
-                }).catch(function () { /* codigo aun sin registrar */ });
+                }).catch(function () {});
 
                 chofRef.get().then(doc => {
                     if (doc.exists) {
-                        /* lastActive tambien se refresca: antes solo se
-                           escribia al dar de alta al chofer, asi que
-                           marcaba su primer dia, no el ultimo. */
                         chofRef.update({
                             scans: firebase.firestore.FieldValue.increment(1),
                             lastActive: new Date()
@@ -6665,9 +6949,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         chofRef.set({ scans: 1, clicks: 0, lastActive: new Date() });
                     }
                 });
-            }).catch(() => {
-                /* Escaneo repetido del mismo celular: se ignora a proposito. */
-            });
+            }).catch(() => {});
         }
     } catch(e) { console.error("Error Firebase:", e); }
 });
@@ -6743,11 +7025,13 @@ document.addEventListener('DOMContentLoaded', () => {
             isJackpot = true;
             window.egPremioLibre = false;
             const hoyP = new Date().toISOString().slice(0, 10);
-            db.collection('premios').doc(chofer + '_' + hoyP).set({
-                chofer: chofer,
-                dev: window.encaviDevId || 'sin-id',
-                fecha: firebase.firestore.FieldValue.serverTimestamp()
-            }).catch(function () {});
+            if (puedeEscribirEnProduccion()) {
+                db.collection('premios').doc(chofer + '_' + hoyP).set({
+                    chofer: chofer,
+                    dev: window.encaviDevId || 'sin-id',
+                    fecha: firebase.firestore.FieldValue.serverTimestamp()
+                }).catch(function () {});
+            }
 
             sequence = [logoImg, logoImg, logoImg];
             winData = {
@@ -6921,15 +7205,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         document.getElementById('codigoModal').style.display = 'flex';
         document.getElementById('codigoNegocio').innerText = title;
-        let _s = null;
-        try { _s = JSON.parse(localStorage.getItem('encavigo_session')); } catch(e) {}
+        let _s = window.encaviSession;
+        if (!_s) {
+            try { _s = JSON.parse(localStorage.getItem(CONFIG_PILOTO.SESSION_KEY)); } catch(e) {}
+        }
         let codigoMostrar = (_s && _s.code) ? _s.code : null;
         if (!codigoMostrar) {
             const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
             let k = 'ENC-';
             for (let i = 0; i < 4; i++) k += chars[Math.floor(Math.random() * chars.length)];
             codigoMostrar = k;
-            if (_s) { _s.code = k; localStorage.setItem('encavigo_session', JSON.stringify(_s)); }
+            if (_s) {
+                _s.code = k;
+                const sKey = _s.origen === 'demo' ? CONFIG_PILOTO.DEMO_SESSION_KEY : CONFIG_PILOTO.SESSION_KEY;
+                try { localStorage.setItem(sKey, JSON.stringify(_s)); } catch(e) {}
+            }
         }
         document.getElementById('codigoTexto').innerText = codigoMostrar;
         document.getElementById('btnEscanearCaja').onclick = function() {
@@ -7121,6 +7411,14 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
+        if (!puedeEscribirEnProduccion()) {
+            if (isFinite(quedan) && quedan > 0) {
+                camp.stock = quedan - 1;
+            }
+            mostrarSuccess(title);
+            return;
+        }
+
         /* ── El registro, con nombre fijo ── */
         const idTicket = negocio + '_' + ses.code;
         const datos = {
@@ -7139,9 +7437,6 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         try {
-            /* Primero el cupon, que es lo que puede fallar. El inventario
-               se descuenta despues, para no restarle existencias al
-               negocio por un intento repetido. */
             await db.collection('tickets').doc(idTicket).set(datos);
         } catch (error) {
             let aviso = 'No se pudo registrar tu cupón. Revisa tu conexión e inténtalo otra vez.';
@@ -7244,18 +7539,20 @@ document.addEventListener('DOMContentLoaded', () => {
             : 'Vamos a hablar con el negocio. Gracias por avisarnos.';
         document.getElementById('opPaso2').style.display = 'none';
         document.getElementById('opPaso3').style.display = 'block';
-        try {
-            db.collection('opiniones').add({
-                camp_id:    cupon.campId || null,
-                negocio:    cupon.negocio || null,
-                chofer:     (window.encaviSession && window.encaviSession.chofer) ? window.encaviSession.chofer : 'desconocido',
-                respetado:  opEstado.respetado,
-                estrellas:  opEstado.respetado ? opEstado.estrellas : 0,
-                comentario: comentario,
-                atendida:   false,
-                fecha:      firebase.firestore.FieldValue.serverTimestamp()
-            }).catch(function(){});
-        } catch (e) {}
+        if (puedeEscribirEnProduccion()) {
+            try {
+                db.collection('opiniones').add({
+                    camp_id:    cupon.campId || null,
+                    negocio:    cupon.negocio || null,
+                    chofer:     (window.encaviSession && window.encaviSession.chofer) ? window.encaviSession.chofer : 'desconocido',
+                    respetado:  opEstado.respetado,
+                    estrellas:  opEstado.respetado ? opEstado.estrellas : 0,
+                    comentario: comentario,
+                    atendida:   false,
+                    fecha:      firebase.firestore.FieldValue.serverTimestamp()
+                }).catch(function(){});
+            } catch (e) {}
+        }
     }
 
     function cerrarSuccess() {
@@ -7391,6 +7688,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function closeMap() {
         document.getElementById('mapModal').style.display = 'none';
+    }
+
+    if (typeof window !== 'undefined' && window.EncaviCore) {
+        window.EncaviCore.quemarCupon = quemarCupon;
+        window.EncaviCore.enviarOpinion = enviarOpinion;
+        window.EncaviCore.mostrarCodigo = mostrarCodigo;
     }
 </script>
 
