@@ -1,4 +1,9 @@
 /* Tipografía tranquila en avisos y formularios; conserva la identidad de EncaviGO. */
+.card-headline { font-size:28px; font-weight:500; color:#e4ddd1; letter-spacing:0; line-height:1.2; }
+.card-badge { font-weight:500; }
+.swipe-btn { font-weight:500; color:#e4ddd1; background:#29374e; border-radius:10px; box-shadow:none; }
+.pullup-pill { font-weight:500; color:#d5cbbb; }
+.game-title { font-weight:500; color:#d5cbbb; }
 .op-card { text-align:left; background:#191d23; border:1px solid #303741; }
 .op-card h2 { color:#d5cbbb; font-size:20px; font-weight:500; line-height:1.4; letter-spacing:0; margin:0 0 12px; }
 .op-card .op-sub { color:#a8b0ba; font-size:14px; }
