@@ -65,7 +65,7 @@ async function caso(nombre, fn) { await fn(); pasadas++; console.log('[PASS] ' +
       assert.equal(d.querySelectorAll('#opinionModal .op-emoji').length,0);assert.equal(d.querySelectorAll('#opEstrellas button').length,5);
       w.opRespeto(true);d.querySelectorAll('#opEstrellas button')[3].click();assert.equal(d.querySelectorAll('#opEstrellas button.on').length,4);
       w.opRespeto(false);assert.equal(d.getElementById('opEstrellas').style.display,'none');assert.equal(d.getElementById('opIcono').textContent,'Reportar un problema');
-      const css=fs.readFileSync('pasajero.css','utf8');assert.ok(css.includes('font-weight:500'));assert.ok(css.includes('color:#d5cbbb'));
+      const css=fs.readFileSync('pasajero.css','utf8');assert.ok(css.includes('font-weight:500'));assert.ok(css.includes('var(--encavi-orange-bright)'));assert.ok(!/#(?:d5cbbb|e4ddd1|315d50|233c35)/i.test(css));
     } finally { a.close(); }
   });
   console.log('Pasajero: '+pasadas+' recorridos completos.');

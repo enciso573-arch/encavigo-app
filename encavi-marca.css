@@ -1,0 +1,14 @@
+/* Fuente y tonos tomados de negocios/index.html. */
+:root {
+  --encavi-font:'Inter',system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --encavi-dark:#12100B;
+  --encavi-ink:#14141A;
+  --encavi-body:#4E4E5A;
+  --encavi-soft:#7B7B8A;
+  --encavi-orange:#E07800;
+  --encavi-orange-bright:#FF8C00;
+  --font:var(--encavi-font);
+}
+body,button,input,select,textarea,h1,h2,h3,h4,h5,h6,p,label,a {
+  font-family:var(--encavi-font);
+}
