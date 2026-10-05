@@ -1100,8 +1100,10 @@ test(44, 'Comprobación de ciclo de vida DOM completo en modo DEMO y modo produc
         const mockDb = new MockFirestore();
         const sb = {
             alert: () => {},
+            Event: class { constructor(type) { this.type=type; } },
             window: {
                 alert: () => {},
+                dispatchEvent: e => (domEvents['win:' + e.type] || []).forEach(fn => fn(e)),
                 addEventListener: (ev, fn) => {
                     if (!domEvents['win:' + ev]) domEvents['win:' + ev] = [];
                     domEvents['win:' + ev].push(fn);

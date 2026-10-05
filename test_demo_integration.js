@@ -45,6 +45,7 @@ async function boot(search = '?demo=1', shared = storage(), servicioVerificado =
     w.L = { divIcon: () => ({}) };
     vm.runInContext(fs.readFileSync(path.join(__dirname,'comisiones.js'),'utf8'), dom.getInternalVMContext());
     vm.runInContext(fs.readFileSync(path.join(__dirname,'operacion.js'),'utf8'), dom.getInternalVMContext());
+    vm.runInContext(fs.readFileSync(path.join(__dirname,'pasajero-ui.js'),'utf8'), dom.getInternalVMContext());
     scripts.forEach(s => vm.runInContext(s, dom.getInternalVMContext()));
     await Promise.all(ready.map(fn => fn()));
     await flush();
