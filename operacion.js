@@ -31,7 +31,9 @@
             dias,startDate,endDate,desde_ms:startDate?Date.parse(startDate+'T00:00:00-06:00'):null,
             hasta_ms:endDate?Date.parse(endDate+'T00:00:00-06:00')+86400000:null,active:v.active!==false};
     }
-    async function guardarPromocion(db,id,datos,stockOriginal,marcaServidor){
+    async function guardarPromocion(db,id,datos,stockOriginal,marcaServidor,evaluacion){
+        const calculadora=root.EncaviCalculadora||(typeof require==='function'?require('./calculadora-promociones'):null);
+        if(datos.tipo_campana!=='municipal'&&(datos.active||evaluacion))calculadora.validar(evaluacion,datos);
         const ref=db.collection('campaigns').doc(id||undefined);
         await db.runTransaction(async tx=>{
             const previa=id?await tx.get(ref):null;
@@ -42,6 +44,10 @@
             }
             const salida={...datos};
             if(id && datos.stock===stockOriginal && datos.tipo_campana!=='municipal')salida.stock=previa.data().stock;
+            if(salida.tipo_campana!=='municipal'&&(salida.active||evaluacion)){
+                calculadora.validar(evaluacion,salida);
+                tx.set(db.collection('evaluaciones_promocion').doc(ref.id),{...evaluacion,fecha:marcaServidor()});
+            }
             if(id)tx.update(ref,salida);else tx.set(ref,{...salida,clicks:0,createdAt:marcaServidor()});
         });return ref.id;
     }

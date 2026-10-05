@@ -1,8 +1,8 @@
 # EncaviGO — Especificación maestra de producto
 
-**Versión:** 1.0
+**Versión:** 1.1
 
-**Fecha:** 2 de octubre de 2026
+**Fecha:** 5 de octubre de 2026
 
 **Carpeta principal:** `C:\Users\Enciso\Desktop\EncaviGO`
 
@@ -13,6 +13,8 @@
 Esta es la fuente de verdad para terminar la primera versión de EncaviGO. Separa las decisiones confirmadas por el propietario de las propuestas y funciones futuras. Que una función aparezca aquí no significa que ya esté implementada.
 
 Para conocer problemas técnicos encontrados en la versión actual, consultar `AUDITORIA-LANZAMIENTO-2026-10-02.md`.
+
+Para construir y publicar promociones con canje, seguir el proceso obligatorio en [PROCESO-PROMOCIONES.md](PROCESO-PROMOCIONES.md). Está incorporado al formulario del panel y a la validación de Firebase: una oferta activa necesita un cálculo aprobado, vinculado a sus condiciones. Los costos se guardan en una ficha privada. Copiar o editar exige revisar el cálculo y confirmar el acuerdo de nuevo desde el panel.
 
 ## 1. Definición del producto
 
@@ -99,7 +101,7 @@ La promoción debe ser suficientemente atractiva para justificar que un pasajero
 - Complementos de bajo costo y alto valor percibido.
 - Productos con capacidad o inventario disponible.
 - Días y horarios de baja demanda.
-- Compra mínima que debe conservarse.
+- Contribución mínima que debe conservarse después de costos y comisión.
 - Costo máximo aceptado para adquirir un cliente nuevo.
 - Vigencia e inventario máximo autorizado para la promoción.
 
@@ -113,11 +115,13 @@ Los gastos fijos, impuestos y otros costos deben mostrarse o explicarse por sepa
 
 ### 3.4 Resultado esperado
 
-La primera calculadora propondrá hasta tres alternativas:
+La calculadora incorporada al panel permite explorar alternativas usando los costos proporcionados:
 
-- **Segura:** protege más margen, con atractivo moderado.
-- **Agresiva:** acepta un costo mayor para adquirir una primera visita.
-- **Horario flojo:** solo se activa en días u horas con capacidad disponible.
+- **Descuento moderado:** reduce el precio conservando contribución.
+- **Descuento mayor:** calcula cuánto descuento cabe sin bajar del mínimo acordado.
+- **Complemento adicional:** conserva el precio habitual y añade un complemento real, si se informó su costo y valor habitual.
+
+Los paquetes se calculan sumando los precios habituales y costos de sus componentes. Los días se configuran en la promoción; si se acuerda un horario especial debe describirse y respetarse en el negocio. Esta calculadora no implementa una comprobación automática de horas ni garantiza atraer una primera visita.
 
 Cada alternativa debe mostrar:
 
@@ -126,10 +130,12 @@ Cada alternativa debe mostrar:
 - Costo estimado para el negocio.
 - Comisión.
 - Margen estimado restante.
-- Límite de canjes recomendado.
+- Límite de canjes autorizado por el negocio.
 - Riesgos o datos faltantes.
 
 El negocio elige y aprueba. La calculadora no publica automáticamente una promoción.
+
+La publicación con canje requiere la ficha aprobada descrita en [PROCESO-PROMOCIONES.md](PROCESO-PROMOCIONES.md). Firebase comprueba el cálculo, la correspondencia con la promoción y los cupos; los importes permanecen privados. Guardar pausada permite completar el proceso más adelante.
 
 ### 3.5 Ejemplos que deben evaluarse, no asumirse
 

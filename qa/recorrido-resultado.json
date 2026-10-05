@@ -1,5 +1,5 @@
 {
-  "fecha": "2026-10-05T07:28:15.243Z",
+  "fecha": "2026-10-05T14:43:58.564Z",
   "proyecto": "demo-encavigo-audit",
   "firestore": "127.0.0.1:8787",
   "auth": "127.0.0.1:9098",
@@ -9,72 +9,82 @@
     {
       "nombre": "Panel real: login por correo y contraseña contra Auth Emulator",
       "resultado": "PASS",
-      "duracion_ms": 604
+      "duracion_ms": 602
     },
     {
       "nombre": "Alta de chofer desde el formulario: código privado y flotilla pública",
       "resultado": "PASS",
-      "duracion_ms": 218
+      "duracion_ms": 213
     },
     {
       "nombre": "Alta de caja y promoción desde Nuevo Negocio: tres cupones a $25",
       "resultado": "PASS",
-      "duracion_ms": 120
+      "duracion_ms": 208
+    },
+    {
+      "nombre": "Ficha privada guardada; editar y copiar no heredan aprobación",
+      "resultado": "PASS",
+      "duracion_ms": 112
+    },
+    {
+      "nombre": "Cambio tras calcular invalida acuerdo y evita publicar datos distintos",
+      "resultado": "PASS",
+      "duracion_ms": 43
     },
     {
       "nombre": "Impresión: el QR del vehículo contiene su URL y el de caja su código exacto",
       "resultado": "PASS",
-      "duracion_ms": 18
+      "duracion_ms": 5
     },
     {
       "nombre": "Entrada sin QR bloqueada: no abre sesión ni muestra promociones",
       "resultado": "PASS",
-      "duracion_ms": 279
+      "duracion_ms": 218
     },
     {
       "nombre": "Pasajero: QR válido abre sesión de 24 h y carga la promoción creada",
       "resultado": "PASS",
-      "duracion_ms": 265
+      "duracion_ms": 183
     },
     {
       "nombre": "Juego: cerrar no consume; primera tarjeta consume una vez; premio monetario desactivado",
       "resultado": "PASS",
-      "duracion_ms": 96
+      "duracion_ms": 86
     },
     {
       "nombre": "Recarga: conserva código, hora, vehículo e intento, sin duplicar el escaneo",
       "resultado": "PASS",
-      "duracion_ms": 169
+      "duracion_ms": 173
     },
     {
       "nombre": "Caja incorrecta rechazada, incluido un texto que solo contiene el código válido",
       "resultado": "PASS",
-      "duracion_ms": 39
+      "duracion_ms": 48
     },
     {
       "nombre": "Canje con código de caja correcto: éxito, un ticket, stock de tres a dos y comisión histórica",
       "resultado": "PASS",
-      "duracion_ms": 121
+      "duracion_ms": 96
     },
     {
       "nombre": "Opinión del pasajero guardada y visible para administración",
       "resultado": "PASS",
-      "duracion_ms": 31
+      "duracion_ms": 32
     },
     {
       "nombre": "Canje repetido rechazado: no muestra éxito ni descuenta inventario otra vez",
       "resultado": "PASS",
-      "duracion_ms": 48
+      "duracion_ms": 47
     },
     {
       "nombre": "Pago adelantado y recuperación de la comisión desde los botones del panel",
       "resultado": "PASS",
-      "duracion_ms": 232
+      "duracion_ms": 234
     },
     {
       "nombre": "Publicidad: cortesía, primer acuerdo pagado y mensualidad sin duplicados",
       "resultado": "PASS",
-      "duracion_ms": 162
+      "duracion_ms": 130
     },
     {
       "nombre": "Reporte del negocio: canje, interacción, opinión y $25 cobrados coinciden",
@@ -84,42 +94,42 @@
     {
       "nombre": "Cambiar la tarifa de la promoción no altera la comisión de un canje anterior",
       "resultado": "PASS",
-      "duracion_ms": 82
+      "duracion_ms": 142
     },
     {
       "nombre": "Dos canjes simultáneos con una unidad: un solo éxito y stock cero",
       "resultado": "PASS",
-      "duracion_ms": 422
+      "duracion_ms": 380
     },
     {
       "nombre": "Sin GPS: canje en revisión, sin comisión liquidable hasta aprobación",
       "resultado": "PASS",
-      "duracion_ms": 292
+      "duracion_ms": 318
     },
     {
       "nombre": "Promoción agotada y promoción pausada rechazan canjes sin crear tickets",
       "resultado": "PASS",
-      "duracion_ms": 366
+      "duracion_ms": 424
     },
     {
       "nombre": "Caja dada de baja rechaza incluso un resultado de lector con el código correcto",
       "resultado": "PASS",
-      "duracion_ms": 252
+      "duracion_ms": 263
     },
     {
       "nombre": "Sesión después de 24 h: canje rechazado, reapertura bloqueada y nuevo QR renueva",
       "resultado": "PASS",
-      "duracion_ms": 429
+      "duracion_ms": 407
     },
     {
       "nombre": "Vehículo dado de baja bloquea la reapertura y los canjes",
       "resultado": "PASS",
-      "duracion_ms": 166
+      "duracion_ms": 205
     },
     {
       "nombre": "Registro privado del chofer y administración inaccesibles al pasajero",
       "resultado": "PASS",
-      "duracion_ms": 56
+      "duracion_ms": 99
     },
     {
       "nombre": "Sin errores de JavaScript en las páginas del recorrido",

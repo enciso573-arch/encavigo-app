@@ -10,6 +10,9 @@ const { crearServicioSesiones } = require('./sesiones-servidor');
 const Comisiones = require('./comisiones');
 const Operacion = require('./operacion');
 const Publicidad = require('./publicidad');
+const Calculadora = require('./calculadora-promociones');
+const OWNER='ZS4cI7hnMXVPpCaQECFg208TLbL2';
+function ficha(c){const numeros={tipo:'descuento',precio_habitual:22000,precio_oferta:17500,costo_base:7000,costo_extra:0,costo_trabajo:1000,empaque:500,valor_extra:0,comision:c.tarifa*100,minimo:1000,canjes:1000};return {version:1,confirmado:true,numeros,resultado:Calculadora.calcular(numeros),referencia:'Desayuno completo a precio de carta',beneficio:'Ahorro real en el mismo desayuno',aprobador:'Dueño de ejemplo',publicacion:Calculadora.publicacion(c),admin_uid:OWNER};}
 
 const host = process.env.FIRESTORE_EMULATOR_HOST;
 assert.equal(host, '127.0.0.1:8787', 'Esta suite exige el emulador local en 8787');
@@ -18,7 +21,9 @@ async function check(name, fn) { await env.clearFirestore(); await fn(); passed+
 async function seed(stock = 1) {
     await env.withSecurityRulesDisabled(async ctx => {
         const db = ctx.firestore();
-        await setDoc(doc(db, 'campaigns/promo'), { active: true, stock, caja_id: 'CAJA-OK', clicks: 0, tarifa:25, title:'Negocio' });
+        const c={ active: true, stock, caja_id: 'CAJA-OK', clicks: 0, tarifa:25, title:'Negocio' };
+        await setDoc(doc(db, 'campaigns/promo'),c);
+        await setDoc(doc(db,'evaluaciones_promocion/promo'),{...ficha(c),fecha:Timestamp.now()});
         await setDoc(doc(db, 'codigos/CAJA-OK'), {tipo:'caja',estado:'activo'});
         await setDoc(doc(db, 'codigos/V-001'), { tipo:'vehiculo', estado:'activo', telefono: 'dato-privado', escaneos: 0 });
         for (const [uid,code] of [['passenger','A'],['passengerB','B']]) {
@@ -292,7 +297,7 @@ async function readPrivate(path) {
     await check('Tarifa histórica inmutable aunque se edite o borre la promoción', async () => {
         await seed(); await redeem(publicDb(),'A');
         const admin=env.authenticatedContext('ZS4cI7hnMXVPpCaQECFg208TLbL2').firestore();
-        await updateDoc(doc(admin,'campaigns/promo'),{tarifa:80});
+        await updateDoc(doc(admin,'campaigns/promo'),{tarifa:80,active:false});
         await deleteDoc(doc(admin,'campaigns/promo'));
         assert.equal((await readPrivate('tickets/CAJA-OK_A')).comision_centavos,2500);
         await assertFails(updateDoc(doc(admin,'tickets/CAJA-OK_A'),{comision_centavos:8000}));
@@ -369,15 +374,15 @@ async function readPrivate(path) {
     await check('Editar sin cambiar stock conserva los canjes concurrentes; caja inactiva impide guardar',async()=>{
         await seed(5);const uid='ZS4cI7hnMXVPpCaQECFg208TLbL2',db=adapter(env.authenticatedContext(uid).firestore());
         const data=Operacion.promocion({title:'Negocio',desc:'Oferta',lat:20.65,lng:-105.22,stock:5,tarifa:25,caja_id:'CAJA-OK',dias:[]});
-        await redeem(publicDb(),'A');await Operacion.guardarPromocion(db,'promo',data,5,serverTimestamp);
+        await redeem(publicDb(),'A');await Operacion.guardarPromocion(db,'promo',data,5,serverTimestamp,ficha(data));
         assert.equal((await readPrivate('campaigns/promo')).stock,4);
         await env.withSecurityRulesDisabled(ctx=>updateDoc(doc(ctx.firestore(),'codigos/CAJA-OK'),{estado:'baja'}));
         await assert.rejects(Operacion.guardarPromocion(db,'promo',data,5,serverTimestamp));
     });
     await check('Servidor bloquea canjes fuera de fechas, días, caja activa y campañas sin comisión',async()=>{
         await seed(8);const d=env.authenticatedContext('ZS4cI7hnMXVPpCaQECFg208TLbL2').firestore();
-        for(const cambio of [{desde_ms:Date.now()+86400000},{desde_ms:null,hasta_ms:Date.now()-1000},{hasta_ms:null,dias:[(new Date(Date.now()-21600000).getUTCDay()+1)%7]},{dias:[],tipo_campana:'municipal'}]){await updateDoc(doc(d,'campaigns/promo'),cambio);await assertFails(redeem(publicDb(),'A'));}
-        await updateDoc(doc(d,'campaigns/promo'),{tipo_campana:'local'});await updateDoc(doc(d,'codigos/CAJA-OK'),{estado:'baja'});await assertFails(redeem(publicDb(),'A'));
+        for(const cambio of [{desde_ms:Date.now()+86400000},{desde_ms:null,hasta_ms:Date.now()-1000},{hasta_ms:null,dias:[(new Date(Date.now()-21600000).getUTCDay()+1)%7]},{dias:[],tipo_campana:'municipal'}]){await env.withSecurityRulesDisabled(ctx=>updateDoc(doc(ctx.firestore(),'campaigns/promo'),cambio));await assertFails(redeem(publicDb(),'A'));}
+        await env.withSecurityRulesDisabled(ctx=>updateDoc(doc(ctx.firestore(),'campaigns/promo'),{tipo_campana:'local'}));await updateDoc(doc(d,'codigos/CAJA-OK'),{estado:'baja'});await assertFails(redeem(publicDb(),'A'));
         assert.equal((await readPrivate('campaigns/promo')).stock,8);
     });
     await check('Logs únicos ligados a sesión y campaña; contadores públicos no se pueden inflar',async()=>{
@@ -409,6 +414,32 @@ async function readPrivate(path) {
         await Operacion.estadoCodigo(db,'V-001',true,null,serverTimestamp);
         assert.equal((await readPrivate('codigos/V-001')).estado,'activo');assert.equal((await readPrivate('choferes/V-001')).activo,true);assert.equal(await readPrivate('bajas/V-001'),undefined);
         assert.equal((await sessionService('passenger').restaurarOIniciar(null)).code,'A');
+    });
+
+    await check('Activar requiere ficha válida; borrador y costos privados respetan permisos',async()=>{
+        await seed();const raw=env.authenticatedContext(OWNER).firestore(),db=adapter(raw);
+        const c=Operacion.promocion({title:'Nueva Fonda',desc:'Desayuno de $220 por $175',lat:20.65,lng:-105.22,stock:30,tarifa:25,caja_id:'CAJA-OK',dias:[]});
+        await assertFails(setDoc(doc(raw,'campaigns/nueva'),c));
+        await assertSucceeds(setDoc(doc(raw,'campaigns/nueva'),{...c,active:false}));
+        await assertFails(updateDoc(doc(raw,'campaigns/nueva'),{active:true}));
+        await assert.rejects(Operacion.guardarPromocion(db,'nueva',c,30,serverTimestamp));
+        await Operacion.guardarPromocion(db,'nueva',c,30,serverTimestamp,ficha(c));
+        await assertSucceeds(getDocFromServer(doc(raw,'evaluaciones_promocion/nueva')));
+        await assertFails(getDocFromServer(doc(publicDb(),'evaluaciones_promocion/nueva')));
+        assert.equal((await readPrivate('campaigns/nueva')).numeros,undefined);
+        for(const x of [{tarifa:45},{desc:'Otra compra'},{dias:[2]},{stock:1001}])await assertFails(updateDoc(doc(raw,'campaigns/nueva'),x));
+        await assertSucceeds(updateDoc(doc(raw,'campaigns/nueva'),{stock:29}));
+    });
+    await check('Firebase rechaza resultados falsificados, oferta sin beneficio y pérdida oculta',async()=>{
+        await seed();const raw=env.authenticatedContext(OWNER).firestore(),c=await readPrivate('campaigns/promo');
+        const original=ficha(c);
+        const invalidas=[{...original,resultado:{...original.resultado,contribucion:999999}},
+            {...original,numeros:{...original.numeros,precio_oferta:22000},resultado:{...original.resultado,ahorro:0}},
+            {...original,numeros:{...original.numeros,costo_base:20000}},
+            {...original,confirmado:false},{...original,aprobador:''}];
+        for(const f of invalidas)await assertFails(setDoc(doc(raw,'evaluaciones_promocion/promo'),{...f,fecha:serverTimestamp()}));
+        await assertFails(setDoc(doc(publicDb(),'evaluaciones_promocion/promo'),{...original,fecha:serverTimestamp()}));
+        assert.equal((await readPrivate('evaluaciones_promocion/promo')).resultado.contribucion,original.resultado.contribucion);
     });
     console.log(`Seguridad: ${passed}/${passed} pruebas pasadas en emulador.`);
 })().catch(err=>{console.error(err);process.exitCode=1;}).finally(async()=>{if(env)await env.cleanup();});

@@ -13,5 +13,5 @@ for(const p of archivos){
  if(p==='admin.html'){const d=dom.window.document;for(const id of ['view-dashboard','view-codigos','view-choferes','view-cobros','view-analiticas'])if(!d.querySelector('.app-container').contains(d.getElementById(id)))throw Error('Vista fuera del panel: '+id);}
  dom.window.close();
 }
-for(const p of ['operacion.js','publicidad.js','admin-operacion.js','admin-publicidad.js','reporte.js','admin-comisiones.js','comisiones.js','sesiones-servidor.js','sw.js','pasajero-ui.js']){new vm.Script(fs.readFileSync(p,'utf8'),{filename:p});scripts++;}
+for(const p of ['calculadora-promociones.js','admin-calculadora.js','operacion.js','publicidad.js','admin-operacion.js','admin-publicidad.js','reporte.js','admin-comisiones.js','comisiones.js','sesiones-servidor.js','sw.js','pasajero-ui.js']){new vm.Script(fs.readFileSync(p,'utf8'),{filename:p});scripts++;}
 console.log('Sitio: '+scripts+' scripts válidos; '+rutas+' referencias locales existentes; IDs y vistas consistentes.');

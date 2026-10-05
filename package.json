@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "test": "node test_fase1.js && node test_comisiones.js && node test_operacion.js && node test_pasajero.js",
+    "test": "node test_fase1.js && node test_comisiones.js && node test_operacion.js && node test_pasajero.js && node test_calculadora.js",
     "test:rules": "firebase emulators:exec --config firebase.emulator.json --project demo-encavigo-audit --only firestore \"node test_seguridad_firebase.js\"",
     "test:auth": "firebase emulators:exec --config firebase.emulator.json --project demo-encavigo-audit --only firestore,auth \"node test_auth_piloto.js\"",
     "test:recorrido": "firebase emulators:exec --config firebase.emulator.json --project demo-encavigo-audit --only firestore,auth \"node test_recorrido_completo.js\""

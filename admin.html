@@ -424,6 +424,7 @@ input[type="checkbox"]{width:auto}.nav-item[role="button"]:focus-visible{outline
 </div></div>
 <script src="admin-seguridad.js"></script>
 <script src="comisiones.js"></script>
+<script src="calculadora-promociones.js"></script>
 <script src="operacion.js"></script>
 <script src="publicidad.js"></script>
 <!-- FIREBASE SDK -->
@@ -741,7 +742,7 @@ seguir(db.collection('codigos'),()=>refrescarChoferes());
        tarifa, días, inventario ni ubicación. Cargar diez negocios a
        mano, campo por campo, es donde se abandona el trabajo. */
     function duplicarCampana(id) {
-        db.collection('campaigns').doc(id).get().then(function (d) {
+        return db.collection('campaigns').doc(id).get().then(function (d) {
             if (!d.exists) { alert('Esa promoción ya no existe.'); return; }
             const c = d.data();
             openEditModal(null, c.title, c.desc, c.img, c.badge, c.lat, c.lng,
@@ -756,16 +757,18 @@ seguir(db.collection('codigos'),()=>refrescarChoferes());
             t.value = c.title;
             t.placeholder = 'Nombre del mismo negocio';
             t.focus();
+            return prepararEvaluacionPromocion(id,true);
         }).catch(function (e) { alert('No se pudo duplicar: ' + e.message); });
     }
 
     function editarCampana(id) {
-        db.collection('campaigns').doc(id).get().then(function (d) {
+        return db.collection('campaigns').doc(id).get().then(function (d) {
             if (!d.exists) { alert('Esa promoción ya no existe.'); return; }
             const c = d.data();
             openEditModal(id, c.title, c.desc, c.img, c.badge, c.lat, c.lng,
                           c.stock, c.caja_id, c.startDate, c.endDate, c.tarifa);
             marcarDias(c.dias);document.getElementById('cActive').checked=c.active!==false;document.getElementById('cPlan').value=c.tipo_campana||'local';document.getElementById('cAction').value=c.action_url||'';document.getElementById('cMunicipio').value=c.municipio||'';ajustarPlan();
+            return prepararEvaluacionPromocion(id);
         }).catch(function (e) { alert('No se pudo abrir: ' + e.message); });
     }
 
@@ -783,6 +786,7 @@ seguir(db.collection('codigos'),()=>refrescarChoferes());
         document.getElementById('cEnd').value = end || '';
 
         editModeId = id;
+        prepararEvaluacionPromocion(null);
         document.getElementById('addModal').style.display = 'flex';
         cajaLlenarLista(caja_id || '');
         sincronizarMapaUbi();
@@ -790,6 +794,7 @@ seguir(db.collection('codigos'),()=>refrescarChoferes());
 
     function openAddModal() {
         limpiarFormulario();
+        prepararEvaluacionPromocion(null);
         document.getElementById('addModal').style.display = 'flex';
         cajaLlenarLista('');
         sincronizarMapaUbi();
@@ -868,7 +873,8 @@ function closeModal() {
  const boton=document.getElementById('guardarCampana');boton.disabled=true;
  try{const val=id=>document.getElementById(id).value;
  const data=EncaviOperacion.promocion({title:val('cTitle'),desc:val('cDesc'),img:val('cImg'),badge:val('cBadge'),lat:val('cLat'),lng:val('cLng'),stock:val('cStock'),tarifa:val('cTarifa'),caja_id:val('cCaja'),startDate:val('cStart'),endDate:val('cEnd'),dias:[...document.querySelectorAll('#cDias input:checked')].map(c=>Number(c.value)),active:document.getElementById('cActive').checked,tipo_campana:val('cPlan'),action_url:val('cAction'),municipio:val('cMunicipio')});
- await EncaviOperacion.guardarPromocion(db,editModeId,data,window.stockOriginal,()=>firebase.firestore.FieldValue.serverTimestamp());
+ const evaluacion=obtenerEvaluacionPromocion(data);
+ await EncaviOperacion.guardarPromocion(db,editModeId,data,window.stockOriginal,()=>firebase.firestore.FieldValue.serverTimestamp(),evaluacion);
  alert('Promoción guardada.');closeModal();limpiarFormulario();
  }catch(e){alert('No se guardó: '+e.message);}finally{boton.disabled=false;}
  }
@@ -1320,14 +1326,14 @@ function closeModal() {
 <div class="form-group"><label for="cPlan">Tipo de campaña</label><select id="cPlan" onchange="ajustarPlan()"><option value="local">Plan Local: cupón en caja y comisión</option><option value="municipal">Campaña Municipal: enlace de contacto, sin canje ni comisión</option></select></div>
 <div id="grupoAction" class="form-group" hidden><label for="cAction">Enlace al WhatsApp, catálogo o mapa del negocio</label><input id="cAction" placeholder="https://wa.me/523220000000"/><p class="ayuda">Pega el enlace HTTPS aprobado por el negocio. El botón abrirá ese destino.</p></div>
 <div id="grupoMunicipio" class="form-group" hidden><label for="cMunicipio">Municipio contratado</label><select id="cMunicipio"><option value="">Elige uno</option><option value="vallarta">Puerto Vallarta</option><option value="bahia">Bahía de Banderas</option></select><p class="ayuda">Se muestra en los vehículos registrados para ese municipio. Programa inicio y fin: hasta 30 días por campaña.</p></div>
-<details class="guia"><summary>Ver ejemplo completo para una fonda</summary><p>Nombre: Fonda Ejemplo. Promoción: Comida del día por $120 con agua, sopa y tortillas; válida de lunes a viernes, una por código, consumo en el local. Imagen: foto autorizada del platillo. Ubicación: la puerta del negocio. Inventario: 30 canjes acordados. Caja: genera FONDA-… una sola vez y reutilízala en todas sus promociones. Tarifa: $25 si así lo acordaron; los espacios gratuitos de publicidad no eliminan la comisión automáticamente. Fechas: las acordadas con el negocio.</p></details>
+<details class="guia"><summary>Ver ejemplo completo para una fonda</summary><p>Ejemplo hipotético: Fonda Ejemplo. Desayuno habitual de $220 por $175 con el mismo contenido; válida de lunes a viernes, una por código, consumo en el local. Comprueba el precio en la carta y calcula los costos con el negocio antes de publicar. Imagen: foto autorizada del platillo. Ubicación: la puerta del negocio. Inventario: 30 canjes acordados. Caja: genera FONDA-… una sola vez y reutilízala en todas sus promociones. Tarifa: $25 si así lo acordaron; los espacios gratuitos de publicidad no eliminan la comisión automáticamente. Fechas: las acordadas con el negocio.</p></details>
 <div class="form-group">
 <label>Nombre del Negocio (Título)</label>
 <input id="cTitle" placeholder="Ej. Fonda Ejemplo" type="text"/>
 </div>
 <div class="form-group">
 <label>Descripción Corta</label>
-<textarea id="cDesc" placeholder="Ej. Comida del día $120 con agua, sopa y tortillas. Lun–vie, consumo en el local, un canje por código." rows="2"></textarea>
+<textarea id="cDesc" placeholder="Ej. Desayuno habitual $220 por $175, con el mismo contenido. Lun–vie, consumo en el local, un canje por código." rows="2"></textarea>
 </div>
 <div class="form-group">
 <label>Imagen del negocio (opcional)</label>
@@ -1432,6 +1438,7 @@ function closeModal() {
 </div>
 <script src="admin-comisiones.js"></script>
 <script src="admin-operacion.js"></script>
+<script src="admin-calculadora.js"></script>
 <script src="admin-publicidad.js"></script>
 </body>
 </html>

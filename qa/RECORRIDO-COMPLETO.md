@@ -4,7 +4,7 @@ Verificación del 5 de octubre de 2026. Se corrigió un fallo observado durante 
 
 ## Resultado y alcance
 
-24 comprobaciones aprobadas en `npm run test:recorrido`. Los resultados individuales y la fecha exacta están en [recorrido-resultado.json](recorrido-resultado.json). La suite habitual `npm test` también aprobó sus 58 casos después de corregir el código de caja.
+26 comprobaciones aprobadas en `npm run test:recorrido`. Los resultados individuales y la fecha exacta están en [recorrido-resultado.json](recorrido-resultado.json). La suite habitual `npm test` también aprobó sus 64 casos, incluidos los seis casos de cálculo de promociones.
 
 La prueba ejecuta el HTML y los controladores actuales de `admin.html`, `index.html` y `dashboard.html` en JSDOM, conectados al SDK real instalado de Firebase y a Authentication y Firestore Emulator. Usa las reglas del repositorio. No sustituye las escrituras por promesas de éxito ni activa una puerta trasera en las páginas públicas.
 
@@ -16,7 +16,7 @@ El proyecto ficticio es `demo-encavigo-audit`, Firestore escucha en `127.0.0.1:8
 
 1. Inicio de sesión del propietario mediante el panel.
 2. Alta de un chofer desde el formulario, con municipio y QR privado; documento público de flotilla creado.
-3. Alta de caja y promoción desde Nuevo Negocio, con tres cupones y tarifa inicial de $25.
+3. Alta de caja y promoción desde Nuevo Negocio, con tres cupones y tarifa inicial de $25; publicar sin cálculo aprobado queda bloqueado.
 4. Contenido de impresión: URL correcta en el QR del vehículo y código correcto en el de caja.
 5. Entrada sin QR bloqueada, sin sesión promocional.
 6. Entrada con el QR generado: código exclusivo confirmado por Firebase y catálogo con la promoción creada.
@@ -38,6 +38,8 @@ El proyecto ficticio es `demo-encavigo-audit`, Firestore escucha en `127.0.0.1:8
 22. Vehículo dado de baja: no se puede reabrir la sesión.
 23. Pasajero sin acceso al registro privado, mensualidades, edición de stock ni panel propietario.
 24. Ausencia de errores de JavaScript en las páginas ejercitadas.
+
+También se comprueba que la ficha de costos queda privada, que editar o copiar no hereda aprobación y que cambiar un costo después de calcular invalida la confirmación y bloquea el guardado publicado.
 
 ## Lo que esta prueba no certifica
 

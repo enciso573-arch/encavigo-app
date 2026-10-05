@@ -103,6 +103,61 @@ service cloud.firestore {
 
       allow create, delete: if esAdmin();
     }
+    function importeValido(n) {
+      return n is int && n >= 0 && n <= 10000000;
+    }
+    function evaluacionValida(e) {
+      let n = e.numeros;
+      let r = e.resultado;
+      let ahorro = n.precio_habitual - n.precio_oferta + n.valor_extra;
+      let contribucion = n.precio_oferta - n.costo_base - n.costo_extra - n.costo_trabajo - n.empaque - n.comision;
+      return e.keys().hasOnly(['version','confirmado','numeros','resultado','referencia','beneficio','aprobador','publicacion','admin_uid','fecha'])
+        && e.version == 1 && e.confirmado == true
+        && e.admin_uid == 'ZS4cI7hnMXVPpCaQECFg208TLbL2'
+        && e.referencia is string && e.referencia.size() > 0 && e.referencia.size() <= 600
+        && e.beneficio is string && e.beneficio.size() > 0 && e.beneficio.size() <= 600
+        && e.aprobador is string && e.aprobador.size() > 0 && e.aprobador.size() <= 120
+        && n.keys().hasOnly(['tipo','precio_habitual','precio_oferta','costo_base','costo_extra','costo_trabajo','empaque','valor_extra','comision','minimo','canjes'])
+        && n.tipo in ['descuento','complemento','paquete']
+        && importeValido(n.precio_habitual) && n.precio_habitual > 0
+        && importeValido(n.precio_oferta) && n.precio_oferta > 0 && n.precio_oferta <= n.precio_habitual
+        && importeValido(n.costo_base) && importeValido(n.costo_extra) && importeValido(n.costo_trabajo)
+        && importeValido(n.empaque) && importeValido(n.valor_extra)
+        && n.comision in [0,2500,4500,8000] && n.comision is int
+        && importeValido(n.minimo) && n.minimo > 0
+        && n.canjes is int && n.canjes > 0 && n.canjes <= 1000000
+        && ((n.tipo == 'complemento' && n.valor_extra > 0) || (n.tipo != 'complemento' && n.valor_extra == 0))
+        && ahorro > 0 && contribucion >= n.minimo
+        && r.keys().hasOnly(['ahorro','contribucion','desembolso','limite'])
+        && r.ahorro == ahorro && r.contribucion == contribucion && r.limite == n.canjes
+        && r.desembolso == n.costo_extra + n.comision + n.precio_habitual - n.precio_oferta;
+    }
+    function publicacionEvaluada(c) {
+      return {'title':c.get('title',''),'desc':c.get('desc',''),'img':c.get('img',''),'badge':c.get('badge',''),
+        'lat':c.get('lat',null),'lng':c.get('lng',null),'caja_id':c.get('caja_id',''),'tarifa':c.get('tarifa',null),
+        'dias':c.get('dias',[]),'startDate':c.get('startDate',null),'endDate':c.get('endDate',null),
+        'desde_ms':c.get('desde_ms',null),'hasta_ms':c.get('hasta_ms',null)};
+    }
+    function campanaLista(c,id) {
+      return c.active == false || (
+        c.get('tipo_campana','local') == 'municipal' && c.stock == 0 && c.tarifa == 0 && c.caja_id == ''
+      ) || (
+        c.get('tipo_campana','local') == 'local'
+        && evaluacionValida(getAfter(/databases/$(database)/documents/evaluaciones_promocion/$(id)).data)
+        && getAfter(/databases/$(database)/documents/evaluaciones_promocion/$(id)).data.publicacion == publicacionEvaluada(c)
+        && getAfter(/databases/$(database)/documents/evaluaciones_promocion/$(id)).data.numeros.comision == c.tarifa * 100
+        && c.stock is int && c.stock >= 0
+        && c.stock <= getAfter(/databases/$(database)/documents/evaluaciones_promocion/$(id)).data.numeros.canjes
+      );
+    }
+    // Los costos quedan separados del catálogo, que es público.
+    match /evaluaciones_promocion/{id} {
+      allow read: if esAdmin();
+      allow create, update: if esAdmin() && evaluacionValida(request.resource.data)
+        && request.resource.data.fecha == request.time
+        && request.resource.data.publicacion == publicacionEvaluada(getAfter(/databases/$(database)/documents/campaigns/$(id)).data);
+      allow delete: if false;
+    }
     match /campaigns/{doc} {
       allow read: if true;
 
@@ -115,10 +170,11 @@ service cloud.firestore {
                       && operacionNuevaValida(request.resource.data.ultima_operacion, doc)
                     ) || (
 
-                      esAdmin()
+                      esAdmin() && campanaLista(request.resource.data,doc)
                     );
 
-      allow create, delete: if esAdmin();
+      allow create: if esAdmin() && campanaLista(request.resource.data,doc);
+      allow delete: if esAdmin();
     }
     match /tickets/{id} {
       allow create: if request.auth != null

@@ -24,6 +24,11 @@ async function cantidad(col){return (await admin.db.collection(col).get({source:
 function btn(p,texto){const b=[...p.w.document.querySelectorAll('button')].find(b=>b.textContent.trim()===texto);assert.ok(b,'Botón: '+texto);return b;}
 async function clienteNuevo(nombre,opts={}){const p=await abrir('index.html',app(nombre),{search:'?chofer='+vehiculo,...opts});await hasta(()=>p.w.loadedCampaigns?.length,'catálogo de '+nombre);return p;}
 async function reclamar(p){p.w.document.querySelector('.track-click[data-campid="'+campId+'"]').click();p.w.document.getElementById('btnEscanearCaja').click();assert.equal(p.w.document.getElementById('scannerModal').style.display,'flex');}
+function aprobarOferta(p){
+    const v={evalReferencia:'Desayuno habitual con ingredientes y café, $220 en la carta',evalBeneficio:'Mismo desayuno por $175: ahorro real de $45',evalAprobador:'Dueño ficticio del recorrido',eval_precio_habitual:220,eval_precio_oferta:175,eval_costo_base:70,eval_costo_trabajo:10,eval_empaque:5,eval_costo_extra:0,eval_valor_extra:0,eval_minimo:30,evalCanjes:3};
+    for(const [k,val] of Object.entries(v))p.set(k,String(val));p.set('evalTipo','descuento');p.w.document.getElementById('evalCalcular').click();
+    assert.equal(p.w.document.getElementById('evalConfirmar').disabled,false,p.w.document.getElementById('evalResultado').textContent);p.w.document.getElementById('evalConfirmar').checked=true;
+}
 async function resumen(){const ts=await admin.db.collection('tickets').get(),ms=await admin.db.collection('movimientos_comision').get();return Comisiones.resumen(ts.docs.map(d=>({...d.data(),id:d.id})),Object.fromEntries(ms.docs.map(d=>[d.id,d.data()])),{desde:null,hasta:null});}
 
 (async()=>{
@@ -49,8 +54,23 @@ async function resumen(){const ts=await admin.db.collection('tickets').get(),ms=
     await comprobar('Alta de caja y promoción desde Nuevo Negocio: tres cupones a $25',async()=>{
         admin.w.openAddModal();admin.set('cTitle','Fonda ficticia del recorrido');await admin.w.cajaGenerarDesdeCampana();
         negocio=admin.w.document.getElementById('cCaja').value;assert.ok(negocio);assert.equal((await leer('codigos',negocio)).tipo,'caja');
-        admin.set('cDesc','Oferta ficticia exclusiva para comprobar el sistema');admin.set('cLat','20.65');admin.set('cLng','-105.22');admin.set('cStock','3');admin.set('cTarifa','25');await admin.w.saveCampaign();
+        admin.set('cDesc','Oferta ficticia exclusiva para comprobar el sistema');admin.set('cLat','20.65');admin.set('cLng','-105.22');admin.set('cStock','3');admin.set('cTarifa','25');
+        await admin.w.saveCampaign();assert.equal(await cantidad('campaigns'),0);assert.ok(admin.avisos.some(t=>t.includes('Completa el cálculo')));
+        aprobarOferta(admin);await admin.w.saveCampaign();
         const cs=await admin.db.collection('campaigns').get();assert.equal(cs.size,1);campId=cs.docs[0].id;assert.equal(cs.docs[0].data().stock,3);
+    });
+
+    await comprobar('Ficha privada guardada; editar y copiar no heredan aprobación',async()=>{
+        const f=await leer('evaluaciones_promocion',campId);assert.equal(f.resultado.contribucion,6500);assert.equal(f.admin_uid,ADMIN);assert.equal(f.numeros.canjes,3);assert.equal((await leer('campaigns',campId)).aprobador,undefined);
+        await admin.w.editarCampana(campId);await hasta(()=>admin.w.document.getElementById('evalAprobador').value==='Dueño ficticio del recorrido','ficha de edición');assert.equal(admin.w.document.getElementById('evalConfirmar').checked,false);
+        admin.set('cDesc','Texto modificado sin nuevo acuerdo');await admin.w.saveCampaign();assert.equal((await leer('campaigns',campId)).desc,'Oferta ficticia exclusiva para comprobar el sistema');
+        await admin.w.duplicarCampana(campId);await hasta(()=>admin.w.document.getElementById('evalResultado').textContent.includes('Datos de referencia copiados'),'ficha copiada');assert.equal(admin.w.document.getElementById('evalAprobador').value,'');assert.equal(admin.w.document.getElementById('evalConfirmar').checked,false);
+        await admin.w.saveCampaign();assert.equal(await cantidad('campaigns'),1);admin.w.closeModal();
+    });
+    await comprobar('Cambio tras calcular invalida acuerdo y evita publicar datos distintos',async()=>{
+        await admin.w.editarCampana(campId);await hasta(()=>admin.w.document.getElementById('evalAprobador').value==='Dueño ficticio del recorrido','ficha recargada');aprobarOferta(admin);
+        admin.set('eval_costo_base','75');admin.w.document.getElementById('eval_costo_base').dispatchEvent(new admin.w.Event('input',{bubbles:true}));assert.equal(admin.w.document.getElementById('evalConfirmar').disabled,true);assert.equal(admin.w.document.getElementById('evalConfirmar').checked,false);
+        await admin.w.saveCampaign();assert.equal((await leer('evaluaciones_promocion',campId)).numeros.costo_base,7000);admin.w.closeModal();
     });
     await comprobar('Impresión: el QR del vehículo contiene su URL y el de caja su código exacto',async()=>{
         await admin.w.codCargar();admin.w.codImprimir(vehiculo);admin.w.codImprimir(negocio);assert.equal(admin.impresos.length,2);
@@ -102,7 +122,7 @@ async function resumen(){const ts=await admin.db.collection('tickets').get(),ms=
         const reporte=await abrir('dashboard.html',adminApp);await hasta(()=>reporte.w.document.getElementById('canjes').textContent==='1','reporte');assert.equal(reporte.w.document.getElementById('clicks').textContent,'1');assert.match(reporte.w.document.getElementById('cobros').textContent,/25/);assert.ok(reporte.w.document.getElementById('opiniones').textContent.includes('Promoción ficticia respetada'));reporte.close();
     });
     await comprobar('Cambiar la tarifa de la promoción no altera la comisión de un canje anterior',async()=>{
-        admin.w.editarCampana(campId);await hasta(()=>admin.w.document.getElementById('addModal').style.display==='flex'&&admin.w.document.getElementById('cCaja').value===negocio,'formulario de edición cargado');admin.set('cTarifa','45');await admin.w.saveCampaign();assert.equal((await leer('campaigns',campId)).tarifa,45);assert.equal((await leer('tickets',ticketId)).comision_centavos,2500);assert.equal((await resumen()).pagado,2500);
+        await admin.w.editarCampana(campId);await hasta(()=>admin.w.document.getElementById('addModal').style.display==='flex'&&admin.w.document.getElementById('cCaja').value===negocio,'formulario de edición cargado');await hasta(()=>admin.w.document.getElementById('evalAprobador').value==='Dueño ficticio del recorrido','ficha privada cargada');admin.set('cTarifa','45');aprobarOferta(admin);await admin.w.saveCampaign();assert.equal((await leer('campaigns',campId)).tarifa,45);assert.equal((await leer('tickets',ticketId)).comision_centavos,2500);assert.equal((await resumen()).pagado,2500);
     });
     await comprobar('Dos canjes simultáneos con una unidad: un solo éxito y stock cero',async()=>{
         await admin.db.collection('campaigns').doc(campId).update({stock:1});const a=await clienteNuevo('simultaneo-a'),b=await clienteNuevo('simultaneo-b');await Promise.all([a.w.EncaviCore.quemarCupon(campId,'Prueba'),b.w.EncaviCore.quemarCupon(campId,'Prueba')]);assert.equal([a,b].filter(p=>p.w.document.getElementById('successModal').style.display==='flex').length,1);assert.equal((await leer('campaigns',campId)).stock,0);assert.equal(await cantidad('tickets'),2);a.close();b.close();
@@ -131,7 +151,7 @@ async function resumen(){const ts=await admin.db.collection('tickets').get(),ms=
         await admin.w.EncaviOperacion.estadoCodigo(admin.db,vehiculo,true,null,()=>firebase.firestore.FieldValue.serverTimestamp());
     });
     await comprobar('Registro privado del chofer y administración inaccesibles al pasajero',async()=>{
-        const a=apps.find(a=>a.name==='pasajero-recorrido');await assert.rejects(a.firestore().collection('codigos').doc(vehiculo).get({source:'server'}));await assert.rejects(a.firestore().collection('pagos_publicidad').get());await assert.rejects(a.firestore().collection('campaigns').doc(campId).update({stock:999}));
+        const a=apps.find(a=>a.name==='pasajero-recorrido');await assert.rejects(a.firestore().collection('codigos').doc(vehiculo).get({source:'server'}));await assert.rejects(a.firestore().collection('pagos_publicidad').get());await assert.rejects(a.firestore().collection('evaluaciones_promocion').get());await assert.rejects(a.firestore().collection('campaigns').doc(campId).update({stock:999}));
         const p=await abrir('admin.html',a);assert.equal(p.w.document.getElementById('login-overlay').style.display,'flex');p.close();
     });
     await comprobar('Sin errores de JavaScript en las páginas del recorrido',async()=>{for(const p of paginas)assert.deepEqual(p.errores,[]);});

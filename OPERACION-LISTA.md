@@ -1,6 +1,6 @@
 # EncaviGO: operación preparada para el primer piloto
 
-Fecha: 4 de octubre de 2026, Ciudad de México. Carpeta única de trabajo: `C:/Users/Enciso/Desktop/EncaviGO`.
+Fecha: 5 de octubre de 2026, Ciudad de México. Carpeta única de trabajo: `C:/Users/Enciso/Desktop/EncaviGO`.
 
 La plataforma permite preparar las altas antes de tener choferes o negocios. Las listas vacías son un estado esperado. La guía y los ejemplos del panel no crean datos en Firebase. Para ensayar el recorrido del pasajero usa `https://encavigo.com/?demo=1`.
 
@@ -18,7 +18,7 @@ La plataforma permite preparar las altas antes de tener choferes o negocios. Las
 
 ## Herramientas para acordar promociones
 
-La calculadora permite capturar precio, costo directo, empaque/complemento, comisión, descuento, contribución mínima y límite de canjes aprobado. Muestra contribución por canje y tres alternativas. No publica ofertas. No incluye renta, nómina, impuestos ni mensualidad en la contribución.
+La calculadora permite capturar precio, costo directo, empaque/complemento, comisión, descuento, contribución mínima y límite de canjes aprobado. Permite explorar descuentos o un complemento informado por el negocio. La ficha privada es obligatoria antes de activar una promoción con canje. Al editar o copiar, se revisa el cálculo y se confirma el acuerdo de nuevo en el formulario. No incluye gastos fijos, impuestos ni mensualidad en la contribución. El procedimiento completo está en [PROCESO-PROMOCIONES.md](PROCESO-PROMOCIONES.md).
 
 La baraja coloca hasta diez promociones cercanas primero cuando hay ubicación y reserva hasta cinco lugares para rotación. Sin ubicación mezcla hasta quince. No es todavía un recomendador que aprenda rentabilidad ni una garantía de visitas.
 
@@ -27,12 +27,12 @@ La búsqueda filtra nombre, descripción y etiqueta sin distinguir acentos. La u
 
 ## Verificación realizada
 
-- `npm run test:recorrido`: 24 comprobaciones del recorrido unido de panel, pasajero y reporte, con Authentication y Firestore locales y las reglas reales del repositorio. Incluye altas desde formularios, QR, canje, opinión, adelanto/cobro y mensualidades. Informe y límites en `qa/RECORRIDO-COMPLETO.md`; no utiliza cámara física ni datos de producción.
+- `npm run test:recorrido`: 26 comprobaciones del recorrido unido de panel, pasajero y reporte, con Authentication y Firestore locales y las reglas reales del repositorio. Incluye altas desde formularios, QR, canje, opinión, adelanto/cobro y mensualidades. Informe y límites en `qa/RECORRIDO-COMPLETO.md`; no utiliza cámara física ni datos de producción.
 
-- `npm test`: 44 casos de acceso, sesión, demo y recorrido; 2 de comisiones; 6 de operación del panel, validación, contacto y reporte; 6 recorridos de búsqueda, ubicación, alertas y opinión.
-- `npm run test:rules`: 35 casos con Firestore Emulator. Incluyen stock atómico, duplicados, permisos, caja y vehículo dados de baja, fechas/días, importes históricos, publicidad, opiniones ligadas al canje y logs ligados a sesión.
+- `npm test`: 44 casos de acceso, sesión, demo y recorrido; 2 de comisiones; 6 de operación del panel, validación, contacto y reporte; 6 recorridos de búsqueda, ubicación, alertas y opinión; 6 casos de la calculadora.
+- `npm run test:rules`: 37 casos con Firestore Emulator. Incluyen stock atómico, duplicados, permisos, caja y vehículo dados de baja, fechas/días, importes históricos, publicidad, opiniones ligadas al canje y logs ligados a sesión.
 - `npm run test:auth`: 4 casos con el proveedor anónimo real del SDK contra emuladores locales.
-- `node scripts/verificar-sitio.cjs`: 19 scripts válidos, 33 referencias locales existentes, sin IDs duplicados y vistas dentro del panel.
+- `node scripts/verificar-sitio.cjs`: 21 scripts válidos, 35 referencias locales existentes, sin IDs duplicados y vistas dentro del panel.
 - Revisión del formulario real en navegador, con Firebase sustituido por un doble **solo en el servidor local de QA**. Escritorio y móvil de 390 × 844; sin desbordamiento horizontal en el móvil revisado. Es una prueba visual, no una sesión propietaria en producción.
 - No se crean negocios, choferes, tickets ni pagos ficticios en Firebase real. La guía de la fonda es texto de ayuda.
 
