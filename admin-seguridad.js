@@ -4,7 +4,7 @@ function escaparTextoAdmin(valor) {
         '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
     }[c]));
 }
-function renderOpinionesSeguras(contenedor, opiniones) {
+function renderOpinionesSeguras(contenedor, opiniones, atender) {
     const doc = contenedor.ownerDocument;
     contenedor.replaceChildren();
     if (!opiniones.length) {
@@ -34,6 +34,11 @@ function renderOpinionesSeguras(contenedor, opiniones) {
             comentario.style.cssText = 'font-size:13px;color:#6B7280;margin-top:4px';
             comentario.textContent = '“' + String(opinion.comentario) + '”';
             fila.append(comentario);
+        }
+        if (opinion.atendida) {
+            const estado=doc.createElement('p');estado.textContent='Atendida por administración';fila.append(estado);
+        } else if (typeof atender === 'function') {
+            const b=doc.createElement('button');b.textContent='Marcar atendida';b.type='button';b.onclick=()=>atender(opinion,b);fila.append(b);
         }
         contenedor.append(fila);
     }

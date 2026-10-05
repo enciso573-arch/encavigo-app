@@ -677,8 +677,8 @@ footer a:hover{color:var(--orange-bright)}
     <div class="flota-caja">
       <div class="flota-num" id="flotaNum">—</div>
       <div class="flota-txt">
-        <span class="flota-et">Vehículos activos hoy</span>
-        <p id="flotaFrase">Este número sale directo del sistema, no es un estimado.</p>
+        <span class="flota-et">Unidades afiliadas activas</span>
+        <p id="flotaFrase">Unidades con QR activo en el registro. No garantiza recorridos ni clientes.</p>
         <p>Vamos sumando unidades cada semana, y cada mes te mandamos el reporte de cuántas están activas. Si baja, también lo vas a ver.</p>
       </div>
     </div>
@@ -903,7 +903,7 @@ footer a:hover{color:var(--orange-bright)}
           <span class="p-per">por 1 mes (30 días)</span>
         </div>
         <ul class="plan-features">
-          <li><span class="chk">✓</span><span>Presencia activa en <strong>todos los vehículos en circulación</strong> de Puerto Vallarta o Bahía de Banderas.</span></li>
+          <li><span class="chk">✓</span><span>Presencia activa en <strong>todos los vehículos afiliados disponibles</strong> de Puerto Vallarta o Bahía de Banderas.</span></li>
           <li><span class="chk">✓</span><span><strong>Solo 5 cupos exclusivos por municipio</strong> (10 marcas en total) para asegurar máxima frecuencia e impacto.</span></li>
           <li><span class="chk">✓</span><span>Duración fija de 1 mes completo para lanzamientos, eventos y temporadas altas.</span></li>
         </ul>
@@ -1079,7 +1079,7 @@ footer a:hover{color:var(--orange-bright)}
       </details>
       <details class="sheet">
         <summary>¿En qué tipo de transporte están?</summary>
-        <p>En unidades de transporte de pasajeros que circulan por la ciudad. Hoy estamos en taxis de sitio y vehículos de plataforma, y vamos sumando rutas conforme crecemos. Para ti no cambia nada: tu promoción aparece igual en cualquier unidad afiliada, porque lo que importa es que el pasajero vaya sentado con su celular en la mano y pasando cerca de tu negocio.</p>
+        <p>En unidades de transporte de pasajeros que circulan por la ciudad. La red contempla taxis de sitio y vehículos de plataforma, y vamos sumando rutas conforme crecemos. Para ti no cambia nada: tu promoción aparece igual en cualquier unidad afiliada, porque lo que importa es que el pasajero vaya sentado con su celular en la mano y pasando cerca de tu negocio.</p>
       </details>
       <details class="sheet">
         <summary>¿En qué zonas están?</summary>
@@ -1096,7 +1096,7 @@ footer a:hover{color:var(--orange-bright)}
 <!-- ══ CIERRE ══ -->
 <section class="final">
   <div class="wrap">
-    <h2>Las unidades ya están rodando.</h2>
+    <h2>Prepara tu promoción para el primer recorrido.</h2>
     <p class="lead">Miles de pasajeros se mueven todos los días por Puerto Vallarta y Bahía de Banderas. Haz que vean tu negocio en su trayecto. Déjanos tus datos y te contactamos hoy mismo.</p>
     <div class="cta-row">
       <a class="btn btn-primary js-registro" href="/registro.html">Quiero mi lugar</a>
@@ -1128,19 +1128,19 @@ footer a:hover{color:var(--orange-bright)}
           + '?key=AIzaSyBS87d1Dv9nx6Yg_dqq-E3x9GI4gpSA7ps&pageSize=300';
 
   fetch(url).then(function (r) { return r.json(); }).then(function (j) {
-    if (!j || !j.documents) { throw new Error('sin datos'); }
+    if (!j || j.error || j.nextPageToken) { throw new Error('sin conteo completo'); }
     var corte = Date.now() - 30 * 24 * 60 * 60 * 1000;
     var activos = 0;
-    j.documents.forEach(function (d) {
+    (j.documents || []).forEach(function (d) {
       var f = d.fields || {};
       var la = f.lastActive && f.lastActive.timestampValue;
-      if (la && new Date(la).getTime() >= corte) activos++;
+      if (f.activo && f.activo.booleanValue === true) activos++;
     });
     NUM.textContent = activos;
     if (activos === 0) {
       FRASE.textContent = 'Todavía ninguna. Estás viendo esto antes de que arranque.';
     } else if (activos === 1) {
-      FRASE.textContent = 'Una unidad rodando. Apenas vamos empezando, y este número sale directo del sistema.';
+      FRASE.textContent = 'Una unidad afiliada activa en el registro. No equivale a un número de viajes.';
     } else {
       FRASE.textContent = 'Este número sale directo del sistema, no es un estimado.';
     }

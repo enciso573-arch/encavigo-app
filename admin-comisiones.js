@@ -49,7 +49,7 @@
             if(turno!==carga)return;
             const tickets=[], movimientos=Object.create(null), opiniones=[];
             ts.forEach(d=>tickets.push({...d.data(),id:d.id})); ms.forEach(d=>{movimientos[d.id]=d.data();});
-            os.forEach(d=>{const o=d.data(), f=o.fecha && o.fecha.toDate && o.fecha.toDate(); if(!rango.desde || (f>=rango.desde && f<rango.hasta))opiniones.push(o);});
+            os.forEach(d=>{const o={...d.data(),id:d.id}, f=o.fecha && o.fecha.toDate && o.fecha.toDate(); if(!rango.desde || (f>=rango.desde && f<rango.hasta))opiniones.push(o);});
             const r=C.resumen(tickets,movimientos,rango);
             window.quemadosPorChofer=Object.create(null);
             r.filas.forEach(({t})=>{window.quemadosPorChofer[t.chofer]=(window.quemadosPorChofer[t.chofer]||0)+1;});
@@ -80,7 +80,12 @@
             }
             if(!r.filas.length)detalle.textContent='Sin canjes para este periodo.';
             document.getElementById('cobRevisionCaja').style.display='none';
-            renderOpinionesSeguras(document.getElementById('cobOpiniones'),opiniones);
+            renderOpinionesSeguras(document.getElementById('cobOpiniones'),opiniones,async(op,b)=>{
+                if(!window.confirm('¿Ya atendiste esta opinión con el negocio?'))return;
+                b.disabled=true;
+                try{await db.collection('opiniones').doc(op.id).update({atendida:true});await window.calcularCobros();}
+                catch(e){window.alert('No se marcó atendida: '+e.message);b.disabled=false;}
+            });
         } catch(e) { if(turno===carga)document.getElementById('cobDetalle').textContent='No se pudo cargar: '+e.message; }
     };
 })();

@@ -2,12 +2,14 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const { initializeTestEnvironment, assertFails, assertSucceeds } = require('@firebase/rules-unit-testing');
-const { collection, doc, getDoc, getDocFromServer, setDoc, updateDoc, deleteDoc, runTransaction, serverTimestamp, Timestamp } = require('firebase/firestore');
+const { collection, doc, getDoc, getDocFromServer, setDoc, updateDoc, deleteDoc, runTransaction, writeBatch, serverTimestamp, Timestamp } = require('firebase/firestore');
 const { JSDOM } = require('jsdom');
 const { renderOpinionesSeguras, escaparTextoAdmin } = require('./admin-seguridad');
 const { boot } = require('./test_demo_integration');
 const { crearServicioSesiones } = require('./sesiones-servidor');
 const Comisiones = require('./comisiones');
+const Operacion = require('./operacion');
+const Publicidad = require('./publicidad');
 
 const host = process.env.FIRESTORE_EMULATOR_HOST;
 assert.equal(host, '127.0.0.1:8787', 'Esta suite exige el emulador local en 8787');
@@ -17,6 +19,7 @@ async function seed(stock = 1) {
     await env.withSecurityRulesDisabled(async ctx => {
         const db = ctx.firestore();
         await setDoc(doc(db, 'campaigns/promo'), { active: true, stock, caja_id: 'CAJA-OK', clicks: 0, tarifa:25, title:'Negocio' });
+        await setDoc(doc(db, 'codigos/CAJA-OK'), {tipo:'caja',estado:'activo'});
         await setDoc(doc(db, 'codigos/V-001'), { tipo:'vehiculo', estado:'activo', telefono: 'dato-privado', escaneos: 0 });
         for (const [uid,code] of [['passenger','A'],['passengerB','B']]) {
             await setDoc(doc(db,'sesiones/'+uid),{code,chofer:'V-001',issuedAt:Timestamp.now(),juegoJugado:false});
@@ -50,6 +53,7 @@ function adapter(db) {
     } });
     return {
         collection: name => ({ doc: id => wrap(id ? doc(db, name, id) : doc(collection(db, name))) }),
+        batch:()=>{const b=writeBatch(db);return {set:(r,d,o)=>o?b.set(r.raw,d,o):b.set(r.raw,d),update:(r,d)=>b.update(r.raw,d),delete:r=>b.delete(r.raw),commit:()=>b.commit()};},
         runTransaction: fn => runTransaction(db, tx => fn({
             get: async ref => { const s = await tx.get(ref.raw); return { exists:s.exists(), data:()=>s.data() }; },
             // Objetos del VM se convierten a objetos del SDK, sin alterar los sentinels.
@@ -132,10 +136,10 @@ async function readPrivate(path) {
         } finally { app.close(); }
     });
     await check('Premio piloto bloqueado y opiniones con tipos inválidos rechazadas', async () => {
-        const db = publicDb();
+        await seed(2);const db = publicDb();await redeem(db,'A');
         await assertFails(setDoc(doc(db,'premios/falso'),{chofer:'V-001',dev:'x',fecha:serverTimestamp()}));
         const opinion = {camp_id:'promo',negocio:'Negocio',chofer:'V-001',respetado:true,estrellas:5,comentario:'Bien',atendida:false,fecha:serverTimestamp()};
-        await assertSucceeds(setDoc(doc(db,'opiniones/valida'),opinion));
+        await assertSucceeds(setDoc(doc(db,'opiniones/CAJA-OK_A'),opinion));
         await assertFails(setDoc(doc(db,'opiniones/invalida'),{...opinion,comentario:[]}));
         await assertFails(setDoc(doc(db,'opiniones/falsa'),{...opinion,atendida:true}));
     });
@@ -354,5 +358,57 @@ async function readPrivate(path) {
         const t={...(await readPrivate('tickets/CAJA-OK_A')),id:'CAJA-OK_A'};
         assert.equal(t.comision_centavos,0);assert.equal(Comisiones.resumen([t],{}, {desde:null}).pagar,0);
     });
-    console.log(`Seguridad: ${passed}/28 pruebas pasadas en emulador.`);
+    await check('Alta real del servicio administra QR sin sobrescribir titulares', async()=>{
+        const uid='ZS4cI7hnMXVPpCaQECFg208TLbL2',db=adapter(env.authenticatedContext(uid).firestore());
+        await Operacion.registrarCodigo(db,'BASE-123',{tipo:'vehiculo',zona:'vallarta',titular:'Chofer aislado',tel:'322 000 0000'},serverTimestamp);
+        assert.equal((await readPrivate('choferes/BASE-123')).activo,true);
+        await assert.rejects(Operacion.registrarCodigo(db,'BASE-123',{tipo:'vehiculo',zona:'vallarta',titular:'Otra persona'},serverTimestamp));
+        assert.equal((await readPrivate('codigos/BASE-123')).titular,'Chofer aislado');
+        await assertFails(Operacion.registrarCodigo(adapter(publicDb()),'FALSO-123',{tipo:'vehiculo',zona:'vallarta',titular:'Intruso'},serverTimestamp));
+    });
+    await check('Editar sin cambiar stock conserva los canjes concurrentes; caja inactiva impide guardar',async()=>{
+        await seed(5);const uid='ZS4cI7hnMXVPpCaQECFg208TLbL2',db=adapter(env.authenticatedContext(uid).firestore());
+        const data=Operacion.promocion({title:'Negocio',desc:'Oferta',lat:20.65,lng:-105.22,stock:5,tarifa:25,caja_id:'CAJA-OK',dias:[]});
+        await redeem(publicDb(),'A');await Operacion.guardarPromocion(db,'promo',data,5,serverTimestamp);
+        assert.equal((await readPrivate('campaigns/promo')).stock,4);
+        await env.withSecurityRulesDisabled(ctx=>updateDoc(doc(ctx.firestore(),'codigos/CAJA-OK'),{estado:'baja'}));
+        await assert.rejects(Operacion.guardarPromocion(db,'promo',data,5,serverTimestamp));
+    });
+    await check('Servidor bloquea canjes fuera de fechas, días, caja activa y campañas sin comisión',async()=>{
+        await seed(8);const d=env.authenticatedContext('ZS4cI7hnMXVPpCaQECFg208TLbL2').firestore();
+        for(const cambio of [{desde_ms:Date.now()+86400000},{desde_ms:null,hasta_ms:Date.now()-1000},{hasta_ms:null,dias:[(new Date(Date.now()-21600000).getUTCDay()+1)%7]},{dias:[],tipo_campana:'municipal'}]){await updateDoc(doc(d,'campaigns/promo'),cambio);await assertFails(redeem(publicDb(),'A'));}
+        await updateDoc(doc(d,'campaigns/promo'),{tipo_campana:'local'});await updateDoc(doc(d,'codigos/CAJA-OK'),{estado:'baja'});await assertFails(redeem(publicDb(),'A'));
+        assert.equal((await readPrivate('campaigns/promo')).stock,8);
+    });
+    await check('Logs únicos ligados a sesión y campaña; contadores públicos no se pueden inflar',async()=>{
+        await seed();const db=publicDb();const scan={chofer:'V-001',fecha:serverTimestamp()},click={...scan,camp_id:'promo'};
+        await assertSucceeds(setDoc(doc(db,'scan_log/passenger_A'),scan));await assertFails(setDoc(doc(db,'scan_log/passenger_A'),scan));await assertFails(setDoc(doc(db,'scan_log/otra-huella'),scan));
+        await assertSucceeds(setDoc(doc(db,'click_log/promo_passenger_A'),click));await assertFails(setDoc(doc(db,'click_log/promo_passenger_A'),click));await assertFails(setDoc(doc(db,'click_log/promo_passenger_A_extra'),click));
+        await assertFails(updateDoc(doc(db,'campaigns/promo'),{clicks:1}));await assertFails(updateDoc(doc(db,'codigos/V-001'),{escaneos:1}));
+    });
+    await check('Opinión requiere canje propio y solo se registra una vez',async()=>{
+        await seed(3);const db=publicDb(),op={camp_id:'promo',negocio:'Negocio',chofer:'V-001',respetado:true,estrellas:5,comentario:'Bien',atendida:false,fecha:serverTimestamp()};
+        await assertFails(setDoc(doc(db,'opiniones/CAJA-OK_A'),op));await redeem(db,'A');await assertSucceeds(setDoc(doc(db,'opiniones/CAJA-OK_A'),op));
+        await assertFails(setDoc(doc(db,'opiniones/otra'),op));await assertFails(setDoc(doc(publicDb('passengerB'),'opiniones/CAJA-OK_A'),op));
+    });
+    await check('Publicidad: cobro mensual real, duplicado bloqueado e importe histórico conservado',async()=>{
+        const uid='ZS4cI7hnMXVPpCaQECFg208TLbL2',raw=env.authenticatedContext(uid).firestore(),db=adapter(raw);
+        await setDoc(doc(raw,'contratos_publicidad/CAJA-OK'),Publicidad.contrato({nombre:'Negocio',importe:1000,plan:'local'}));
+        await assertFails(getDoc(doc(publicDb(),'contratos_publicidad/CAJA-OK')));
+        await Publicidad.cobrar(db,'CAJA-OK','2026-10','Transferencia real simulada en emulador',uid,serverTimestamp);
+        await assert.rejects(Publicidad.cobrar(db,'CAJA-OK','2026-10','Otra',uid,serverTimestamp));
+        await updateDoc(doc(raw,'contratos_publicidad/CAJA-OK'),{importe_centavos:120000});assert.equal((await readPrivate('pagos_publicidad/CAJA-OK_2026-10')).importe_centavos,100000);
+        await assertFails(updateDoc(doc(raw,'pagos_publicidad/CAJA-OK_2026-10'),{importe_centavos:120000}));await assertFails(deleteDoc(doc(raw,'pagos_publicidad/CAJA-OK_2026-10')));
+        await setDoc(doc(raw,'contratos_publicidad/CORTESIA'),Publicidad.contrato({nombre:'Piloto',importe:0,plan:'cortesia'}));await assert.rejects(Publicidad.cobrar(db,'CORTESIA','2026-10','No hubo dinero',uid,serverTimestamp));
+    });
+    await check('Baja y reactivación actualizan QR, lista de bajas y flota juntos',async()=>{
+        await seed();const uid='ZS4cI7hnMXVPpCaQECFg208TLbL2',db=adapter(env.authenticatedContext(uid).firestore());
+        await Operacion.estadoCodigo(db,'V-001',false,'Fin del acuerdo',serverTimestamp);
+        assert.equal((await readPrivate('codigos/V-001')).estado,'baja');assert.equal((await readPrivate('choferes/V-001')).activo,false);assert.ok(await readPrivate('bajas/V-001'));
+        await assert.rejects(sessionService('passenger').restaurarOIniciar(null));
+        await Operacion.estadoCodigo(db,'V-001',true,null,serverTimestamp);
+        assert.equal((await readPrivate('codigos/V-001')).estado,'activo');assert.equal((await readPrivate('choferes/V-001')).activo,true);assert.equal(await readPrivate('bajas/V-001'),undefined);
+        assert.equal((await sessionService('passenger').restaurarOIniciar(null)).code,'A');
+    });
+    console.log(`Seguridad: ${passed}/${passed} pruebas pasadas en emulador.`);
 })().catch(err=>{console.error(err);process.exitCode=1;}).finally(async()=>{if(env)await env.cleanup();});

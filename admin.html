@@ -43,22 +43,22 @@
   .data-section { background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); }
   .data-header { padding: 20px 24px; border-bottom: 1px solid #E5E7EB; display: flex; justify-content: space-between; align-items: center; }
   .data-header h3 { margin: 0; font-size: 14px; font-weight: 600; color: #111827; }
-  
+
   table { width: 100%; border-collapse: collapse; text-align: left; }
   th { padding: 16px 24px; font-size: 11px; font-weight: 500; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #E5E7EB; background: #F9FAFB; }
   td { padding: 16px 24px; font-size: 13px; color: #4B5563; border-bottom: 1px solid #E5E7EB; vertical-align: middle; }
   tr:hover td { background: #F9FAFB; cursor: pointer; }
-  
+
   .business-cell { display: flex; align-items: center; gap: 16px; }
   .biz-avatar { width: 36px; height: 36px; border-radius: 8px; background-size: cover; background-position: center; border: 1px solid #E5E7EB; }
   .biz-info { display: flex; flex-direction: column; gap: 4px; }
   .biz-name { font-weight: 600; color: #111827; font-size: 14px; }
   .biz-type { font-size: 11px; color: #6B7280; }
-  
+
   .badge-active { background: rgba(16, 185, 129, 0.1); color: #10B981; border: 1px solid rgba(16, 185, 129, 0.2); padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 500; display: inline-block;}
   .action-icon { color: #6B7280; cursor: pointer; transition: color 0.2s; background: none; border: none; padding: 4px; }
   .action-icon:hover { color: #111827; }
-  
+
   .performance-bar { width: 100%; height: 6px; background: #E5E7EB; border-radius: 3px; overflow: hidden; margin-top: 6px; }
   .performance-fill { height: 100%; background: #F97316; border-radius: 3px; }
 
@@ -126,6 +126,9 @@
   .login-box input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #E5E7EB; border-radius: 8px; font-family: 'Inter', sans-serif; background: #F9FAFB; }
   .login-box button { width: 100%; padding: 12px; background: #111827; color: #FFF; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
   .login-box button:hover { opacity: 0.9; }
+.ayuda{font-size:12px;color:#64748b;line-height:1.6}.guia{padding:14px;background:#fff7ed;border-radius:10px;margin-bottom:18px}.guia summary{cursor:pointer;font-weight:600}.guia p{font-size:13px;line-height:1.7}.guia select,.form-group select{width:100%;padding:10px}
+@media(max-width:760px){.app-container{flex-direction:column}.sidebar{width:100%;height:auto;padding:14px}.nav-menu{flex-direction:row;flex-wrap:wrap}.main{padding:18px}.metrics{grid-template-columns:1fr}.top-bar{flex-wrap:wrap;gap:12px}.data-section{overflow-x:auto}.modal{width:94vw!important;max-height:90vh;overflow-y:auto}.form-group{flex-wrap:wrap} }
+input[type="checkbox"]{width:auto}.nav-item[role="button"]:focus-visible{outline:2px solid #F97316}.guia input{max-width:100%;margin:7px 0 15px}.main{min-width:0}
 </style>
 </head>
 <body>
@@ -133,11 +136,12 @@
 <div class="login-box">
 <h2>🔒 EncaviGO Admin</h2>
 <input autocomplete="email" id="loginEmail" placeholder="Correo electrónico" type="email"/>
-<input id="loginPwd" placeholder="Contraseña" type="password"/>
+<input autocomplete="current-password" id="loginPwd" placeholder="Contraseña" type="password"/>
 <button onclick="loginAdmin()">Ingresar</button>
 <p id="loginError" style="color: #EF4444; font-size: 12px; margin-top: 10px; display: none;">Credenciales incorrectas.</p>
 </div>
 </div>
+<div class="app-container" style="display:none;width:100%;height:100vh;min-height:0;">
 <div class="sidebar">
 <div class="brand">
 <div class="brand-icon">
@@ -175,7 +179,7 @@
 <h1 class="page-title">Métricas Principales</h1>
 <button class="btn-secondary" style="margin-right: 15px; background: #FFF; color: #111827; border: 1px solid #E5E7EB;" onclick="generarReportePDF()">
   <svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="16" style="margin-right: 6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-  Exportar PDF
+  Reporte por negocio
 </button>
 <button class="btn-primary" onclick="openAddModal();">
 <svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="16"><line x1="12" x2="12" y1="5" y2="19"></line><line x1="5" x2="19" y1="12" y2="12"></line></svg>
@@ -186,7 +190,7 @@
 <div class="metric-card">
 <div class="metric-label">Escaneos QR Totales</div>
 <div class="metric-value" id="val-scans">0</div>
-<div class="metric-trend">sin repetir: 1 por celular al día</div>
+<div class="metric-trend">sin repetir: 1 por sesión de 24 horas</div>
 </div>
 <div class="metric-card">
 <div class="metric-label">Cupones Quemados</div>
@@ -194,7 +198,7 @@
 <div class="metric-trend" style="color: #10B981;">canjes en caja</div>
 </div>
 <div class="metric-card">
-<div class="metric-label">Chofer Destacado (Hoy)</div>
+<div class="metric-label">Chofer con más sesiones registradas</div>
 <div class="metric-value" id="val-top-chofer">--</div>
 <div class="metric-trend" style="color: #6B7280;"><span id="val-top-scans">0 escaneos</span></div>
 </div>
@@ -210,21 +214,21 @@
 <div class="data-section" style="padding:22px 24px; margin-bottom:22px;">
   <div style="display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:16px;">
     <h3 style="margin:0; font-size:16px;">La semana</h3>
-    <span style="font-size:12.5px; color:#6B7280;">Qué promoción sale cada día. El negocio contrata tres por semana.</span>
+    <span style="font-size:12.5px; color:#6B7280;">Calendario de los días seleccionados al registrar las promociones. Las fechas de vigencia también se aplican.</span>
   </div>
   <div id="semanaGrid" style="display:grid; grid-template-columns:repeat(7,1fr); gap:8px; min-width:0;"></div>
 </div>
 
 <div class="data-section">
 <div class="data-header">
-<h3>Directorio de Campañas Activas</h3>
+<h3>Directorio de promociones</h3>
 <svg fill="none" height="16" stroke="#666" stroke-width="2" viewbox="0 0 24 24" width="16"><circle cx="11" cy="11" r="8"></circle><line x1="21" x2="16.65" y1="21" y2="16.65"></line></svg>
 </div>
 <table>
 <thead>
 <tr>
 <th>Negocio Registrado</th>
-<th>Rendimiento (Clics)</th>
+<th>Interacciones registradas</th>
 <th>Días que sale</th>
 <th>Estado</th>
 <th>Acciones</th>
@@ -290,7 +294,7 @@
 <th>Escaneos Generados</th>
 <th>Clics a Negocios</th>
 <th>Cupones quemados</th>
-<th>Última Actividad</th>
+<th>Estado del QR</th>
 </tr>
 </thead>
 <tbody id="choferes-tbody">
@@ -414,45 +418,14 @@
     </div>
   </div>
 
-  <div style="background:#FFF; border:1px solid #FECACA; border-radius:16px; padding:24px; margin-top:24px;">
-    <h2 style="font-size:17px; margin:0 0 4px 0; color:#B91C1C;">Cerrar la etapa de pruebas</h2>
-    <p style="font-size:13px; color:#6B7280; margin:0 0 16px 0; max-width:640px;">
-      Borra todo lo que se generó probando: contadores, choferes, promociones, cupones y registros.
-      Se usa una sola vez, antes de dar de alta al primer chofer y al primer negocio de verdad.
-      <strong>Los códigos QR registrados aquí arriba no se tocan</strong>, porque esos ya podrían estar impresos.
-    </p>
-
-    <button class="btn-cancel" style="border:1px solid #D1D5DB; border-radius:8px; padding:9px 14px; font-size:13px;" onclick="limpiezaPrevia()">Ver qué se borraría</button>
-
-    <div id="limpiezaCaja" style="display:none; margin-top:18px; border-top:1px solid #FEE2E2; padding-top:18px;">
-      <div id="limpiezaLista" style="font-size:13px; margin-bottom:16px;"></div>
-      <label style="display:block; font-size:12px; color:#6B7280; margin-bottom:6px; font-weight:600;">Para confirmar, escribe BORRAR</label>
-      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-        <input id="limpiezaPalabra" placeholder="BORRAR" style="padding:10px 12px; border:1px solid #D1D5DB; border-radius:8px; font-family:'Inter',sans-serif; font-size:14px; text-transform:uppercase; width:150px;"/>
-        <button style="border:none; cursor:pointer; background:#B91C1C; color:#FFF; font-weight:600; font-size:13px; padding:10px 16px; border-radius:8px;" onclick="limpiezaEjecutar()">Borrar y empezar de cero</button>
-        <span id="limpiezaAviso" style="font-size:13px;"></span>
-      </div>
-    </div>
-  </div>
+<p class="ayuda">Usa la demostración para ensayar. Los canjes y pagos reales conservan su historial y no se borran desde el panel.</p>
 </div>
-
-<div id="view-analiticas" style="display: none; height: 100%; flex-direction: column;">
-<div class="top-bar" style="margin-bottom: 20px;">
-<h1 class="page-title">Analíticas Avanzadas</h1>
-</div>
-<div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
-<div style="width: 90px; height: 90px; background: rgba(249, 115, 22, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 24px; color: #F97316;">
-<svg fill="none" height="40" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="40"><line x1="18" x2="18" y1="20" y2="10"></line><line x1="12" x2="12" y1="20" y2="4"></line><line x1="6" x2="6" y1="20" y2="14"></line></svg>
-</div>
-<h2 style="font-size: 22px; font-weight: 700; color: #111827; margin: 0 0 10px 0;">Módulo en Construcción</h2>
-<p style="color: #6B7280; font-size: 15px; max-width: 450px; text-align: center; line-height: 1.6; margin: 0;">Estamos desarrollando un sistema de métricas de rendimiento y gráficas avanzadas exclusivas para la versión 2.0 de EncaviGO.</p>
-</div>
-</div>
-
-</div>
-</div>
+<div id="view-analiticas" style="display:none"><h1>Actividad registrada</h1><p>Hasta 31 días con actividad reciente. Son sesiones e interacciones; no representan personas únicas. Para el detalle mensual de un negocio, abre su reporte.</p><p><a href="dashboard.html">Abrir reporte por negocio</a></p><div class="data-section"><table><thead><tr><th>Fecha local</th><th>Sesiones QR</th><th>Interacciones</th><th>Canjes</th></tr></thead><tbody id="anaDias"></tbody></table></div></div>
+</div></div>
 <script src="admin-seguridad.js"></script>
 <script src="comisiones.js"></script>
+<script src="operacion.js"></script>
+<script src="publicidad.js"></script>
 <!-- FIREBASE SDK -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -475,26 +448,35 @@
     // FIREBASE AUTHENTICATION LOGIC
     const auth = firebase.auth();
 
-    auth.onAuthStateChanged(user => {
-        if (user) {
-            document.getElementById('login-overlay').style.display = 'none';
-            document.querySelector('.app-container').style.display = 'flex';
-            contarQuemadosPorChofer();
-        } else {
-            document.getElementById('login-overlay').style.display = 'flex';
-            document.querySelector('.app-container').style.display = 'none';
-        }
-    });
+    let panelIniciado=false; const panelSuscripciones=[];
+ function seguir(ref,ok,error){const unsub=ref.onSnapshot(ok,error||((e)=>console.error('Error de lectura',e)));panelSuscripciones.push(unsub);}
+ auth.onAuthStateChanged(async user=>{
+   await new Promise(resolve=>document.readyState==='loading'?document.addEventListener('DOMContentLoaded',resolve,{once:true}):resolve());
+   const permitido=EncaviOperacion.esAdmin(user);
+   document.getElementById('login-overlay').style.display=permitido?'none':'flex';
+   document.querySelector('.app-container').style.display=permitido?'flex':'none';
+   if(permitido){if(!panelIniciado){iniciarPanel();panelIniciado=true;}contarQuemadosPorChofer();}
+   else{panelSuscripciones.splice(0).forEach(fn=>fn());panelIniciado=false;}
+ });
 
     function loginAdmin() {
         const email = document.getElementById('loginEmail').value;
         const pwd = document.getElementById('loginPwd').value;
         const errObj = document.getElementById('loginError');
         errObj.style.display = 'none';
-        
+
         auth.signInWithEmailAndPassword(email, pwd)
+            .then(async cred => {
+                if (!EncaviOperacion.esAdmin(cred.user)) {
+                    await auth.signOut();
+                    errObj.textContent = 'Esta cuenta no es la administradora de EncaviGO.';
+                    errObj.style.display = 'block';
+                }
+            })
             .catch(error => {
-                errObj.innerText = error.message;
+                errObj.textContent = error.code === 'auth/network-request-failed'
+                    ? 'No se pudo conectar. Revisa tu conexión e inténtalo otra vez.'
+                    : 'No se pudo iniciar sesión. Revisa el correo y la contraseña de tu cuenta administradora.';
                 errObj.style.display = 'block';
             });
     }
@@ -503,11 +485,11 @@
         auth.signOut();
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
+    function iniciarPanel(){
         const valScans = document.getElementById('val-scans');
         const valClicks = document.getElementById('val-clicks');
         const tbody = document.querySelector('tbody');
-        
+
         /* Los dos numeros de arriba salian de un contador global que
            subia con cada recarga de la app. Ahora salen de los
            registros reales, que ya vienen sin repetir: un escaneo por
@@ -515,105 +497,33 @@
            promocion y por dia. Son mas chicos y son ciertos. */
         cargarInteres();
 
-        db.collection('scan_log').onSnapshot(snap => {
-            if (valScans) valScans.innerText = snap.size.toLocaleString();
+        seguir(db.collection('scan_log'), snap => {
+            refrescarChoferes(); if (valScans) valScans.innerText = snap.size.toLocaleString();
         }, () => { if (valScans) valScans.innerText = '—'; });
 
-        db.collection('click_log').onSnapshot(snap => {
-            if (valClicks) valClicks.innerText = snap.size.toLocaleString();
+        seguir(db.collection('click_log'), snap => {
+            refrescarChoferes(); if (valClicks) valClicks.innerText = snap.size.toLocaleString();
         }, () => { if (valClicks) valClicks.innerText = '—'; });
-        
+
         // Leer Top Chofer
         // Contar tickets quemados
-        db.collection('tickets').where('status', '==', 'quemado').onSnapshot(snap => {
-            const total = snap.size;
+        seguir(db.collection('tickets').where('status', '==', 'quemado'), snap => {
+            refrescarChoferes(); const total = snap.size;
             const el = document.getElementById('val-quemados');
             if(el) el.innerText = total;
         });
 
-        db.collection('choferes').orderBy('scans', 'desc').limit(1).onSnapshot(snapshot => {
-            if(!snapshot.empty) {
-                const topChofer = snapshot.docs[0];
-                const topName = document.getElementById('val-top-chofer');
-                const topScans = document.getElementById('val-top-scans');
-                if(topName) topName.innerText = topChofer.id;
-                if(topScans) topScans.innerText = topChofer.data().scans + " escaneos";
-            }
-        });
+
 
         // LEER CAMPAÑAS EN VIVO Y PINTAR LA TABLA
-        db.collection('campaigns').onSnapshot(snapshot => {
-            if(tbody) {
-                tbody.innerHTML = '';
-                
-                snapshot.forEach(doc => {
-                    const camp = doc.data();
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                      <td>
-                        <div class="business-cell">
-                          <div class="biz-avatar" style="background-image: url('${camp.img || ''}');"></div>
-                          <div class="biz-info">
-                            <span class="biz-name">${camp.title || 'Sin Título'}</span>
-                            <span class="biz-type">${camp.badge || 'Anuncio'}</span>
-                          </div>
-                        </div>
-                      </td>
-                      <td style="width: 25%;">
-                        <div style="font-weight: 500; color: #111827; margin-bottom: 4px;">${camp.clicks || 0} clics</div>
-                        <div class="performance-bar"><div class="performance-fill" style="width: ${Math.min((camp.clicks||0), 100)}%;"></div></div>
-                      </td>
-                      <td><span class="dias-pastilla">${diasTexto(camp.dias)}</span></td>
-                      <td>${ saleHoy(camp)
-                          ? '<span class="badge-active">Sale hoy</span>'
-                          : '<span style="background:#F3F4F6; color:#6B7280; border:1px solid #E5E7EB; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:500;">Hoy no</span>' }</td>
-                      <td>
-                        <button class="action-icon" onclick='editarCampana(${JSON.stringify(doc.id)})' title="Editar">✏️</button>
-                        <button class="action-icon" onclick='duplicarCampana(${JSON.stringify(doc.id)})' title="Duplicar">⧉</button>
-                        <button class="action-icon" onclick="deleteCampaign('${doc.id}')" title="Eliminar">🗑️</button>
-                      </td>
-                    `;
-                    tbody.appendChild(tr);
-                    
-                });
-            }
-            pintarSemana(snapshot);
-        }, err => console.error(err));
-
+        seguir(db.collection('campaigns'),snapshot=>{window.panelCampanas=snapshot;pintarCampanas(snapshot);pintarSemana(snapshot);});
         const choferesTbody = document.getElementById('choferes-tbody');
-        db.collection('choferes').orderBy('scans', 'desc').onSnapshot(snapshot => {
-            if(choferesTbody) {
-                choferesTbody.innerHTML = '';
-                snapshot.forEach(doc => {
-                    const c = doc.data();
-                    const tr = document.createElement('tr');
-                    
-                    /* Aqui habia una "comision sugerida" de escaneos x $2.
-                       Ese peaje no lo decidio nadie y ademas pagaba por
-                       escaneo, no por cupon quemado, que es lo contrario
-                       de lo acordado. El dinero se calcula en Cobros,
-                       donde si esta la tarifa de cada negocio. */
-                    const quemados = (window.quemadosPorChofer && window.quemadosPorChofer[doc.id]) || 0;
-                    
-                    let dateStr = 'Reciente';
-                    if (c.lastActive && c.lastActive.toDate) {
-                        dateStr = c.lastActive.toDate().toLocaleDateString();
-                    }
-                    
-                    tr.innerHTML = `
-                      <td><strong style="color: #111827;">${doc.id}</strong></td>
-                      <td>${c.scans || 0}</td>
-                      <td>${c.clicks || 0}</td>
-                      <td data-chofer="${doc.id}" style="color: #10B981; font-weight: bold;">${quemados}</td>
-                      <td>${dateStr}</td>
-                    `;
-                    choferesTbody.appendChild(tr);
-                });
-            }
-        });
-    });
 
-    
+
+seguir(db.collection('codigos'),()=>refrescarChoferes());
+}
+
+
 
     /* ───────────────────────────────────────────
        UBICACION DEL NEGOCIO
@@ -625,7 +535,7 @@
 
     function ubiEstado(txt, ok) {
         const el = document.getElementById('ubiAviso');
-        el.innerHTML = txt;
+        el.textContent = txt;
         el.className = 'ubi-aviso' + (ok ? ' ubi-ok' : '');
     }
 
@@ -741,7 +651,7 @@
        cargado, y es el que te dice que negocio ir a buscar en esa
        zona — y con que argumento tocarle la puerta. */
     function cargarInteres() {
-        db.collection('interes').onSnapshot(function (snap) {
+        seguir(db.collection('interes'), function (snap) {
             const caja = document.getElementById('cajaInteres');
             const lista = document.getElementById('interesLista');
             if (!caja || !lista) return;
@@ -765,7 +675,7 @@
             lista.innerHTML = filas.map(function (f) {
                 const ancho = Math.round((f[1] / tope) * 100);
                 return '<div style="display:flex; align-items:center; gap:12px; padding:7px 0;">' +
-                         '<span style="width:150px; font-size:13.5px; flex:0 0 auto;">' + (NOMBRES[f[0]] || f[0]) + '</span>' +
+                         '<span style="width:150px; font-size:13.5px; flex:0 0 auto;">' + codEsc(NOMBRES[f[0]] || f[0]) + '</span>' +
                          '<div style="flex:1; height:8px; background:#F3F4F6; border-radius:99px; overflow:hidden;">' +
                            '<div style="width:' + ancho + '%; height:100%; background:#F97316; border-radius:99px;"></div>' +
                          '</div>' +
@@ -820,10 +730,10 @@
 
     /* ¿Sale hoy? Misma regla que usa la app del pasajero. */
     function saleHoy(camp) {
-        if (camp.active === false) return false;
+        if (camp.active === false) return false;if(camp.desde_ms!=null&&Date.now()<camp.desde_ms)return false;if(camp.hasta_ms!=null&&Date.now()>=camp.hasta_ms)return false;
         const d = camp.dias;
         if (!Array.isArray(d) || d.length === 0) return true;
-        return d.map(Number).indexOf(new Date().getDay()) !== -1;
+        return d.map(Number).indexOf(new Date(Date.now()-21600000).getUTCDay()) !== -1;
     }
 
     /* Duplicar: abre el formulario con todo copiado menos el nombre,
@@ -834,17 +744,17 @@
         db.collection('campaigns').doc(id).get().then(function (d) {
             if (!d.exists) { alert('Esa promoción ya no existe.'); return; }
             const c = d.data();
-            openEditModal(null, '', c.desc, c.img, c.badge, c.lat, c.lng,
+            openEditModal(null, c.title, c.desc, c.img, c.badge, c.lat, c.lng,
                           c.stock, c.caja_id, c.startDate, c.endDate, c.tarifa);
-            marcarDias(c.dias);
+            marcarDias(c.dias);document.getElementById('cActive').checked=c.active!==false;document.getElementById('cPlan').value=c.tipo_campana||'local';document.getElementById('cAction').value=c.action_url||'';document.getElementById('cMunicipio').value=c.municipio||'';ajustarPlan();
 
             /* editModeId se limpia a propósito: esto se guarda como una
                promoción nueva, no encima de la que copiamos. */
             editModeId = null;
 
             const t = document.getElementById('cTitle');
-            t.value = '';
-            t.placeholder = 'Nombre del negocio nuevo';
+            t.value = c.title;
+            t.placeholder = 'Nombre del mismo negocio';
             t.focus();
         }).catch(function (e) { alert('No se pudo duplicar: ' + e.message); });
     }
@@ -855,7 +765,7 @@
             const c = d.data();
             openEditModal(id, c.title, c.desc, c.img, c.badge, c.lat, c.lng,
                           c.stock, c.caja_id, c.startDate, c.endDate, c.tarifa);
-            marcarDias(c.dias);
+            marcarDias(c.dias);document.getElementById('cActive').checked=c.active!==false;document.getElementById('cPlan').value=c.tipo_campana||'local';document.getElementById('cAction').value=c.action_url||'';document.getElementById('cMunicipio').value=c.municipio||'';ajustarPlan();
         }).catch(function (e) { alert('No se pudo abrir: ' + e.message); });
     }
 
@@ -864,14 +774,14 @@
         document.getElementById('cDesc').value = desc || '';
         document.getElementById('cImg').value = img || '';
         document.getElementById('cBadge').value = badge || '';
-        document.getElementById('cLat').value = lat || '';
-        document.getElementById('cLng').value = lng || '';
-        document.getElementById('cStock').value = stock || '50';
+        document.getElementById('cLat').value = lat ?? '';
+        document.getElementById('cLng').value = lng ?? '';
+        document.getElementById('cStock').value = stock ?? ''; window.stockOriginal=stock;
         document.getElementById('cCaja').value = caja_id || '';
         document.getElementById('cTarifa').value = (tarifa === 0 || tarifa) ? String(tarifa) : '25';
         document.getElementById('cStart').value = start || '';
         document.getElementById('cEnd').value = end || '';
-        
+
         editModeId = id;
         document.getElementById('addModal').style.display = 'flex';
         cajaLlenarLista(caja_id || '');
@@ -941,11 +851,7 @@
         if (!codigo) { alert('No se pudo generar un código libre. Inténtalo otra vez.'); return; }
 
         try {
-            await db.collection('codigos').doc(codigo).set({
-                tipo: 'caja', estado: 'activo', titular: nombre,
-                tel: null, nota: null, escaneos: 0,
-                creado: firebase.firestore.FieldValue.serverTimestamp()
-            });
+            await EncaviOperacion.registrarCodigo(db,codigo,{tipo:'caja',titular:nombre},()=>firebase.firestore.FieldValue.serverTimestamp());
         } catch (e) { alert('No se pudo guardar el código: ' + e.message); return; }
 
         await cajaLlenarLista(codigo);
@@ -958,38 +864,17 @@ function closeModal() {
         document.getElementById('addModal').style.display = 'none';
     }
 
-    function saveCampaign() {
-        const title = document.getElementById('cTitle').value;
-        const desc = document.getElementById('cDesc').value;
-        const img = document.getElementById('cImg').value;
-        const badge = document.getElementById('cBadge').value;
-        const lat = document.getElementById('cLat').value;
-        const lng = document.getElementById('cLng').value;
-        const startDate = document.getElementById('cStart').value;
-        const endDate = document.getElementById('cEnd').value;
-        const stock = parseInt(document.getElementById('cStock').value) || 0;
-        const caja_id = document.getElementById('cCaja').value;
-        const tarifa = Number(document.getElementById('cTarifa').value);
-        if (![0,25,45,80].includes(tarifa)) { alert('Selecciona una tarifa acordada válida.'); return; }
-        const dias = Array.prototype.slice
-            .call(document.querySelectorAll('#cDias input:checked'))
-            .map(function (c) { return parseInt(c.value, 10); })
-            .sort();
+    async function saveCampaign(){
+ const boton=document.getElementById('guardarCampana');boton.disabled=true;
+ try{const val=id=>document.getElementById(id).value;
+ const data=EncaviOperacion.promocion({title:val('cTitle'),desc:val('cDesc'),img:val('cImg'),badge:val('cBadge'),lat:val('cLat'),lng:val('cLng'),stock:val('cStock'),tarifa:val('cTarifa'),caja_id:val('cCaja'),startDate:val('cStart'),endDate:val('cEnd'),dias:[...document.querySelectorAll('#cDias input:checked')].map(c=>Number(c.value)),active:document.getElementById('cActive').checked,tipo_campana:val('cPlan'),action_url:val('cAction'),municipio:val('cMunicipio')});
+ await EncaviOperacion.guardarPromocion(db,editModeId,data,window.stockOriginal,()=>firebase.firestore.FieldValue.serverTimestamp());
+ alert('Promoción guardada.');closeModal();limpiarFormulario();
+ }catch(e){alert('No se guardó: '+e.message);}finally{boton.disabled=false;}
+ }
 
-        if(!title || !img) { alert('Título e Imagen son obligatorios'); return; }
-
-        const data = { title, desc, img, badge, lat, lng, stock, caja_id, tarifa, dias: dias, startDate: startDate || null, endDate: endDate || null, active: true };
-
-        if (typeof editModeId !== 'undefined' && editModeId) {
-            db.collection('campaigns').doc(editModeId).update(data).then(() => { alert('¡Campaña Actualizada exitosamente!'); closeModal(); limpiarFormulario(); }).catch(err => alert('Error: ' + err));
-        } else {
-            data.clicks = 0; data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-            db.collection('campaigns').add(data).then(() => { alert('¡Campaña Creada exitosamente!'); closeModal(); limpiarFormulario(); }).catch(err => alert('Error: ' + err));
-        }
-    }
-
-    function limpiarFormulario() {
-        document.getElementById('cTitle').value = ''; document.getElementById('cDesc').value = ''; document.getElementById('cImg').value = ''; document.getElementById('cBadge').value = ''; document.getElementById('cLat').value = ''; document.getElementById('cLng').value = ''; document.getElementById('cStock').value = '50'; document.getElementById('cCaja').value = ''; document.getElementById('cTarifa').value = '25'; document.getElementById('cStart').value = ''; document.getElementById('cEnd').value = ''; marcarDias([]); if(typeof editModeId !== 'undefined') editModeId = null;
+    function limpiarFormulario() {document.getElementById('cActive').checked=true;document.getElementById('cPlan').value='local';document.getElementById('cAction').value='';window.stockOriginal=undefined;document.getElementById('cMunicipio').value='';ajustarPlan();
+        document.getElementById('cTitle').value = ''; document.getElementById('cDesc').value = ''; document.getElementById('cImg').value = ''; document.getElementById('cBadge').value = ''; document.getElementById('cLat').value = ''; document.getElementById('cLng').value = ''; document.getElementById('cStock').value = ''; document.getElementById('cCaja').value = ''; document.getElementById('cTarifa').value = '25'; document.getElementById('cStart').value = ''; document.getElementById('cEnd').value = ''; marcarDias([]); if(typeof editModeId !== 'undefined') editModeId = null;
     }
 
     function deleteCampaign(id) {
@@ -1099,11 +984,7 @@ function closeModal() {
         if (!codigo) { codAvisar('No se pudo generar un código libre. Inténtalo otra vez.', '#DC2626'); return; }
 
         try {
-            await db.collection('codigos').doc(codigo).set({
-                tipo: tipo, estado: 'activo', titular: titular,
-                tel: tel || null, nota: nota || null, escaneos: 0,
-                creado: firebase.firestore.FieldValue.serverTimestamp()
-            });
+            await EncaviOperacion.registrarCodigo(db,codigo,{tipo,titular,tel,nota,zona:document.getElementById('codZona').value},()=>firebase.firestore.FieldValue.serverTimestamp());
         } catch (e) { codAvisar('No se pudo guardar: ' + e.message, '#DC2626'); return; }
 
         document.getElementById('codTitular').value = '';
@@ -1113,54 +994,18 @@ function closeModal() {
         codCargar();
     }
 
-    async function codBaja(codigo) {
-        const c = window.codTodos.find(x => x.id === codigo) || {};
-        const aviso = (c.tipo === 'vehiculo')
-            ? 'Al dar de baja ' + codigo + ', ese acrílico deja de servir de inmediato.\n\nQuien lo escanee va a ver que el vehículo ya no está afiliado, y no va a poder reclamar nada.\n\n¿Seguro?'
-            : 'Al dar de baja ' + codigo + ' deja de funcionar de inmediato.\n\n¿Seguro?';
-        if (!confirm(aviso)) return;
-        const motivo = prompt('¿Por qué se da de baja? (dejó el servicio, se perdió, se dañó…)') || 'sin motivo anotado';
-        try {
-            await db.collection('codigos').doc(codigo).update({
-                estado: 'baja', motivo_baja: motivo,
-                baja_fecha: firebase.firestore.FieldValue.serverTimestamp()
-            });
+    async function codBaja(codigo){
+ const motivo=prompt('Motivo de baja (ej. cambió de unidad o terminó el acuerdo):');if(!motivo || !motivo.trim())return;
+ try{await EncaviOperacion.estadoCodigo(db,codigo,false,motivo,()=>firebase.firestore.FieldValue.serverTimestamp());codCargar();}catch(e){alert('No se cambió el estado: '+e.message);}
+ }
 
-            /* La lista negra que sí puede leer el teléfono del pasajero.
-               Aquí no va el motivo ni de quién era: solo que ese código
-               dejó de servir. Los datos de la persona se quedan en el
-               libro, que es tuyo. */
-            await db.collection('bajas').doc(codigo).set({
-                fecha: firebase.firestore.FieldValue.serverTimestamp()
-            });
-
-            codCargar();
-        } catch (e) { alert('No se pudo dar de baja: ' + e.message); }
-    }
-
-    async function codReactivar(codigo) {
-        if (!confirm('Volver a activar ' + codigo + '?')) return;
-        try {
-            await db.collection('codigos').doc(codigo).update({ estado: 'activo', motivo_baja: null });
-            await db.collection('bajas').doc(codigo).delete();
-            codCargar();
-        } catch (e) { alert('No se pudo: ' + e.message); }
-    }
+    async function codReactivar(codigo){
+ if(!confirm('¿Reactivar '+codigo+'?'))return;const motivo=null;
+ try{await EncaviOperacion.estadoCodigo(db,codigo,true,motivo,()=>firebase.firestore.FieldValue.serverTimestamp());codCargar();}catch(e){alert('No se cambió el estado: '+e.message);}
+ }
 
     /* Registra un codigo que ya anda en la calle pero nunca se anoto. */
-    async function codAdoptar(codigo, tipo) {
-        const titular = prompt('¿De quién es ' + codigo + '?\n\n' +
-            (tipo === 'vehiculo' ? 'Nombre del chofer:' : 'Nombre del negocio:'));
-        if (!titular) return;
-        try {
-            await db.collection('codigos').doc(codigo).set({
-                tipo: tipo, estado: 'activo', titular: titular.trim(),
-                tel: null, nota: 'Registrado después, ya estaba en uso', escaneos: 0,
-                creado: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            codCargar();
-        } catch (e) { alert('No se pudo registrar: ' + e.message); }
-    }
+    async function codAdoptar(codigo,tipo){const titular=prompt('Nombre del titular de '+codigo+':');if(!titular)return;try{await EncaviOperacion.registrarCodigo(db,codigo,{tipo,titular,nota:'Registrado después, ya estaba en uso',zona:tipo==='vehiculo'?prompt('Municipio de operación: escribe vallarta o bahia')||'':null},()=>firebase.firestore.FieldValue.serverTimestamp());codCargar();}catch(e){alert(e.message);}}
 
     async function codCargar() {
         try {
@@ -1275,7 +1120,7 @@ function closeModal() {
                 '<td style="padding:12px 10px;"><code style="font-weight:700; font-size:13px;">' + codEsc(c.id) + '</code></td>' +
                 '<td style="padding:12px 10px; font-size:13px; color:#6B7280;">' + (nombres[c.tipo] || c.tipo || '—') + '</td>' +
                 '<td style="padding:12px 10px; font-size:13px;">' + quien + '</td>' +
-                '<td style="padding:12px 10px; font-size:13px; text-align:right;">' + (c.escaneos || 0) + '</td>' +
+                '<td style="padding:12px 10px; font-size:13px; text-align:right;">' + (c.tipo==='vehiculo'?(window.scansPorCodigo?.[c.id]||0):'No aplica') + '</td>' +
                 '<td style="padding:12px 10px;">' + estado + motivo + '</td>' +
                 '<td style="padding:12px 10px; text-align:right; white-space:nowrap;">' + acciones + '</td>' +
             '</tr>';
@@ -1334,7 +1179,7 @@ function closeModal() {
 '  Cuando veas un negocio que le pueda servir, se la enseñas y le dices:</p>' +
 '  <p style="background:#FFF; border-left:3px solid #F97316; padding:10px 12px; border-radius:0 8px 8px 0;">' +
 '  “Oiga, traigo algo que le puede servir para traerle gente. Escanee esto y ahí viene todo.”</p>' +
-'  <p>Ese código es tuyo. Si ese negocio entra, te toca tu parte.</p>' +
+'  <p>Ese código es tuyo. Su solicitud llevará tu código de referido.</p>' +
 '</div>' +
 '<div class="imprimir"><button onclick="window.print()">Imprimir</button></div></div>' +
 '<script>' +
@@ -1362,9 +1207,9 @@ function closeModal() {
             pie    = 'Válido 24 horas desde que escaneas.';
             ancho  = '105mm';
         } else if (c.tipo === 'calcomania') {
-            contenido = base + '?desde=' + encodeURIComponent(codigo);
+            contenido = base + 'negocios/?ref=' + encodeURIComponent(codigo);
             titulo = 'Este negocio se mueve con EncaviGO';
-            bajada = 'Escanea y mira las promociones que traen los pasajeros que llegan en taxi.';
+            bajada = 'Escanea para conocer EncaviGO. Para acceder a los cupones, escanea el QR de un vehículo afiliado.';
             pie    = '';
             ancho  = '90mm';
         } else {
@@ -1436,89 +1281,16 @@ function closeModal() {
         ['campaigns',  'Promociones']
     ];
 
-    async function limpiezaPrevia() {
-        const caja  = document.getElementById('limpiezaCaja');
-        const lista = document.getElementById('limpiezaLista');
-        caja.style.display = 'block';
-        lista.innerHTML = '<span style="color:#6B7280;">Contando…</span>';
-        document.getElementById('limpiezaAviso').textContent = '';
 
-        const filas = [];
-        for (const [col, nombre] of LIMPIEZA_COLECCIONES) {
-            let n = 0;
-            try { n = (await db.collection(col).get()).size; } catch (e) { n = '?'; }
-            filas.push([nombre, n]);
-        }
-        let g = null;
-        try {
-            const d = await db.collection('stats').doc('global').get();
-            if (d.exists) g = d.data();
-        } catch (e) {}
 
-        lista.innerHTML =
-            filas.map(f => '<div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #F3F4F6;">' +
-                             '<span>' + codEsc(f[0]) + '</span><strong>' + f[1] + '</strong></div>').join('') +
-            (g ? '<div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #F3F4F6;">' +
-                   '<span>Contador global (vuelve a cero)</span><strong>' +
-                   (g.scans || 0) + ' escaneos, ' + (g.clicks || 0) + ' clicks</strong></div>' : '') +
-            '<p style="color:#B91C1C; margin:12px 0 0;">Esto no se puede deshacer.</p>';
-    }
 
-    async function limpiezaEjecutar() {
-        try {
-            const canjes = await db.collection('tickets').limit(1).get();
-            if (!canjes.empty) { alert('La limpieza queda bloqueada porque ya existen canjes. Conserva el historial de comisiones.'); return; }
-        } catch (e) { alert('No se pudo verificar el historial; no se realizará la limpieza.'); return; }
-        const palabra = (document.getElementById('limpiezaPalabra').value || '').trim().toUpperCase();
-        const avi = document.getElementById('limpiezaAviso');
-        if (palabra !== 'BORRAR') {
-            avi.textContent = 'Escribe BORRAR para confirmar.';
-            avi.style.color = '#B91C1C';
-            return;
-        }
-        if (!confirm('Se borra todo el historial de pruebas y no hay vuelta atrás.\n\n¿Seguro?')) return;
-
-        avi.style.color = '#6B7280';
-        let total = 0, fallos = [];
-
-        for (const [col, nombre] of LIMPIEZA_COLECCIONES) {
-            avi.textContent = 'Borrando ' + nombre.toLowerCase() + '…';
-            try {
-                const snap = await db.collection(col).get();
-                for (const d of snap.docs) {
-                    try { await d.ref.delete(); total++; }
-                    catch (e) { fallos.push(col + '/' + d.id); }
-                }
-            } catch (e) { fallos.push(col + ' (no se pudo leer)'); }
-        }
-
-        try {
-            await db.collection('stats').doc('global').set({ scans: 0, clicks: 0 });
-        } catch (e) { fallos.push('contador global'); }
-
-        document.getElementById('limpiezaPalabra').value = '';
-
-        /* Se repinta la cuenta primero, porque limpiar la vista borra
-           el aviso, y el resultado tiene que quedar a la vista. */
-        await limpiezaPrevia();
-        codCargar();
-
-        if (fallos.length) {
-            avi.style.color = '#B91C1C';
-            avi.textContent = 'Se borraron ' + total + ', pero quedaron ' + fallos.length +
-                              ' sin borrar: ' + fallos.slice(0, 4).join(', ') +
-                              (fallos.length > 4 ? '…' : '');
-        } else {
-            avi.style.color = '#059669';
-            avi.textContent = 'Listo. Se borraron ' + total + ' registros y el contador quedó en cero.';
-        }
-    }
 
     function switchTab(tab) {
+        const publicidad=document.getElementById('view-publicidad');if(publicidad)publicidad.style.display=tab==='publicidad'?'block':'none';if(tab==='publicidad')cargarPublicidad();
         // Update nav UI
         document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
         document.getElementById('nav-' + tab).classList.add('active');
-        
+
         // Update views
         document.getElementById('view-dashboard').style.display = (tab === 'dashboard') ? 'block' : 'none';
         document.getElementById('view-choferes').style.display = (tab === 'choferes') ? 'block' : 'none';
@@ -1534,119 +1306,38 @@ function closeModal() {
             vCob.style.display = (tab === 'cobros') ? 'block' : 'none';
             if (tab === 'cobros') calcularCobros();
         }
-        
+
 
     }
 
-    function generarReportePDF() {
-        db.collection('campaigns').get().then(snapshot => {
-            let win = window.open('', '_blank');
-            let pdfHtml = `
-            <html>
-            <head>
-                <title>Reporte EncaviGO</title>
-                <style>
-                    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #F3F4F6; padding: 40px; color: #111827; }
-                    .report-container { max-width: 800px; margin: 0 auto; background: #FFF; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-                    .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #F97316; padding-bottom: 20px; margin-bottom: 30px; }
-                    .header h1 { margin: 0; color: #F97316; font-size: 28px; font-weight: 800; }
-                    .header p { margin: 0; color: #6B7280; font-size: 14px; }
-                    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-                    th { background: #F9FAFB; color: #374151; font-weight: 600; text-align: left; padding: 12px 15px; border-bottom: 2px solid #E5E7EB; font-size: 14px; }
-                    td { padding: 15px; border-bottom: 1px solid #E5E7EB; color: #4B5563; font-size: 14px; }
-                    .highlight { font-weight: 700; color: #10B981; }
-                    .footer { margin-top: 40px; text-align: center; color: #9CA3AF; font-size: 12px; }
-                    @media print {
-                        body { background: #FFF; padding: 0; }
-                        .report-container { box-shadow: none; max-width: 100%; padding: 0; }
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="report-container">
-                    <div class="header">
-                        <h1>EncaviGO Analytics</h1>
-                        <p>Reporte de Rendimiento<br>Fecha: ${new Date().toLocaleDateString()}</p>
-                    </div>
-                    <p style="margin-bottom: 30px; line-height: 1.6;">A continuación se detalla el impacto directo y las activaciones generadas por la red de vehículos afiliados a EncaviGO durante el periodo activo.</p>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Nombre de la Campaña</th>
-                                <th>Tipo de Oferta</th>
-                                <th>Estado</th>
-                                <th>Clics</th>
-                                  <th>Stock</th>
-                                  <th>Quemados</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-            `;
-            
-            let totalClics = 0;
-            snapshot.forEach(doc => {
-                const c = doc.data();
-                const clics = c.clicks || 0;
-                totalClics += clics;
-                pdfHtml += `
-                            <tr>
-                                <td style="font-weight: 600; color: #111827;">${c.title || 'Sin Titulo'}</td>
-                                <td>${c.badge || '-'}</td>
-                                <td>${c.active ? '<span style="color: #10B981;">● Activo</span>' : '<span style="color: #EF4444;">● Pausado</span>'}</td>
-                                <td class="highlight">+${clics} interacciones</td>
-                                  <td>${c.stock !== undefined ? c.stock : 'N/A'}</td>
-                                  <td id="burned-${doc.id}">...</td>
-                            </tr>
-                `;
-            });
-            
-            pdfHtml += `
-                        </tbody>
-                    </table>
-                    
-                    <div style="margin-top: 30px; background: #F9FAFB; padding: 20px; border-radius: 8px; text-align: right;">
-                        <span style="font-size: 14px; color: #6B7280; margin-right: 15px;">Total de Impactos Globales:</span>
-                        <span style="font-size: 24px; font-weight: 800; color: #F97316;">${totalClics}</span>
-                    </div>
-                    
-                    <div class="footer">
-                        Este documento es generado automáticamente por el sistema central de EncaviGO.<br>
-                        Confidencial y exclusivo para el negocio afiliado.
-                    </div>
-                </div>
-                <script>
-                    setTimeout(() => window.print(), 1000);
-                <\/script>
-            </body>
-            </html>
-            `;
-            win.document.write(pdfHtml);
-            win.document.close();
-        }).catch(err => alert("Error al generar Reporte: " + err));
-    }
+    function generarReportePDF(){window.open('dashboard.html','_blank','noopener');}
 
 
 </script>
 <div class="modal-overlay" id="addModal">
 <div class="modal">
-<h2>Nuevo Negocio / Campaña</h2>
+<h2>Negocio y promoción</h2><p class="ayuda">Los ejemplos de abajo son una guía. No se guardan hasta que pulses Guardar.</p>
+<div class="form-group"><label for="cPlan">Tipo de campaña</label><select id="cPlan" onchange="ajustarPlan()"><option value="local">Plan Local: cupón en caja y comisión</option><option value="municipal">Campaña Municipal: enlace de contacto, sin canje ni comisión</option></select></div>
+<div id="grupoAction" class="form-group" hidden><label for="cAction">Enlace al WhatsApp, catálogo o mapa del negocio</label><input id="cAction" placeholder="https://wa.me/523220000000"/><p class="ayuda">Pega el enlace HTTPS aprobado por el negocio. El botón abrirá ese destino.</p></div>
+<div id="grupoMunicipio" class="form-group" hidden><label for="cMunicipio">Municipio contratado</label><select id="cMunicipio"><option value="">Elige uno</option><option value="vallarta">Puerto Vallarta</option><option value="bahia">Bahía de Banderas</option></select><p class="ayuda">Se muestra en los vehículos registrados para ese municipio. Programa inicio y fin: hasta 30 días por campaña.</p></div>
+<details class="guia"><summary>Ver ejemplo completo para una fonda</summary><p>Nombre: Fonda Ejemplo. Promoción: Comida del día por $120 con agua, sopa y tortillas; válida de lunes a viernes, una por código, consumo en el local. Imagen: foto autorizada del platillo. Ubicación: la puerta del negocio. Inventario: 30 canjes acordados. Caja: genera FONDA-… una sola vez y reutilízala en todas sus promociones. Tarifa: $25 si así lo acordaron; los espacios gratuitos de publicidad no eliminan la comisión automáticamente. Fechas: las acordadas con el negocio.</p></details>
 <div class="form-group">
 <label>Nombre del Negocio (Título)</label>
-<input id="cTitle" placeholder="Ej. Cena al Carbón 2x1" type="text"/>
+<input id="cTitle" placeholder="Ej. Fonda Ejemplo" type="text"/>
 </div>
 <div class="form-group">
 <label>Descripción Corta</label>
-<textarea id="cDesc" placeholder="Ej. Muestra esta pantalla en el Asador..." rows="2"></textarea>
+<textarea id="cDesc" placeholder="Ej. Comida del día $120 con agua, sopa y tortillas. Lun–vie, consumo en el local, un canje por código." rows="2"></textarea>
 </div>
 <div class="form-group">
-<label>URL de la Imagen de Fondo (Link)</label>
+<label>Imagen del negocio (opcional)</label>
 <p style="font-size: 12px; color: #64748b; margin-top: 4px; margin-bottom: 8px; line-height: 1.4;">
     <strong>Formato Ideal:</strong> Vertical (9:16) estilo TikTok/Reels.<br>
     <strong>Medidas Recomendadas:</strong> 1080 x 1920 píxeles (Mínimo 720 x 1280).<br>
     <strong>Peso:</strong> Menor a 500KB (Formato JPG o WEBP) para que no gaste los datos del pasajero.<br>
     <em>Nota: Si subes una foto cuadrada u horizontal, el sistema la recortará automáticamente (Zoom) para llenar la pantalla vertical.</em>
 </p>
-<input id="cImg" placeholder="https://unsplash.com/foto..." type="text"/>
+<p class="ayuda">Pega el enlace directo a una imagen autorizada (no la página donde está la foto). Si lo dejas vacío, se usa el logotipo de EncaviGO.</p><input id="cImg" placeholder="https://tu-sitio.com/foto-del-negocio.jpg" type="text"/>
 </div>
 <div class="form-group" style="display:flex; gap:10px;">
 <div style="flex:1;">
@@ -1691,8 +1382,8 @@ function closeModal() {
     </div>
     <div class="form-group" style="display:flex; gap:10px; margin-top: 15px;">
         <div style="flex:1;">
-            <label>Inventario (Stock de Cupones)</label>
-            <input id="cStock" placeholder="Ej. 50" type="number" value="50"/>
+            <label>Canjes disponibles</label><p class="ayuda">Ejemplo: 30 si el negocio autorizó 30. Cero significa agotada; guardar sin cambiarlo conserva los canjes que se hayan usado mientras editas.</p>
+            <input id="cStock" placeholder="Ej. 30 canjes autorizados" type="number" min="0" step="1"/>
         </div>
         <div style="flex:1;">
             <label>Código del acrílico de caja</label>
@@ -1717,7 +1408,7 @@ function closeModal() {
             <label class="dia-chip"><input type="checkbox" value="6"><span>Sáb</span></label>
             <label class="dia-chip"><input type="checkbox" value="0"><span>Dom</span></label>
         </div>
-        <p style="font-size:11.5px; color:#6B7280; margin:7px 0 0;">Sin ningún día marcado, sale todos los días. Un cupón ya reclamado sigue valiendo 24 horas aunque cambie el día.</p>
+        <p style="font-size:11.5px; color:#6B7280; margin:7px 0 0;">Sin días marcados, se muestra todos los días. El canje también debe ocurrir en un día y fecha vigentes de la promoción; el código del pasajero dura 24 horas.</p>
     </div>
 
     <div class="form-group" style="margin-top:15px;">
@@ -1732,13 +1423,15 @@ function closeModal() {
             Se fija al firmar, según el ticket promedio del negocio. De aquí sale el corte de cobro.
         </p>
     </div>
+<div class="form-group"><label><input id="cActive" type="checkbox" checked/> Publicar promoción (desmarca para dejarla pausada)</label></div>
 <div class="modal-actions">
 <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
-<button class="btn-primary" onclick="saveCampaign()">Guardar Campaña</button>
+<button class="btn-primary" id="guardarCampana" onclick="saveCampaign()">Guardar Campaña</button>
 </div>
 </div>
 </div>
 <script src="admin-comisiones.js"></script>
+<script src="admin-operacion.js"></script>
+<script src="admin-publicidad.js"></script>
 </body>
 </html>
-<!-- 1788643621.4208372 --><!-- v4 1788644835.507004 --><!-- v6 1788645702.3345118 --><!-- v7 1788657285.6522698 --><!-- v8 1788658146.5265121 --><!-- v10 1788658633.7332523 --><!-- v11 1788658746.0280507 --><!-- v12 1788658954.1285067 --><!-- v13 1788659375.369281 --><!-- v21 1788660497.1802418 --><!-- v22 1788660571.5987554 --><!-- v23 1788660619.9974518 --><!-- v24 1788660754.0814111 --><!-- v25 1788662077.6181395 --><!-- v26 1788662293.384441 -->

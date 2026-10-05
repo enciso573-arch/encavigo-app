@@ -193,6 +193,7 @@ sandbox.window.document = sandbox.document;
 sandbox.window.window = sandbox.window;
 
 sandbox.EncaviComisiones = require('./comisiones');
+sandbox.EncaviOperacion = require('./operacion');
 vm.createContext(sandbox);
 vm.runInContext(sInit, sandbox);
 vm.runInContext(sMain, sandbox);
@@ -1011,6 +1012,7 @@ test(39, 'Script de inicialización de Firebase evaluado en los 7 escenarios de 
         };
         sb.window.window = sb.window;
         sb.EncaviComisiones = require('./comisiones');
+        sb.EncaviOperacion = require('./operacion');
         vm.createContext(sb);
         vm.runInContext(sInit, sb);
 
@@ -1133,6 +1135,7 @@ test(44, 'Comprobación de ciclo de vida DOM completo en modo DEMO y modo produc
         sb.window.window = sb.window;
 
         sb.EncaviComisiones = require('./comisiones');
+        sb.EncaviOperacion = require('./operacion');
         vm.createContext(sb);
         vm.runInContext(sInit, sb);
         vm.runInContext(sMain, sb);

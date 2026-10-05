@@ -96,12 +96,12 @@
   <div class="section">
     <h2>Datos que recopilamos</h2>
     <ul>
-      <li><strong>Ubicación GPS</strong> — solo para calcular distancias a negocios cercanos. Nunca se almacena en nuestros servidores ni se comparte con terceros.</li>
-      <li><strong>Datos de navegación</strong> — páginas vistas, canales abiertos, botones presionados. Se envían de forma anónima a Google Analytics 4 con IP anonimizada.</li>
+      <li><strong>Ubicación GPS</strong> — se usa para mostrar distancias y validar canjes. En un canje guardamos las coordenadas disponibles, precisión y distancia aproximada en Firebase. No guardamos un recorrido continuo del pasajero.</li>
+      <li><strong>Sesión e interacciones</strong> — Firebase asigna un identificador; se registran la sesión QR, vehículo atribuido, apertura de promociones, canjes y opiniones. Estos identificadores no equivalen a nombres ni a personas únicas.</li>
       <li><strong>Datos de registro (anunciantes)</strong> — nombre, teléfono, correo, nombre del negocio y zona de operación. Se usan exclusivamente para gestionar su cuenta en la plataforma.</li>
     </ul>
     <div class="highlight">
-      🔒 La ubicación del pasajero <strong>nunca sale de tu dispositivo</strong>. Toda la lógica de distancia se calcula localmente en el navegador.
+      🔒 El radar calcula distancias en tu dispositivo. Al confirmar un canje enviamos a Firebase las coordenadas disponibles, precisión y distancia aproximada al negocio para revisar su validez. Si no das permiso de ubicación, el canje queda pendiente de revisión administrativa.
     </div>
   </div>
 
@@ -119,7 +119,7 @@
     <h2>Transferencia de datos</h2>
     <p>No vendemos, cedemos ni transferimos datos personales a terceros, salvo:</p>
     <ul>
-      <li><strong>Google Analytics 4</strong> — análisis de uso anónimo. Consulta la <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">política de Google</a>.</li>
+      <li><strong>Google Firebase</strong> — autenticación, sesiones promocionales y almacenamiento de canjes, opiniones y registros administrativos. Se asigna un identificador de usuario, incluso sin registrar nombre o correo. Consulta la <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">política de Google</a>.</li>
       <li><strong>WhatsApp</strong> — cuando el usuario toca el botón de contacto, se abre la app de WhatsApp con el número del anunciante. Esta acción es iniciada por el usuario.</li>
     </ul>
   </div>
@@ -138,7 +138,7 @@
 
   <div class="section">
     <h2>Cookies y almacenamiento local</h2>
-    <p>Usamos <strong>localStorage</strong> del navegador para recordar que aceptaste este aviso y para guardar preferencias de la app (sin datos personales identificables). Puedes limpiar estos datos desde la configuración de tu navegador en cualquier momento.</p>
+    <p>Usamos <strong>localStorage</strong> del navegador para recordar que aceptaste este aviso y para guardar preferencias de la app (incluidos el código promocional, vehículo atribuido, identificador del navegador y estado del juego). Puedes limpiar estos datos desde la configuración de tu navegador en cualquier momento.</p>
   </div>
 
   <div class="section">
@@ -146,7 +146,7 @@
     <p>Cualquier modificación a este aviso se publicará en esta misma página con la fecha de actualización. El uso continuo de la aplicación tras la publicación de cambios implica la aceptación de los mismos.</p>
   </div>
 
-  <p class="updated">Última actualización: julio 2026 · EncaviGO v1.0</p>
+  <p class="updated">Última actualización técnica: 4 de octubre de 2026 · EncaviGO</p>
 
 </div>
 </body>

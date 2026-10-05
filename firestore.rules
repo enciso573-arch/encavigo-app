@@ -14,6 +14,21 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/codigos/$(codigo)).data.estado == 'activo'
         && !exists(/databases/$(database)/documents/bajas/$(codigo));
     }
+    function cajaValida(codigo) {
+      return exists(/databases/$(database)/documents/codigos/$(codigo))
+        && get(/databases/$(database)/documents/codigos/$(codigo)).data.tipo == 'caja'
+        && get(/databases/$(database)/documents/codigos/$(codigo)).data.estado == 'activo'
+        && !exists(/databases/$(database)/documents/bajas/$(codigo));
+    }
+    function campanaVigente(c) {
+      // Puerto Vallarta y Bahía de Banderas: UTC-6; final exclusivo.
+      let ahora = request.time.toMillis();
+      let dia = (int((ahora - 21600000) / 86400000) + 4) % 7;
+      return c.active == true
+        && (c.get('desde_ms', null) == null || ahora >= c.desde_ms)
+        && (c.get('hasta_ms', null) == null || ahora < c.hasta_ms)
+        && (c.get('dias', []).size() == 0 || dia in c.dias);
+    }
     function sesionValida(code, chofer) {
       let s = get(/databases/$(database)/documents/sesiones/$(request.auth.uid)).data;
       return request.auth != null && s.code == code && s.chofer == chofer
@@ -75,9 +90,6 @@ service cloud.firestore {
     match /stats/{doc} {
       allow read: if true;
 
-      allow update: if request.resource.data.diff(resource.data)
-                         .affectedKeys().hasOnly(['clicks'])
-                    && request.resource.data.clicks == resource.data.clicks + 1;
 
       allow update: if esAdmin();
 
@@ -86,9 +98,6 @@ service cloud.firestore {
     match /choferes/{doc} {
       allow read: if true;
 
-      allow update: if request.resource.data.diff(resource.data)
-                         .affectedKeys().hasOnly(['clicks'])
-                    && request.resource.data.clicks == resource.data.clicks + 1;
 
       allow update: if esAdmin();
 
@@ -98,10 +107,6 @@ service cloud.firestore {
       allow read: if true;
 
       allow update: if (
-                      request.resource.data.diff(resource.data)
-                        .affectedKeys().hasOnly(['clicks'])
-                      && request.resource.data.clicks == resource.data.clicks + 1
-                    ) || (
                       request.resource.data.diff(resource.data)
                         .affectedKeys().hasOnly(['stock', 'ultima_operacion'])
                       && resource.data.stock is int && resource.data.stock > 0
@@ -118,6 +123,9 @@ service cloud.firestore {
     match /tickets/{id} {
       allow create: if request.auth != null
                     && sesionValida(request.resource.data.code, request.resource.data.chofer)
+                    && cajaValida(request.resource.data.negocio)
+                    && campanaVigente(get(/databases/$(database)/documents/campaigns/$(request.resource.data.camp_id)).data)
+                    && get(/databases/$(database)/documents/campaigns/$(request.resource.data.camp_id)).data.get('tipo_campana','local') == 'local'
                     && request.resource.data.keys().hasOnly(
                          ['camp_id','negocio','code','chofer','dev','status',
                           'lat','lng','acc','dist_m','revisar','fecha',
@@ -171,8 +179,39 @@ service cloud.firestore {
       allow create: if esAdmin() && movimientoValido(id);
       allow update, delete: if false;
     }
+    match /contratos_publicidad/{id} {
+      allow read: if esAdmin();
+      allow create, update: if esAdmin()
+        && request.resource.data.keys().hasOnly(['nombre','importe_centavos','plan','activo'])
+        && request.resource.data.nombre is string && request.resource.data.nombre.size() > 0 && request.resource.data.nombre.size() <= 120
+        && request.resource.data.importe_centavos is int && request.resource.data.importe_centavos >= 0 && request.resource.data.importe_centavos <= 10000000
+        && request.resource.data.plan in ['local','municipal','cortesia']
+        && (request.resource.data.plan != 'cortesia' || request.resource.data.importe_centavos == 0)
+        && request.resource.data.activo is bool;
+      allow delete: if false;
+    }
+    match /pagos_publicidad/{id} {
+      allow read: if esAdmin();
+      allow create: if esAdmin()
+        && request.resource.data.keys().hasOnly(['negocio','periodo','referencia','importe_centavos','nombre','plan','admin_uid','fecha'])
+        && request.resource.data.negocio is string
+        && request.resource.data.periodo.matches('[0-9]{4}-(0[1-9]|1[0-2])')
+        && id == request.resource.data.negocio + '_' + request.resource.data.periodo
+        && request.resource.data.admin_uid == request.auth.uid && request.resource.data.fecha == request.time
+        && request.resource.data.referencia is string && request.resource.data.referencia.size() > 0 && request.resource.data.referencia.size() <= 200
+        && request.resource.data.importe_centavos is int && request.resource.data.importe_centavos > 0
+        && get(/databases/$(database)/documents/contratos_publicidad/$(request.resource.data.negocio)).data.activo == true
+        && request.resource.data.importe_centavos == get(/databases/$(database)/documents/contratos_publicidad/$(request.resource.data.negocio)).data.importe_centavos
+        && request.resource.data.nombre == get(/databases/$(database)/documents/contratos_publicidad/$(request.resource.data.negocio)).data.nombre
+        && request.resource.data.plan == get(/databases/$(database)/documents/contratos_publicidad/$(request.resource.data.negocio)).data.plan;
+      allow update, delete: if false;
+    }
     match /opiniones/{doc} {
-      allow create: if request.resource.data.keys().hasOnly(
+      allow create: if request.auth != null
+                    && get(/databases/$(database)/documents/tickets/$(doc)).data.code == get(/databases/$(database)/documents/sesiones/$(request.auth.uid)).data.code
+                    && get(/databases/$(database)/documents/tickets/$(doc)).data.camp_id == request.resource.data.camp_id
+                    && get(/databases/$(database)/documents/tickets/$(doc)).data.chofer == request.resource.data.chofer
+                    && request.resource.data.keys().hasOnly(
                          ['camp_id','negocio','chofer','respetado',
                           'estrellas','comentario','atendida','fecha'])
                     && request.resource.data.respetado is bool
@@ -193,9 +232,6 @@ service cloud.firestore {
 
       allow read: if esAdmin();
 
-      allow update: if request.resource.data.diff(resource.data)
-                         .affectedKeys().hasOnly(['escaneos'])
-                    && request.resource.data.escaneos == resource.data.escaneos + 1;
 
       allow create, delete: if esAdmin();
       allow update: if esAdmin();
@@ -229,7 +265,11 @@ service cloud.firestore {
       allow delete: if esAdmin();
     }
     match /click_log/{id} {
-      allow create: if request.resource.data.keys().hasAll(['camp_id','chofer','fecha'])
+      allow create: if request.auth != null
+                    && id == request.resource.data.camp_id + '_' + request.auth.uid + '_' + get(/databases/$(database)/documents/sesiones/$(request.auth.uid)).data.code
+                    && sesionValida(get(/databases/$(database)/documents/sesiones/$(request.auth.uid)).data.code, request.resource.data.chofer)
+                    && campanaVigente(get(/databases/$(database)/documents/campaigns/$(request.resource.data.camp_id)).data)
+                    && request.resource.data.keys().hasAll(['camp_id','chofer','fecha'])
                     && request.resource.data.keys().hasOnly(['camp_id','chofer','fecha'])
                     && request.resource.data.camp_id is string
                     && request.resource.data.chofer is string
@@ -240,7 +280,10 @@ service cloud.firestore {
       allow delete: if esAdmin();
     }
     match /scan_log/{id} {
-      allow create: if request.resource.data.keys().hasAll(['chofer','fecha'])
+      allow create: if request.auth != null
+                    && id == request.auth.uid + '_' + get(/databases/$(database)/documents/sesiones/$(request.auth.uid)).data.code
+                    && sesionValida(get(/databases/$(database)/documents/sesiones/$(request.auth.uid)).data.code, request.resource.data.chofer)
+                    && request.resource.data.keys().hasAll(['chofer','fecha'])
                     && request.resource.data.keys().hasOnly(['chofer','fecha'])
                     && request.resource.data.chofer is string
                     && request.resource.data.fecha == request.time;

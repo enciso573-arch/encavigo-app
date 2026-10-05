@@ -44,6 +44,7 @@ async function boot(search = '?demo=1', shared = storage(), servicioVerificado =
     // Map UI is not exercised here; any unexpected dependency causes a failure.
     w.L = { divIcon: () => ({}) };
     vm.runInContext(fs.readFileSync(path.join(__dirname,'comisiones.js'),'utf8'), dom.getInternalVMContext());
+    vm.runInContext(fs.readFileSync(path.join(__dirname,'operacion.js'),'utf8'), dom.getInternalVMContext());
     scripts.forEach(s => vm.runInContext(s, dom.getInternalVMContext()));
     await Promise.all(ready.map(fn => fn()));
     await flush();
@@ -121,7 +122,7 @@ async function deferredOpinion() {
             w.encaviSession = {origen:'qr',code:'ENC-OP',chofer:'V-001'};
             let resolve, decline;
             const response = new Promise((r,j) => { resolve=r; decline=j; });
-            w.db = { collection: () => ({add: () => response}) };
+            w.db = { collection: () => ({doc: () => ({set: () => response})}) };
             w.document.getElementById('opPaso3').style.display='none';
             const pending = w.enviarOpinion();
             assert.equal(typeof pending?.then,'function');
@@ -134,4 +135,3 @@ async function deferredOpinion() {
     }
 }
 module.exports = { boot, isolation, transitions, corruptStorage, deferredOpinion };
-

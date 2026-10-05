@@ -5857,6 +5857,7 @@ function cerrarSplash() {
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 <script src="sesiones-servidor.js"></script>
 <script src="comisiones.js"></script>
+<script src="operacion.js"></script>
 <script>
 function evaluarParametrosURL(searchStr) {
     if (!searchStr || typeof searchStr !== 'string') {
@@ -6243,6 +6244,8 @@ function registrarIntentoJuego(session, storage = (typeof localStorage !== 'unde
 function esCampanaVigente(camp, now = new Date()) {
     if (!camp || typeof camp !== 'object') return false;
     if (camp.active === false) return false;
+    if (camp.desde_ms != null && now.getTime() < camp.desde_ms) return false;
+    if (camp.hasta_ms != null && now.getTime() >= camp.hasta_ms) return false;
 
     const y = now.getFullYear();
     const m = String(now.getMonth() + 1).padStart(2, '0');
@@ -6270,18 +6273,18 @@ function esCampanaVigente(camp, now = new Date()) {
     };
 
     const inicioStr = normalizar(camp.startDate);
-    if (inicioStr && hoyStr < inicioStr) {
+    if (!('desde_ms' in camp) && inicioStr && hoyStr < inicioStr) {
         return false;
     }
 
     // endDate incluye todo el día indicado (hasta las 23:59:59 locales)
     const finStr = normalizar(camp.endDate);
-    if (finStr && hoyStr > finStr) {
+    if (!('hasta_ms' in camp) && finStr && hoyStr > finStr) {
         return false;
     }
 
     if (Array.isArray(camp.dias) && camp.dias.length > 0) {
-        const diaSemana = now.getDay();
+        const diaSemana = ('desde_ms' in camp) ? new Date(now.getTime()-21600000).getUTCDay() : now.getDay();
         const diasNum = camp.dias.map(Number);
         if (diasNum.indexOf(diaSemana) === -1) {
             return false;
@@ -6621,16 +6624,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             : '<p style="font-size:12px; color:#94A3B8; text-align:center; margin-top:0;">Promociones en tu ruta, de la más cercana a la más lejana:</p>';
 
         lista.forEach(local => {
-            const esCerca = local.distKm <= RADIO_CERCA_KM;
+            const esCerca = gpsFiable && local.distKm <= RADIO_CERCA_KM;
             const metros  = Math.round(local.distKm * 1000);
             const cuanto  = esCerca
                 ? (metros < 100 ? 'Aquí mismo' : 'A ' + metros + ' m — la vas pasando')
                 : (local.distKm < 1 ? 'A ' + metros + ' m' : 'A ' + local.distKm.toFixed(1) + ' km');
             html += '<div class="mini-card' + (esCerca ? ' mini-card-cerca' : '') + '">'
-                  +   '<div class="mini-card-img" style="background-image: url(\'' + (local.img || '') + '\');"></div>'
+                  +   '<div class="mini-card-img" style="background-image: url(\'' + escapeHTML(EncaviOperacion.enlace(local.img || '')) + '\');"></div>'
                   +   '<div class="mini-card-info">'
-                  +     '<h4 class="mini-title">' + local.title + '</h4>'
-                  +     '<p class="mini-desc">' + (local.desc || '') + '</p>'
+                  +     '<h4 class="mini-title">' + escapeHTML(local.title) + '</h4>'
+                  +     '<p class="mini-desc">' + escapeHTML(local.desc || '') + '</p>'
                   +     '<p class="mini-dist' + (esCerca ? ' mini-dist-cerca' : '') + '">' + cuanto + '</p>'
                   +   '</div>'
                   + '</div>';
@@ -6757,16 +6760,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         deck.forEach(camp => {
             html += `
             <article class="immersive-card">
-                <div class="card-bg" style="background-image: url('${camp.img || ''}'); background-size: cover; background-position: center;"></div>
+                <div class="card-bg" style="background-image: url('${escapeHTML(EncaviOperacion.enlace(camp.img || ''))}'); background-size: cover; background-position: center;"></div>
                 <div class="card-overlay" style="background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.1) 100%);"></div>
                 <div class="card-ui">
                     <div class="card-badge" style="background: rgba(245, 158, 11, 0.2); border-color: rgba(245, 158, 11, 0.5); color: #FBBF24;">
-                        ★ ${camp.badge || 'PROMO ACTIVA'}
+                        ★ ${escapeHTML(camp.badge || 'PROMO ACTIVA')}
                     </div>
-                    <h2 class="card-headline">${camp.title || ''}</h2>
-                    <p class="card-body">${camp.desc || ''}</p>
-                    <button class="swipe-btn track-click" data-campid="${camp.id}" data-cajaid="${camp.caja_id || ''}" data-stock="${camp.stock || 0}" data-title="${camp.title}" style="border:none; width:100%;">
-                        Reclamar
+                    <h2 class="card-headline">${escapeHTML(camp.title || '')}</h2>
+                    <p class="card-body">${escapeHTML(camp.desc || '')}</p>
+                    <button class="swipe-btn track-click" data-campid="${escapeHTML(camp.id)}" data-cajaid="${escapeHTML(camp.caja_id || '')}" data-stock="${camp.stock || 0}" data-title="${escapeHTML(camp.title)}" data-plan="${camp.tipo_campana==='municipal'?'municipal':'local'}" style="border:none; width:100%;">
+                        ${camp.tipo_campana==='municipal'?'Contactar negocio':'Reclamar'}
                     </button>
                 </div>
             </article>
@@ -6782,10 +6785,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                    reales, no de visitantes sueltos. */
                 if (!window.egSesionConQR()) { window.egAvisoSoloQR(); return; }
 
-                const cid = e.target.getAttribute('data-campid');
-                const cajaId = e.target.getAttribute('data-cajaid');
-                const title = e.target.getAttribute('data-title');
-                let stock = parseInt(e.target.getAttribute('data-stock'));
+                const cid = e.currentTarget.getAttribute('data-campid');
+                const cajaId = e.currentTarget.getAttribute('data-cajaid');
+                const title = e.currentTarget.getAttribute('data-title');
+                let stock = parseInt(e.currentTarget.getAttribute('data-stock'));
 
                 // ─────────────────────────────────────────────────────────
                 // CLICK UNICO: 1 celular = 1 click por promo por dia.
@@ -6805,27 +6808,23 @@ document.addEventListener('DOMContentLoaded', async () => {
                         window.encaviDevId = d;
                     }
                     var hoy = new Date().toISOString().slice(0, 10);
-                    var huella = (cid || 'sin-promo') + '_' + window.encaviDevId + '_' + hoy;
+                    var huella = cid + '_' + session.uid + '_' + session.code;
 
                     if (puedeEscribirEnProduccion()) {
                         db.collection('click_log').doc(huella).set({
                             camp_id: cid || null,
                             chofer: (session && session.chofer) ? session.chofer : 'orgánico',
                             fecha: firebase.firestore.FieldValue.serverTimestamp()
-                        }).then(function () {
-                            db.collection('stats').doc('global').update({ clicks: firebase.firestore.FieldValue.increment(1) });
-                            if (session && session.chofer !== 'orgánico') {
-                                db.collection('choferes').doc(session.chofer).update({ clicks: firebase.firestore.FieldValue.increment(1) });
-                            }
-                            if (cid) {
-                                db.collection('campaigns').doc(cid).update({ clicks: firebase.firestore.FieldValue.increment(1) });
-                            }
                         }).catch(function () {
                             // Click repetido del mismo celular: se ignora a proposito.
                         });
                     }
                 } catch(err) { console.error(err); }
 
+                const seleccion=(window.loadedCampaigns||[]).find(c=>c.id===cid);
+                if(seleccion && seleccion.tipo_campana==='municipal'){
+                    try{const url=EncaviOperacion.enlace(seleccion.action_url);if(!url)throw Error('Falta el enlace de contacto.');window.open(url,'_blank','noopener');}catch(err){alert(err.message);}return;
+                }
                 if (stock <= 0) {
                     alert('Lo sentimos, los cupones para esta promoción se han agotado por hoy.');
                     return;
@@ -6852,39 +6851,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         return array;
     }
 
-    function buildSmartDeck(userLat, userLng) {
-        let allCamps = [...window.loadedCampaigns];
-
-        if (allCamps.length <= 15) {
-            // Si hay menos de 15 en total, solo revuélvelas todas y muéstralas
-            renderDeck(shuffleArray(allCamps));
-            return;
-        }
-
-        let finalDeck = [];
-
-        if (userLat && userLng) {
-            // 1. Filtrar por cercanía (Los 10 más cercanos)
-            allCamps.forEach(c => {
-                if(c.lat && c.lng) {
-                    c._dist = haversine(userLat, userLng, parseFloat(c.lat), parseFloat(c.lng));
-                } else {
-                    c._dist = 9999;
-                }
-            });
-            allCamps.sort((a, b) => a._dist - b._dist);
-
-            const closest = allCamps.slice(0, 10);
-            const remaining = allCamps.slice(10);
-            const randomFill = shuffleArray(remaining).slice(0, 5);
-
-            finalDeck = shuffleArray([...closest, ...randomFill]);
-        } else {
-            // Si no hay GPS, solo muestra 15 al azar
-            finalDeck = shuffleArray(allCamps).slice(0, 15);
-        }
-
-        renderDeck(finalDeck);
+    function buildSmartDeck(userLat,userLng){
+        const vigentes=(window.loadedCampaigns||[]).filter(c=>esCampanaVigente(c));
+        if(!Number.isFinite(userLat)||!Number.isFinite(userLng)){renderDeck(shuffleArray([...vigentes]).slice(0,15));return;}
+        const cerca=[...vigentes].sort((a,b)=>haversine(userLat,userLng,Number(a.lat),Number(a.lng))-haversine(userLat,userLng,Number(b.lat),Number(b.lng))).slice(0,10);
+        const resto=shuffleArray(vigentes.filter(c=>!cerca.includes(c))).slice(0,5);
+        renderDeck([...cerca,...resto]);
     }
 
     /* ¿Esta promoción está vigente hoy?
@@ -6899,10 +6871,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.loadedCampaigns = [...DEMO_CAMPAIGNS];
         buildSmartDeck(null, null);
     } else if (window.db) {
+        window.egZonaRuta='';
+        if(session && session.chofer){try{const veh=await window.db.collection('choferes').doc(session.chofer).get({source:'server'});window.egZonaRuta=veh.exists?veh.data().zona||'':'';}catch(e){console.log('No se pudo leer el municipio del vehículo');}}
         window.db.collection('campaigns').where('active', '==', true).get().then(snapshot => {
             snapshot.forEach(doc => {
                 const camp = doc.data();
                 camp.id = doc.id;
+                if(camp.tipo_campana==='municipal'&&camp.municipio!==window.egZonaRuta)return;
                 if (!window.egSaleHoy(camp)) return;   /* hoy no le toca */
                 window.loadedCampaigns.push(camp);
             });
@@ -6916,7 +6891,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     actualizarRadar(pos.coords.latitude, pos.coords.longitude);
                 }, (err) => console.log("GPS no autorizado de inicio"), { enableHighAccuracy: true });
             }
-        }).catch(e => console.error("Error loading campaigns:", e));
+        }).catch(e=>{console.error('No se cargó el catálogo',e);mainFeed.replaceChildren();const aviso=document.createElement('p');aviso.style='padding:60px 24px;color:white;text-align:center';aviso.textContent='No se pudieron cargar las promociones. Revisa tu conexión y vuelve a intentar.';const b=document.createElement('button');b.textContent='Volver a cargar';b.onclick=()=>location.reload();aviso.append(b);mainFeed.append(aviso);});
     }
 
 
@@ -6952,29 +6927,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
                 window.encaviDevId = dv;
             }
-            const diaHoy   = new Date().toISOString().slice(0, 10);
-            const huellaSc = session.chofer + '_' + window.encaviDevId + '_' + diaHoy;
-            const chofRef  = db.collection('choferes').doc(session.chofer);
-
-            db.collection('scan_log').doc(huellaSc).set({
-                chofer: session.chofer,
-                fecha: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(() => {
-                db.collection('codigos').doc(session.chofer).update({
-                    escaneos: firebase.firestore.FieldValue.increment(1)
-                }).catch(function () {});
-
-                chofRef.get().then(doc => {
-                    if (doc.exists) {
-                        chofRef.update({
-                            scans: firebase.firestore.FieldValue.increment(1),
-                            lastActive: new Date()
-                        });
-                    } else {
-                        chofRef.set({ scans: 1, clicks: 0, lastActive: new Date() });
-                    }
-                });
-            }).catch(() => {});
+            const huellaSc=session.uid+'_'+session.code;
+            db.collection('scan_log').doc(huellaSc).set({chofer:session.chofer,fecha:firebase.firestore.FieldValue.serverTimestamp()}).catch(()=>{});
         }
     } catch(e) { console.error("Error Firebase:", e); }
 });
@@ -7067,7 +7021,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         // Flujo del piloto: descubrir una promoción real entre las campañas cargadas
-        const activeCampaigns = (window.loadedCampaigns || []).filter(c => esCampanaVigente(c));
+        const activeCampaigns = (window.loadedCampaigns || []).filter(c => esCampanaVigente(c) && c.tipo_campana!=='municipal' && c.stock>0);
 
         if (activeCampaigns.length === 0) {
             // Estado honesto si no hay campañas disponibles
@@ -7086,7 +7040,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const getIconHTML = (camp) => {
             if (camp && camp.img) {
-                return `<img src="${camp.img}" alt="${escapeHTML((camp && camp.title) || '')}" style="width:100%; height:100%; object-fit:cover; border-radius:10px;">`;
+                return `<img src="${escapeHTML(EncaviOperacion.enlace(camp.img || ''))}" alt="${escapeHTML((camp && camp.title) || '')}" style="width:100%; height:100%; object-fit:cover; border-radius:10px;">`;
             }
             const icon = (camp && camp.fallbackIcon) || '🎁';
             return `<div style="font-size:45px; display:flex; align-items:center; justify-content:center; width:100%; height:100%;">${icon}</div>`;
@@ -7489,7 +7443,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const ticketRef = targetDb.collection('tickets').doc(idTicket);
                 const snapshot = await tx.get(promoRef);
                 const vigente = snapshot.exists ? snapshot.data() : null;
-                if (!vigente || !esCampanaVigente(vigente) || idNegocio(vigente.caja_id) !== negocio) {
+                if (!vigente || !esCampanaVigente(vigente) || vigente.tipo_campana==='municipal' || idNegocio(vigente.caja_id) !== negocio) {
                     throw Object.assign(new Error('Promoción no disponible'), { code: 'promo-no-disponible' });
                 }
                 if (!Number.isInteger(vigente.stock) || vigente.stock <= 0) {
@@ -7516,7 +7470,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         camp.stock = stockConfirmado;
-        window.__ultimoCupon = { campId: campId, negocio: title };
+        window.__ultimoCupon = { campId:campId, negocio:title, ticketId:idTicket };
         mostrarSuccess(title);
     }
 
@@ -7606,7 +7560,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         try {
-            return targetDb.collection('opiniones').add({
+            return targetDb.collection('opiniones').doc(cupon.ticketId).set({
                 camp_id:    cupon.campId || null,
                 negocio:    cupon.negocio || null,
                 chofer:     (ses && ses.chofer) ? ses.chofer : 'desconocido',
@@ -7660,9 +7614,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             ? '<span class="eg-pop-img" style="background-image:url(\'' + egEsc(camp.img) + '\')"></span>'
             : '';
 
-        const accion = agotado
+        const accion = agotado && camp.tipo_campana!=='municipal'
             ? '<span class="eg-pop-agotado">Cupones agotados por hoy</span>'
-            : '<button class="eg-pop-btn" onclick="egReclamarDesdeMapa(\'' + egEsc(camp.id) + '\')">Reclamar</button>';
+            : '<button class="eg-pop-btn" onclick="egReclamarDesdeMapa(\'' + egEsc(camp.id) + '\')">' + (camp.tipo_campana==='municipal'?'Contactar negocio':'Reclamar') + '</button>';
 
         return img
              + '<div class="eg-pop-body">'
@@ -7685,6 +7639,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (btn) { btn.click(); return; }
 
         const camp = (window.loadedCampaigns || []).find(c => c.id === campId);
+        if(camp && camp.tipo_campana==='municipal'){
+            if(!window.egSesionConQR()){window.egAvisoSoloQR();return;}
+            try{window.open(EncaviOperacion.enlace(camp.action_url),'_blank','noopener');}catch(e){alert('El enlace no está disponible.');}return;
+        }
         if (camp) mostrarCodigo(camp.id, camp.caja_id || '', camp.title || '');
     };
 
