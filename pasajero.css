@@ -66,3 +66,6 @@ body { --font:var(--encavi-font); }
 .eg-pop-btn { background:var(--encavi-orange-bright); color:var(--encavi-dark); font-weight:500; }
 .eg-pop-cap { color:var(--encavi-orange-bright); }
 .eg-pop-badge { background:var(--encavi-orange-bright); color:var(--encavi-dark); }
+#egSoloQR p { color:var(--encavi-soft) !important; }
+#egSoloQRCerrar { background:var(--encavi-orange-bright) !important; color:var(--encavi-dark) !important; font-weight:500 !important; border-radius:9px !important; }
+#successTime { font-family:var(--encavi-font) !important; font-variant-numeric:tabular-nums; }
