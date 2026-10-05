@@ -1,5 +1,19 @@
 # Preparación de activación — 2026-10-04
 
+## Estado actual: publicación técnica completada
+
+La conexión CLI fue completada por el propietario. Se verificó el proyecto `encavi-go` y la existencia del UID administrador esperado. Las reglas vigentes se respaldaron mediante la API autenticada antes de publicar.
+
+Se publicaron y volvieron a leer las reglas: coinciden exactamente con `firestore.rules`. Después se habilitó `signIn.anonymous.enabled` y se confirmó mediante lectura de configuración. No se activó facturación ni se desplegaron Cloud Functions.
+
+Se actualizó `main` a `74fb464c401c91fcd640fbda8776f90daa4806d5`. GitHub Pages finalizó con éxito: https://github.com/enciso573-arch/encavigo-app/actions/runs/37264002256 . Las páginas `index.html`, `admin.html`, `negocios/index.html` y los cuatro scripts nuevos devuelven HTTP 200 y su contenido coincide con los archivos locales, normalizando únicamente CRLF/LF.
+
+Prueba de navegador público: entrada directa muestra «Escanea el código en tu transporte»; `?demo=1` muestra el indicador de demostración, el código `DEMO-001` y el canje «CANJE DE DEMOSTRACIÓN». Capturas en la carpeta de visualizaciones: `piloto-acceso-sin-qr.png` y `piloto-canje-demo-publicado.png`. La lectura REST sin autenticación de `codigos` recibe HTTP 403. `campaigns` sigue vacío; no se crearon negocios, vehículos, tickets ni movimientos financieros de ejemplo en producción. La entrada pública puede crear la identidad anónima normal de Authentication.
+
+El respaldo incluye `firestore-reglas-activas.json`, `authentication-config.json`, `activacion-verificada.json` y un bundle Git, además del HTML previo. No contiene contraseñas ni tokens de acceso. Falta configurar altas aprobadas y probar el recorrido de un QR y canje reales antes de distribuir el piloto. La entrada al panel administrador desde una sesión humana no se comprobó en este turno; el permiso del UID sí fue probado en emulador y se verificó su existencia en producción.
+
+Las secciones siguientes registran la preparación anterior; los pasos 1–4 ya se completaron. Los pasos 5–6 siguen pendientes por falta de los datos reales del piloto.
+
 ## Verificación nueva
 
 - `npm run test:auth` ejecuta los SDK reales de Authentication y Firestore contra emuladores del proyecto ficticio `demo-encavigo-audit`. No conecta al proyecto de producción.
@@ -17,7 +31,7 @@ Se descargaron las versiones públicas de `index.html`, `admin.html`, `negocios/
 
 Es un respaldo del HTML publicado, no una exportación de la base de datos ni de sus reglas activas. Antes de sustituir las reglas debe respaldarse el texto vigente autenticado en Firebase; el texto pegado anteriormente por el propietario sirve como referencia, no como comprobación actual.
 
-## Secuencia pendiente de publicación
+## Secuencia de publicación preparada previamente
 
 1. Conectar la cuenta del propietario a Firebase. La herramienta CLI estaba sin cuentas autorizadas y la sesión Edge anterior no estaba disponible en este turno.
 2. Consultar y respaldar las reglas activas; comprobar el proyecto `encavi-go` y el UID propietario.
