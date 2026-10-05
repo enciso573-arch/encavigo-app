@@ -1,6 +1,5 @@
 // Recorridos contra el HTML y módulos reales. Sin red ni permisos del navegador real.
 const assert = require('node:assert/strict');
-const fs = require('node:fs');
 const {boot} = require('./test_demo_integration');
 const flush = () => new Promise(r => setImmediate(r));
 let pasadas = 0;
@@ -59,13 +58,12 @@ async function caso(nombre, fn) { await fn(); pasadas++; console.log('[PASS] ' +
       w.encaviSession.timestamp=Date.now()-25*3600000;w.egGpsAcc=10;w.actualizarRadar(20.65,-105.22);await flush();assert.equal(avisos.length,1);
     } finally { a.close(); }
   });
-  await caso('Opinión sin emojis decorativos: respuesta negativa y escala numérica utilizables', async () => {
+  await caso('Opinión con apariencia original: respuesta negativa y estrellas utilizables', async () => {
     const a=await boot();const w=a.w,d=w.document;
     try {
-      assert.equal(d.querySelectorAll('#opinionModal .op-emoji').length,0);assert.equal(d.querySelectorAll('#opEstrellas button').length,5);
-      w.opRespeto(true);d.querySelectorAll('#opEstrellas button')[3].click();assert.equal(d.querySelectorAll('#opEstrellas button.on').length,4);
-      w.opRespeto(false);assert.equal(d.getElementById('opEstrellas').style.display,'none');assert.equal(d.getElementById('opIcono').textContent,'Reportar un problema');
-      const css=fs.readFileSync('pasajero.css','utf8');assert.ok(css.includes('font-weight:500'));assert.ok(css.includes('var(--encavi-orange-bright)'));assert.ok(!/#(?:d5cbbb|e4ddd1|315d50|233c35)/i.test(css));
+      assert.equal(d.querySelectorAll('#opinionModal .op-emoji').length,3);assert.equal(d.querySelectorAll('#opEstrellas span').length,5);
+      w.opRespeto(true);d.querySelectorAll('#opEstrellas span')[3].click();assert.equal(d.querySelectorAll('#opEstrellas span.on').length,4);
+      w.opRespeto(false);assert.equal(d.getElementById('opEstrellas').style.display,'none');assert.equal(d.getElementById('opIcono').textContent,'😕');
     } finally { a.close(); }
   });
   console.log('Pasajero: '+pasadas+' recorridos completos.');

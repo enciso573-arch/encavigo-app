@@ -3,7 +3,7 @@
    PWA offline cache + Push notifications
 ============================================= */
 
-const CACHE_NAME = 'encavigo-v47'; /* bump → invalida caches con el JS viejo */
+const CACHE_NAME = 'encavigo-v48'; /* bump → invalida caches con el JS viejo */
 const PRECACHE = [
   './',
   './index.html',
@@ -11,8 +11,7 @@ const PRECACHE = [
   './comisiones.js',
   './operacion.js',
   './pasajero-ui.js',
-  './encavi-marca.css?v=20261005-2',
-  './pasajero.css?v=20261005-3',
+  './pasajero.css?v=20261005-restaurado',
   './sesiones-servidor.js',
   './registro.html'
 ];

@@ -22,14 +22,15 @@ La calculadora permite capturar precio, costo directo, empaque/complemento, comi
 
 La baraja coloca hasta diez promociones cercanas primero cuando hay ubicación y reserva hasta cinco lugares para rotación. Sin ubicación mezcla hasta quince. No es todavía un recomendador que aprenda rentabilidad ni una garantía de visitas.
 
-La búsqueda filtra nombre, descripción y etiqueta sin distinguir acentos. La ubicación se solicita solo al pulsar el control correspondiente; sin ella no se inventa cercanía. Las alertas requieren permiso del navegador y GPS preciso mientras la página permanece abierta. La demo no solicita ubicación ni activa notificaciones reales. El sitio comparte la fuente Inter de la página de negocios. El catálogo y sus formularios reutilizan naranja y carbón mediante encavi-marca.css, sin la paleta verde o beige anterior. Los avisos y opiniones usan encabezados de peso moderado y una escala de calificación numérica sin emojis decorativos.
+La búsqueda filtra nombre, descripción y etiqueta sin distinguir acentos. La ubicación se solicita solo al pulsar el control correspondiente; sin ella no se inventa cercanía. Las alertas requieren permiso del navegador y GPS preciso mientras la página permanece abierta. La demo no solicita ubicación ni activa notificaciones reales. Por indicación del propietario, la apariencia original anterior a las propuestas visuales se conserva. Los controles nuevos de búsqueda y ubicación utilizan sus mismos estilos; no se cambia la identidad de la página.
+
 
 ## Verificación realizada
 
 - `npm test`: 44 casos de acceso, sesión, demo y recorrido; 2 de comisiones; 6 de operación del panel, validación, contacto y reporte; 6 recorridos de búsqueda, ubicación, alertas y opinión.
 - `npm run test:rules`: 35 casos con Firestore Emulator. Incluyen stock atómico, duplicados, permisos, caja y vehículo dados de baja, fechas/días, importes históricos, publicidad, opiniones ligadas al canje y logs ligados a sesión.
 - `npm run test:auth`: 4 casos con el proveedor anónimo real del SDK contra emuladores locales.
-- `node scripts/verificar-sitio.cjs`: 19 scripts válidos, 39 referencias locales existentes, sin IDs duplicados y vistas dentro del panel.
+- `node scripts/verificar-sitio.cjs`: 19 scripts válidos, 33 referencias locales existentes, sin IDs duplicados y vistas dentro del panel.
 - Revisión del formulario real en navegador, con Firebase sustituido por un doble **solo en el servidor local de QA**. Escritorio y móvil de 390 × 844; sin desbordamiento horizontal en el móvil revisado. Es una prueba visual, no una sesión propietaria en producción.
 - No se crean negocios, choferes, tickets ni pagos ficticios en Firebase real. La guía de la fonda es texto de ayuda.
 

@@ -7,9 +7,12 @@
     const dialogo = d.getElementById('catalogoDialogo'), titulo = d.getElementById('catalogoTitulo'), contenido = d.getElementById('catalogoContenido');
     let origen, alertasActivas = false;
     const anunciadas = new Set();
-    for (const b of d.querySelectorAll('#opEstrellas button')) {
+    for (const [i,b] of [...d.querySelectorAll('#opEstrellas span,#opEstrellas button')].entries()) {
       b.removeAttribute('onclick');
-      b.addEventListener('click', () => window.opEstrella(Number(b.textContent)));
+      b.setAttribute('role','button'); b.tabIndex=0;
+      b.setAttribute('aria-label','Calificación '+(i+1)+' de 5');
+      b.addEventListener('click', () => window.opEstrella(i+1));
+      b.addEventListener('keydown', e => { if(e.key==='Enter'||e.key===' '){e.preventDefault();b.click();} });
     }
     const sesionActiva = () => {
       const s = window.encaviSession;
