@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "test": "node test_fase1.js",
+    "test": "node test_fase1.js && node test_comisiones.js",
     "test:rules": "firebase emulators:exec --config firebase.emulator.json --project demo-encavigo-audit --only firestore \"node test_seguridad_firebase.js\""
   },
   "dependencies": {

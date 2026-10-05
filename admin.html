@@ -157,7 +157,7 @@
     </div>
 <div class="nav-item" id="nav-cobros" onclick="switchTab('cobros')">
 <svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="16"><line x1="12" x2="12" y1="1" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-      Cobros del mes
+      Comisiones y pagos
     </div>
 <div class="nav-item" id="nav-codigos" onclick="switchTab('codigos')">
 <svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="16"><rect height="7" width="7" x="3" y="3"></rect><rect height="7" width="7" x="14" y="3"></rect><rect height="7" width="7" x="3" y="14"></rect><path d="M14 14h3v3h-3zM18 18h3v3h-3z"></path></svg>
@@ -302,10 +302,13 @@
 
 <div id="view-cobros" style="display: none;">
   <div class="top-bar" style="margin-bottom: 20px;">
-    <h1 class="page-title">Cobros del mes</h1>
-    <input id="cobMes" type="month" style="padding:10px 14px; border:1px solid #D1D5DB; border-radius:8px; font-family:'Inter',sans-serif; font-size:14px;" onchange="calcularCobros()"/>
+    <h1 class="page-title">Comisiones y pagos</h1>
+    <label>Periodo <select id="cobTipo" onchange="calcularCobros()"><option value="semana">Semana</option><option value="mes">Mes</option><option value="todos">Todos / pendientes anteriores</option></select></label>
+    <input id="cobMes" type="date" style="padding:10px 14px; border:1px solid #D1D5DB; border-radius:8px; font-family:'Inter',sans-serif; font-size:14px;" onchange="calcularCobros()"/>
   </div>
 
+  <p id="cobPeriodo" style="color:#6B7280;"></p>
+  <p>Comisiones completas para el chofer. Las mensualidades de publicidad se administran aparte. Registrar un movimiento no transfiere dinero.</p>
   <div id="cobResumen" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; margin-bottom:24px;"></div>
 
   <div style="background:#FFF; border:1px solid #E5E7EB; border-radius:16px; padding:24px; margin-bottom:24px;">
@@ -314,8 +317,8 @@
     <table style="width:100%; border-collapse:collapse;"><thead><tr>
       <th style="text-align:left; padding:10px; font-size:12px; color:#6B7280; border-bottom:1px solid #E5E7EB;">Negocio</th>
       <th style="text-align:right; padding:10px; font-size:12px; color:#6B7280; border-bottom:1px solid #E5E7EB;">Clientes</th>
-      <th style="text-align:right; padding:10px; font-size:12px; color:#6B7280; border-bottom:1px solid #E5E7EB;">Tarifa</th>
-      <th style="text-align:right; padding:10px; font-size:12px; color:#6B7280; border-bottom:1px solid #E5E7EB;">A cobrar</th>
+      <th style="text-align:right; padding:10px; font-size:12px; color:#6B7280; border-bottom:1px solid #E5E7EB;">Generado</th>
+      <th style="text-align:right; padding:10px; font-size:12px; color:#6B7280; border-bottom:1px solid #E5E7EB;">Pendiente de cobrar</th>
     </tr></thead><tbody id="cobNegocios"></tbody></table>
   </div>
 
@@ -329,6 +332,7 @@
     </tr></thead><tbody id="cobChoferes"></tbody></table>
   </div>
 
+  <div style="background:white;padding:24px;border-radius:16px;margin-bottom:24px;overflow-wrap:anywhere"><h2>Detalle de canjes y movimientos</h2><div id="cobDetalle"></div></div>
   <div id="cobRevisionCaja" style="background:#FFFBEB; border:1px solid #FDE68A; border-radius:16px; padding:24px; margin-bottom:24px; display:none;">
     <h2 style="font-size:17px; margin:0 0 4px 0; color:#92400E;">Cupones marcados para revisión</h2>
     <p style="font-size:13px; color:#92400E; margin:0 0 16px 0;">No se cobran automáticamente. Revísalos y decide.</p>
@@ -448,6 +452,7 @@
 </div>
 </div>
 <script src="admin-seguridad.js"></script>
+<script src="comisiones.js"></script>
 <!-- FIREBASE SDK -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -964,7 +969,8 @@ function closeModal() {
         const endDate = document.getElementById('cEnd').value;
         const stock = parseInt(document.getElementById('cStock').value) || 0;
         const caja_id = document.getElementById('cCaja').value;
-        const tarifa  = parseInt(document.getElementById('cTarifa').value);
+        const tarifa = Number(document.getElementById('cTarifa').value);
+        if (![0,25,45,80].includes(tarifa)) { alert('Selecciona una tarifa acordada válida.'); return; }
         const dias = Array.prototype.slice
             .call(document.querySelectorAll('#cDias input:checked'))
             .map(function (c) { return parseInt(c.value, 10); })
@@ -972,7 +978,7 @@ function closeModal() {
 
         if(!title || !img) { alert('Título e Imagen son obligatorios'); return; }
 
-        const data = { title, desc, img, badge, lat, lng, stock, caja_id, tarifa: isNaN(tarifa) ? 25 : tarifa, dias: dias, startDate: startDate || null, endDate: endDate || null, active: true };
+        const data = { title, desc, img, badge, lat, lng, stock, caja_id, tarifa, dias: dias, startDate: startDate || null, endDate: endDate || null, active: true };
 
         if (typeof editModeId !== 'undefined' && editModeId) {
             db.collection('campaigns').doc(editModeId).update(data).then(() => { alert('¡Campaña Actualizada exitosamente!'); closeModal(); limpiarFormulario(); }).catch(err => alert('Error: ' + err));
@@ -1026,114 +1032,6 @@ function closeModal() {
     }
 
     const pesos = n => '$' + Number(n || 0).toLocaleString('es-MX');
-
-    async function calcularCobros() {
-        const campoMes = document.getElementById('cobMes');
-        if (!campoMes.value) {
-            const h = new Date();
-            campoMes.value = h.getFullYear() + '-' + String(h.getMonth() + 1).padStart(2, '0');
-        }
-        const [anio, mes] = campoMes.value.split('-').map(Number);
-        const desde = new Date(anio, mes - 1, 1, 0, 0, 0);
-        const hasta = new Date(anio, mes, 0, 23, 59, 59);
-
-        document.getElementById('cobNegocios').innerHTML =
-            '<tr><td colspan="4" style="padding:16px; color:#9CA3AF;">Calculando…</td></tr>';
-
-        try {
-            const [snapCamp, snapTk, snapOp] = await Promise.all([
-                db.collection('campaigns').get(),
-                db.collection('tickets').where('fecha', '>=', desde).where('fecha', '<=', hasta).get(),
-                db.collection('opiniones').where('fecha', '>=', desde).where('fecha', '<=', hasta).get()
-            ]);
-
-            const camps = Object.create(null);
-            snapCamp.forEach(d => { camps[d.id] = d.data(); });
-
-            const porNegocio = Object.create(null), porChofer = Object.create(null), revisar = [];
-            let totalCobrar = 0, totalPagar = 0, clientes = 0;
-            window.quemadosPorChofer = Object.create(null);
-
-            snapTk.forEach(d => {
-                const t = d.data();
-                const c = camps[t.camp_id] || {};
-                const nombre = c.title || ('(promo borrada: ' + t.camp_id + ')');
-                const tarifa = (c.tarifa === 0 || c.tarifa) ? Number(c.tarifa) : 25;
-                const chofer = t.chofer || 'orgánico';
-
-                window.quemadosPorChofer[chofer] = (window.quemadosPorChofer[chofer] || 0) + 1;
-
-                if (t.revisar) {
-                    revisar.push({ nombre, chofer, motivo: t.revisar, dist: t.dist_m,
-                                   fecha: t.fecha && t.fecha.toDate ? t.fecha.toDate() : null });
-                    return;                      /* marcado = no se cobra solo */
-                }
-
-                clientes++;
-                if (!porNegocio[nombre]) porNegocio[nombre] = { n: 0, tarifa: tarifa };
-                porNegocio[nombre].n++;
-                totalCobrar += tarifa;
-
-                if (chofer !== 'orgánico') {
-                    if (!porChofer[chofer]) porChofer[chofer] = { n: 0, monto: 0 };
-                    porChofer[chofer].n++;
-                    porChofer[chofer].monto += tarifa;
-                    totalPagar += tarifa;
-                }
-            });
-
-            /* Resumen */
-            document.getElementById('cobResumen').innerHTML =
-                tarjetaCobro('Clientes que llegaron', clientes, 'cupones quemados en el mes') +
-                tarjetaCobro('Por cobrar a negocios', pesos(totalCobrar), 'suma de tarifas', '#047857') +
-                tarjetaCobro('Por pagar a choferes', pesos(totalPagar), 'va completo al chofer', '#B45309') +
-                tarjetaCobro('Te queda', pesos(totalCobrar - totalPagar), 'sin contar mensualidades', '#1D4ED8');
-
-            /* Negocios */
-            const filasN = Object.keys(porNegocio).sort((a, b) => porNegocio[b].n - porNegocio[a].n);
-            document.getElementById('cobNegocios').innerHTML = filasN.length
-                ? filasN.map(k => '<tr>' +
-                    '<td style="padding:12px 10px; border-bottom:1px solid #F3F4F6;">' + escaparTextoAdmin(k) + '</td>' +
-                    '<td style="padding:12px 10px; text-align:right; border-bottom:1px solid #F3F4F6;">' + porNegocio[k].n + '</td>' +
-                    '<td style="padding:12px 10px; text-align:right; border-bottom:1px solid #F3F4F6; color:#6B7280;">' + pesos(porNegocio[k].tarifa) + '</td>' +
-                    '<td style="padding:12px 10px; text-align:right; border-bottom:1px solid #F3F4F6; font-weight:700;">' + pesos(porNegocio[k].n * porNegocio[k].tarifa) + '</td>' +
-                  '</tr>').join('')
-                : '<tr><td colspan="4" style="padding:16px; color:#9CA3AF;">Ningún cupón quemado este mes.</td></tr>';
-
-            /* Choferes */
-            const filasC = Object.keys(porChofer).sort((a, b) => porChofer[b].monto - porChofer[a].monto);
-            document.getElementById('cobChoferes').innerHTML = filasC.length
-                ? filasC.map(k => '<tr>' +
-                    '<td style="padding:12px 10px; border-bottom:1px solid #F3F4F6;">' + escaparTextoAdmin(k) + '</td>' +
-                    '<td style="padding:12px 10px; text-align:right; border-bottom:1px solid #F3F4F6;">' + porChofer[k].n + '</td>' +
-                    '<td style="padding:12px 10px; text-align:right; border-bottom:1px solid #F3F4F6; font-weight:700;">' + pesos(porChofer[k].monto) + '</td>' +
-                  '</tr>').join('')
-                : '<tr><td colspan="3" style="padding:16px; color:#9CA3AF;">Ningún chofer generó cupones este mes.</td></tr>';
-
-            /* Revisión */
-            const motivos = { sin_ubicacion: 'el celular no dio ubicación',
-                              gps_impreciso: 'el GPS venía impreciso',
-                              negocio_sin_ubicacion: 'el negocio no tiene ubicación cargada' };
-            document.getElementById('cobRevisionCaja').style.display = revisar.length ? 'block' : 'none';
-            document.getElementById('cobRevision').innerHTML = revisar.map(r =>
-                '<div style="padding:10px 0; border-bottom:1px solid #FDE68A; font-size:14px; color:#78350F;">' +
-                '<strong>' + escaparTextoAdmin(r.nombre) + '</strong> · chofer ' + escaparTextoAdmin(r.chofer) +
-                ' · ' + escaparTextoAdmin(motivos[r.motivo] || r.motivo) +
-                (r.dist != null ? ' · a ' + escaparTextoAdmin(r.dist) + ' m' : '') +
-                (r.fecha ? ' · ' + r.fecha.toLocaleDateString('es-MX') : '') +
-                '</div>').join('');
-
-            /* Opiniones */
-            const ops = [];
-            snapOp.forEach(d => ops.push(d.data()));
-            renderOpinionesSeguras(document.getElementById('cobOpiniones'), ops);
-
-        } catch (e) {
-            console.error(e);
-            document.getElementById('cobNegocios').innerHTML =
-                '<tr><td colspan="4" style="padding:16px; color:#DC2626;">No se pudo calcular: ' + e.message + '</td></tr>';
-        }
-    }
 
     /* ══ CODIGOS QR ══════════════════════════════════════════════
        El libro de todos los acrilicos y calcomanias que salen a la
@@ -1567,6 +1465,10 @@ function closeModal() {
     }
 
     async function limpiezaEjecutar() {
+        try {
+            const canjes = await db.collection('tickets').limit(1).get();
+            if (!canjes.empty) { alert('La limpieza queda bloqueada porque ya existen canjes. Conserva el historial de comisiones.'); return; }
+        } catch (e) { alert('No se pudo verificar el historial; no se realizará la limpieza.'); return; }
         const palabra = (document.getElementById('limpiezaPalabra').value || '').trim().toUpperCase();
         const avi = document.getElementById('limpiezaAviso');
         if (palabra !== 'BORRAR') {
@@ -1836,6 +1738,7 @@ function closeModal() {
 </div>
 </div>
 </div>
+<script src="admin-comisiones.js"></script>
 </body>
 </html>
 <!-- 1788643621.4208372 --><!-- v4 1788644835.507004 --><!-- v6 1788645702.3345118 --><!-- v7 1788657285.6522698 --><!-- v8 1788658146.5265121 --><!-- v10 1788658633.7332523 --><!-- v11 1788658746.0280507 --><!-- v12 1788658954.1285067 --><!-- v13 1788659375.369281 --><!-- v21 1788660497.1802418 --><!-- v22 1788660571.5987554 --><!-- v23 1788660619.9974518 --><!-- v24 1788660754.0814111 --><!-- v25 1788662077.6181395 --><!-- v26 1788662293.384441 -->

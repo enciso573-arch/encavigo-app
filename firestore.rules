@@ -120,11 +120,18 @@ service cloud.firestore {
                     && sesionValida(request.resource.data.code, request.resource.data.chofer)
                     && request.resource.data.keys().hasOnly(
                          ['camp_id','negocio','code','chofer','dev','status',
-                          'lat','lng','acc','dist_m','revisar','fecha'])
+                          'lat','lng','acc','dist_m','revisar','fecha',
+                          'comision_centavos','moneda','negocio_nombre'])
+                    && request.resource.data.moneda == 'MXN'
+                    && request.resource.data.comision_centavos is int
+                    && request.resource.data.comision_centavos in [0,2500,4500,8000]
+                    && request.resource.data.comision_centavos == get(/databases/$(database)/documents/campaigns/$(request.resource.data.camp_id)).data.tarifa * 100
+                    && request.resource.data.negocio_nombre == get(/databases/$(database)/documents/campaigns/$(request.resource.data.camp_id)).data.title
                     && request.resource.data.camp_id is string
                     && request.resource.data.negocio is string
                     && request.resource.data.code    is string
                     && request.resource.data.dev     is string
+                    && (request.resource.data.revisar == null || request.resource.data.revisar in ['sin_ubicacion','gps_impreciso','negocio_sin_ubicacion'])
                     && request.resource.data.status == 'quemado'
 
                     && id == request.resource.data.negocio + '_' + request.resource.data.code
@@ -143,7 +150,26 @@ service cloud.firestore {
                        == get(/databases/$(database)/documents/campaigns/$(request.resource.data.camp_id)).data.stock - 1
                     && getAfter(/databases/$(database)/documents/operaciones_canje/$(getAfter(/databases/$(database)/documents/campaigns/$(request.resource.data.camp_id)).data.ultima_operacion)).data.ticket_id == id;
 
-      allow read, update, delete: if esAdmin();
+      allow read: if esAdmin();
+      allow update, delete: if false; // Historial de canjes inmutable, también para administración.
+    }
+    function movimientoValido(id) {
+      let d = request.resource.data;
+      let t = get(/databases/$(database)/documents/tickets/$(d.ticket_id)).data;
+      let revision = d.tipo in ['aprobar','rechazar'];
+      return d.keys().hasOnly(['ticket_id','tipo','referencia','importe_centavos','admin_uid','fecha'])
+        && d.ticket_id is string && d.admin_uid == request.auth.uid && d.fecha == request.time
+        && d.referencia is string && d.referencia.size() > 0 && d.referencia.size() <= 200
+        && t.moneda == 'MXN' && t.comision_centavos in [0,2500,4500,8000]
+        && ((revision && t.revisar != null && id == d.ticket_id + '_revision' && d.importe_centavos == 0)
+          || (d.tipo in ['cobro','pago'] && id == d.ticket_id + '_' + d.tipo
+            && d.importe_centavos == t.comision_centavos && t.comision_centavos > 0
+            && (t.revisar == null || get(/databases/$(database)/documents/movimientos_comision/$(d.ticket_id + '_revision')).data.tipo == 'aprobar')));
+    }
+    match /movimientos_comision/{id} {
+      allow read: if esAdmin();
+      allow create: if esAdmin() && movimientoValido(id);
+      allow update, delete: if false;
     }
     match /opiniones/{doc} {
       allow create: if request.resource.data.keys().hasOnly(

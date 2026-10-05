@@ -2,11 +2,12 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const { initializeTestEnvironment, assertFails, assertSucceeds } = require('@firebase/rules-unit-testing');
-const { collection, doc, getDoc, getDocFromServer, setDoc, updateDoc, runTransaction, serverTimestamp, Timestamp } = require('firebase/firestore');
+const { collection, doc, getDoc, getDocFromServer, setDoc, updateDoc, deleteDoc, runTransaction, serverTimestamp, Timestamp } = require('firebase/firestore');
 const { JSDOM } = require('jsdom');
 const { renderOpinionesSeguras, escaparTextoAdmin } = require('./admin-seguridad');
 const { boot } = require('./test_demo_integration');
 const { crearServicioSesiones } = require('./sesiones-servidor');
+const Comisiones = require('./comisiones');
 
 const host = process.env.FIRESTORE_EMULATOR_HOST;
 assert.equal(host, '127.0.0.1:8787', 'Esta suite exige el emulador local en 8787');
@@ -15,7 +16,7 @@ async function check(name, fn) { await env.clearFirestore(); await fn(); passed+
 async function seed(stock = 1) {
     await env.withSecurityRulesDisabled(async ctx => {
         const db = ctx.firestore();
-        await setDoc(doc(db, 'campaigns/promo'), { active: true, stock, caja_id: 'CAJA-OK', clicks: 0 });
+        await setDoc(doc(db, 'campaigns/promo'), { active: true, stock, caja_id: 'CAJA-OK', clicks: 0, tarifa:25, title:'Negocio' });
         await setDoc(doc(db, 'codigos/V-001'), { tipo:'vehiculo', estado:'activo', telefono: 'dato-privado', escaneos: 0 });
         for (const [uid,code] of [['passenger','A'],['passengerB','B']]) {
             await setDoc(doc(db,'sesiones/'+uid),{code,chofer:'V-001',issuedAt:Timestamp.now(),juegoJugado:false});
@@ -24,7 +25,8 @@ async function seed(stock = 1) {
 }
 function ticket(code) {
     return { camp_id:'promo', negocio:'CAJA-OK', code, chofer:'V-001', dev:'device', status:'quemado',
-        lat:null, lng:null, acc:null, dist_m:null, revisar:'sin_ubicacion', fecha:serverTimestamp() };
+        lat:null, lng:null, acc:null, dist_m:null, revisar:'sin_ubicacion', fecha:serverTimestamp(),
+        comision_centavos:2500, moneda:'MXN', negocio_nombre:'Negocio' };
 }
 function operation(tx, db, ticketId, campId = 'promo') {
     const op = doc(collection(db,'operaciones_canje'));
@@ -37,7 +39,7 @@ function redeem(db, code) {
         const data = (await tx.get(p)).data();
         if (!data || data.stock <= 0) throw new Error('agotado');
         const op = doc(collection(db,'operaciones_canje'));
-        tx.set(t, ticket(code)); tx.set(op, {ticket_id:t.id,camp_id:'promo',fecha:serverTimestamp()});
+        tx.set(t, {...ticket(code),...Comisiones.captura(data)}); tx.set(op, {ticket_id:t.id,camp_id:'promo',fecha:serverTimestamp()});
         tx.update(p, { stock:data.stock-1, ultima_operacion:op.id });
     });
 }
@@ -139,7 +141,7 @@ async function readPrivate(path) {
     });
     await check('Dos promociones del mismo negocio no admiten repetir el código', async () => {
         await seed(3); await redeem(publicDb(),'A');
-        await env.withSecurityRulesDisabled(ctx => setDoc(doc(ctx.firestore(),'campaigns/otra'), {active:true,stock:2,caja_id:'CAJA-OK'}));
+        await env.withSecurityRulesDisabled(ctx => setDoc(doc(ctx.firestore(),'campaigns/otra'), {active:true,stock:2,caja_id:'CAJA-OK',tarifa:25,title:'Negocio'}));
         const db = publicDb();
         await assertFails(runTransaction(db, async tx => {
             const p = doc(db,'campaigns/otra'); await tx.get(p);
@@ -283,5 +285,74 @@ async function readPrivate(path) {
         try { assert.equal(app.w.encaviSession,null); assert.ok(app.w.document.body.textContent.includes('No pudimos verificar')); }
         finally { app.close(); }
     });
-    console.log(`Seguridad: ${passed}/22 pruebas pasadas en emulador.`);
+    await check('Tarifa histórica inmutable aunque se edite o borre la promoción', async () => {
+        await seed(); await redeem(publicDb(),'A');
+        const admin=env.authenticatedContext('ZS4cI7hnMXVPpCaQECFg208TLbL2').firestore();
+        await updateDoc(doc(admin,'campaigns/promo'),{tarifa:80});
+        await deleteDoc(doc(admin,'campaigns/promo'));
+        assert.equal((await readPrivate('tickets/CAJA-OK_A')).comision_centavos,2500);
+        await assertFails(updateDoc(doc(admin,'tickets/CAJA-OK_A'),{comision_centavos:8000}));
+    });
+    await check('Cliente no puede introducir una comisión inventada ni registrar pagos', async () => {
+        await seed(); const db=publicDb();
+        await assertFails(runTransaction(db,async tx=>{
+            const p=doc(db,'campaigns/promo');await tx.get(p);
+            tx.set(doc(db,'tickets/CAJA-OK_A'),{...ticket('A'),comision_centavos:8000});
+            tx.update(p,{stock:0,ultima_operacion:operation(tx,db,'CAJA-OK_A')});
+        }));
+        await redeem(db,'A');
+        await assert.rejects(Comisiones.registrar(adapter(db),'CAJA-OK_A','pago','falso','passenger',serverTimestamp));
+    });
+    await check('Revisión, adelanto y recuperación; dobles pagos y cambios de historial bloqueados', async () => {
+        await seed(); await redeem(publicDb(),'A');
+        const uid='ZS4cI7hnMXVPpCaQECFg208TLbL2', db=env.authenticatedContext(uid).firestore();
+        const registrar=(tipo,ref)=>Comisiones.registrar(adapter(db),'CAJA-OK_A',tipo,ref,uid,serverTimestamp);
+        await assert.rejects(registrar('pago','antes de revisión'));
+        await registrar('aprobar','Verificado con el negocio');
+        const intentos=await Promise.allSettled([registrar('pago','Transferencia 001'),registrar('pago','Transferencia 002')]);
+        assert.equal(intentos.filter(x=>x.status==='fulfilled').length,1);
+        const t={...(await readPrivate('tickets/CAJA-OK_A')),id:'CAJA-OK_A'};
+        const movimientos={'CAJA-OK_A_revision':await readPrivate('movimientos_comision/CAJA-OK_A_revision'),
+            'CAJA-OK_A_pago':await readPrivate('movimientos_comision/CAJA-OK_A_pago')};
+        assert.equal(Comisiones.resumen([t],movimientos,{desde:null}).anticipado,2500);
+        await registrar('cobro','Recibo negocio 001');
+        movimientos['CAJA-OK_A_cobro']=await readPrivate('movimientos_comision/CAJA-OK_A_cobro');
+        const r=Comisiones.resumen([t],movimientos,{desde:null});
+        assert.equal(r.anticipado,0);assert.equal(r.cobrar,0);assert.equal(r.pagar,0);
+        await assertFails(updateDoc(doc(db,'movimientos_comision/CAJA-OK_A_pago'),{referencia:'otra'}));
+        await assert.rejects(registrar('rechazar','cambiar decisión'));
+    });
+    await check('Reglas niegan pago sin aprobación, importes incorrectos y duplicación con otro ID', async () => {
+        await seed();await redeem(publicDb(),'A');
+        const uid='ZS4cI7hnMXVPpCaQECFg208TLbL2',db=env.authenticatedContext(uid).firestore();
+        const movimiento={ticket_id:'CAJA-OK_A',tipo:'pago',referencia:'recibo',importe_centavos:2500,admin_uid:uid,fecha:serverTimestamp()};
+        await assertFails(setDoc(doc(db,'movimientos_comision/CAJA-OK_A_pago'),movimiento));
+        await Comisiones.registrar(adapter(db),'CAJA-OK_A','aprobar','Verificado',uid,serverTimestamp);
+        await assertFails(setDoc(doc(db,'movimientos_comision/CAJA-OK_A_pago'),{...movimiento,importe_centavos:8000}));
+        await assertFails(setDoc(doc(db,'movimientos_comision/otro-id'),movimiento));
+        await assertSucceeds(setDoc(doc(db,'movimientos_comision/CAJA-OK_A_pago'),movimiento));
+    });
+    await check('Canje sin marca de revisión permite cobro y pago completos por administración', async () => {
+        await seed(); const app=await client(publicDb(),'A');
+        // Ubicación confiable del negocio: flujo real sin revisión pendiente.
+        app.w.loadedCampaigns[0].lat=19.4; app.w.loadedCampaigns[0].lng=-99.1;
+        app.w.leerUbicacion=async()=>({lat:19.4,lng:-99.1,acc:5});
+        try {await app.w.quemarCupon('promo','Negocio');} finally {app.close();}
+        const t=await readPrivate('tickets/CAJA-OK_A');assert.equal(t.revisar,null);
+        const uid='ZS4cI7hnMXVPpCaQECFg208TLbL2',db=adapter(env.authenticatedContext(uid).firestore());
+        await Comisiones.registrar(db,'CAJA-OK_A','cobro','Recibo 01',uid,serverTimestamp);
+        await Comisiones.registrar(db,'CAJA-OK_A','pago','Transferencia 01',uid,serverTimestamp);
+    });
+    await check('Cortesía genera cero deuda y canje rechazado no permite cobro ni pago', async () => {
+        await seed();
+        await env.withSecurityRulesDisabled(ctx=>updateDoc(doc(ctx.firestore(),'campaigns/promo'),{tarifa:0}));
+        await redeem(publicDb(),'A');
+        const uid='ZS4cI7hnMXVPpCaQECFg208TLbL2',db=adapter(env.authenticatedContext(uid).firestore());
+        await Comisiones.registrar(db,'CAJA-OK_A','rechazar','Negocio no confirmó el canje',uid,serverTimestamp);
+        await assert.rejects(Comisiones.registrar(db,'CAJA-OK_A','cobro','recibo',uid,serverTimestamp));
+        await assert.rejects(Comisiones.registrar(db,'CAJA-OK_A','pago','pago',uid,serverTimestamp));
+        const t={...(await readPrivate('tickets/CAJA-OK_A')),id:'CAJA-OK_A'};
+        assert.equal(t.comision_centavos,0);assert.equal(Comisiones.resumen([t],{}, {desde:null}).pagar,0);
+    });
+    console.log(`Seguridad: ${passed}/28 pruebas pasadas en emulador.`);
 })().catch(err=>{console.error(err);process.exitCode=1;}).finally(async()=>{if(env)await env.cleanup();});

@@ -5856,6 +5856,7 @@ function cerrarSplash() {
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 <script src="sesiones-servidor.js"></script>
+<script src="comisiones.js"></script>
 <script>
 function evaluarParametrosURL(searchStr) {
     if (!searchStr || typeof searchStr !== 'string') {
@@ -7495,7 +7496,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     throw Object.assign(new Error('Sin inventario'), { code: 'stock-agotado' });
                 }
                 // No leer el ticket: sus datos son privados. Las reglas niegan sobrescribirlo.
-                tx.set(ticketRef, datos);
+                tx.set(ticketRef, Object.assign({}, datos, EncaviComisiones.captura(vigente)));
                 // Referencia opaca: el catálogo público nunca expone el código del pasajero.
                 tx.set(operacionRef, { ticket_id:idTicket, camp_id:campId, fecha:datos.fecha });
                 tx.update(promoRef, { stock: vigente.stock - 1, ultima_operacion: operacionRef.id });

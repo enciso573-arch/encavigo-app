@@ -43,6 +43,7 @@ async function boot(search = '?demo=1', shared = storage(), servicioVerificado =
     },{FieldValue:{serverTimestamp:()=>0,increment:n=>n}}) };
     // Map UI is not exercised here; any unexpected dependency causes a failure.
     w.L = { divIcon: () => ({}) };
+    vm.runInContext(fs.readFileSync(path.join(__dirname,'comisiones.js'),'utf8'), dom.getInternalVMContext());
     scripts.forEach(s => vm.runInContext(s, dom.getInternalVMContext()));
     await Promise.all(ready.map(fn => fn()));
     await flush();

@@ -84,7 +84,7 @@ class MockFirestore {
         const result = await fn({
             get: async ref => {
                 this.reads.push({ type: 'get', collection: ref.collection, docId: ref.docId });
-                return { exists: true, data: () => this.campaign || { stock: 8, active: true, caja_id: 'CAJA-PROD-2' } };
+                return { exists: true, data: () => this.campaign || { stock: 8, active: true, caja_id: 'CAJA-PROD-2', tarifa:25, title:'Negocio' } };
             },
             set: (ref, data) => pending.push({ type: 'set', collection: ref.collection, docId: ref.docId, data }),
             update: (ref, data) => pending.push({ type: 'update', collection: ref.collection, docId: ref.docId, data })
@@ -192,6 +192,7 @@ const sandbox = {
 sandbox.window.document = sandbox.document;
 sandbox.window.window = sandbox.window;
 
+sandbox.EncaviComisiones = require('./comisiones');
 vm.createContext(sandbox);
 vm.runInContext(sInit, sandbox);
 vm.runInContext(sMain, sandbox);
@@ -866,7 +867,7 @@ test(33, 'Canje en Producción con escritura rechazada no muestra éxito ni redu
 
 test(34, 'Canje en Producción con escritura permitida actualiza Firestore y muestra éxito', async () => {
     const mockDb = new MockFirestore(false);
-    mockDb.campaign = { stock: 5, active: true, caja_id: 'CAJA-OK' };
+    mockDb.campaign = { stock: 5, active: true, caja_id: 'CAJA-OK', tarifa:25, title:'Negocio' };
     sandbox.window.db = mockDb;
     sandbox.window.__ENCAVI_ENTORNO__ = ENTORNOS.PRODUCCION;
     sandbox.window.encaviSession = { origen: 'qr', code: 'ENC-REAL-OK', chofer: 'V-003' };
@@ -1009,6 +1010,7 @@ test(39, 'Script de inicialización de Firebase evaluado en los 7 escenarios de 
             URLSearchParams: URLSearchParams
         };
         sb.window.window = sb.window;
+        sb.EncaviComisiones = require('./comisiones');
         vm.createContext(sb);
         vm.runInContext(sInit, sb);
 
@@ -1130,6 +1132,7 @@ test(44, 'Comprobación de ciclo de vida DOM completo en modo DEMO y modo produc
         sb.window.document = doc;
         sb.window.window = sb.window;
 
+        sb.EncaviComisiones = require('./comisiones');
         vm.createContext(sb);
         vm.runInContext(sInit, sb);
         vm.runInContext(sMain, sb);
