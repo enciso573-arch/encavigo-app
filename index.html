@@ -7228,7 +7228,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function coincideCaja(leido) {
         const a = normalizarCaja(leido), b = normalizarCaja(cajaEsperada);
-        return !!b && (a === b || a.indexOf(b) !== -1);
+        return !!b && a === b;
     }
 
     function abrirScanner(campId, expectedCajaId, title) {

@@ -27,6 +27,8 @@ La búsqueda filtra nombre, descripción y etiqueta sin distinguir acentos. La u
 
 ## Verificación realizada
 
+- `npm run test:recorrido`: 24 comprobaciones del recorrido unido de panel, pasajero y reporte, con Authentication y Firestore locales y las reglas reales del repositorio. Incluye altas desde formularios, QR, canje, opinión, adelanto/cobro y mensualidades. Informe y límites en `qa/RECORRIDO-COMPLETO.md`; no utiliza cámara física ni datos de producción.
+
 - `npm test`: 44 casos de acceso, sesión, demo y recorrido; 2 de comisiones; 6 de operación del panel, validación, contacto y reporte; 6 recorridos de búsqueda, ubicación, alertas y opinión.
 - `npm run test:rules`: 35 casos con Firestore Emulator. Incluyen stock atómico, duplicados, permisos, caja y vehículo dados de baja, fechas/días, importes históricos, publicidad, opiniones ligadas al canje y logs ligados a sesión.
 - `npm run test:auth`: 4 casos con el proveedor anónimo real del SDK contra emuladores locales.
